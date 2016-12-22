@@ -14,6 +14,29 @@
 			width: 100vw;
 			height: 100vh;
 		}
+
+		#contacts {
+			display: flex;
+			flex-direction: column;
+		}
+
+		#contacts ul {
+			overflow-y: scroll;
+			height: calc(100vh - 40px);
+		}
+
+		#contacts .fill {
+			display: flex;
+		}
+
+		#contacts form {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.online {
+			background-color: rgba(0, 128, 0, 0.2);
+		}
 	</style>
 </head>
 <body>
@@ -23,12 +46,30 @@
 	<input name="password" type="password"/>
 	<button type="submit">Войти</button>
 </form>
-<div style="display: none">
-	
+<div id="contacts" style="display: none">
+	<input type="search"/>
+	<div>
+		<button id="checkAll" type="button">все</button>
+		<button id="checkNobody" type="button">никого</button>
+		<button id="checkOnline" type="button">онлайн</button>
+		<button id="checkOffline" type="button">офлайн</button>
+		<label id="showOnline">
+			<input type="checkbox"/>
+			только онлайн
+		</label>
+	</div>
+	<div class="fill">
+		<ul></ul>
+		<form>
+			<textarea></textarea>
+			<button id="send" type="button">Послать</button>
+		</form>
+	</div>
 </div>
 <script>
 	const {extend, each} = require('lodash')
 	const EventEmitter = require('events')
+	const Skype = require('skyweb')
 
 	function $$(selector) {
 		return document.querySelector(selector)
@@ -38,31 +79,20 @@
 		return document.querySelectorAll(selector)
 	}
 
+	function $id(id) {
+		return document.getElementById(id)
+	}
+
+	function bar(events) {
+		each(events, function (fn, id) {
+			$id(id).addEventListener('click', fn)
+		})
+	}
+
 	['map', 'forEach'].forEach(function (fn) {
 		NodeList.prototype[fn] = Array.prototype[fn]
 		HTMLFormControlsCollection.prototype[fn] = Array.prototype[fn]
 	})
-
-	function createBrowser() {
-		const browser = document.createElement('webview')
-		browser.src = 'https://web.skype.com/'
-		switch (process.platform) {
-			case 'darwin':
-				browser.setAttribute('useragent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36')
-				break
-			case 'linux':
-				browser.setAttribute('useragent', 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1478.0 Safari/537.36')
-				break
-			default:
-				browser.setAttribute('useragent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
-				break
-		}
-		return browser
-	}
-
-	const browser = createBrowser()
-
-	document.body.appendChild(browser)
 
 	extend(Element.prototype, {
 		show() {
@@ -73,6 +103,51 @@
 		hide() {
 			this.style.display = 'none'
 			return this
+		},
+
+		attach() {
+			if (this._parent) {
+				if (this._nextSibling) {
+					this._parent.insertBefore(this, this._nextSibling)
+					delete this._nextSibling
+				}
+				else {
+					this._parent.appendChild(this)
+				}
+				delete this._parent
+			}
+			else {
+				console.error('Parent not defined')
+			}
+		},
+
+		detach() {
+			this._parent = this.parentNode
+			const nextSibling = this.nextSibling
+			if (nextSibling) {
+				this._nextSibling = nextSibling
+			}
+			this.remove()
+		},
+
+		append(array) {
+			const fragment = document.createDocumentFragment()
+			array.forEach(function (element) {
+				fragment.appendChild(element)
+			})
+			this.appendChild(fragment)
+		}
+	})
+
+	Object.defineProperties(Element.prototype, {
+		isVisible: {
+			get() {
+				return 'none' === this.style.display
+			},
+
+			set(value) {
+				this.style.display = value ? 'block' : 'none'
+			}
 		}
 	})
 
@@ -105,6 +180,100 @@
 		}
 	})
 	//			.show()
+
+	function $new(tag, attributes, children) {
+		if (!children && attributes instanceof Array || attributes instanceof Element) {
+			children = attributes
+			attributes = null
+		}
+		const element = document.createElement(tag)
+		if ('string' === typeof attributes) {
+			element.setAttribute('class', attributes)
+		}
+		else {
+			each(attributes, function (value, name) {
+				if ('boolean' === typeof value) {
+					element[name] = value
+				}
+				else {
+					element.setAttribute(name, value)
+				}
+			})
+		}
+		if ('string' === typeof children) {
+			element.innerHTML = children
+		}
+		else if (children instanceof Element) {
+			element.appendChild(children)
+		}
+		else {
+			each(children, function (child) {
+				element.appendChild(child)
+			})
+		}
+		return element
+	}
+
+	const skype = new Skype()
+	skype.login('viktor.anatolievi4', 'lbpfqywtrhenj!!!')
+			.then(function (account) {
+				skype.contactsService.loadContacts(account, function (_1, contacts) {
+					$$('#contacts ul').append(contacts.map(contact => {
+						const li = $new('li', {class: contact.authorized ? 'online' : 'offline'}, [
+							$new('input', {type: 'checkbox', checked: contact.authorized}),
+							$new('span', null, contact.display_name)
+						])
+						li.model = contact
+						return li
+					}))
+
+					bar({
+						checkAll() {
+							$all('#contacts li').forEach(function (li) {
+								li.querySelector('[type=checkbox]').checked = true
+							})
+						},
+
+						checkNobody() {
+							$all('#contacts li').forEach(function (li) {
+								li.querySelector('[type=checkbox]').checked = false
+							})
+						},
+
+						checkOnline() {
+							$all('#contacts li').forEach(function (li) {
+								li.querySelector('[type=checkbox]').checked = li.model.authorized
+							})
+						},
+
+						checkOffline() {
+							$all('#contacts li').forEach(function (li) {
+								li.querySelector('[type=checkbox]').checked = !li.model.authorized
+							})
+						},
+
+						showOnline() {
+							const checkbox = $$('#showOnline [type=checkbox]')
+							checkbox.checked = !checkbox.checked
+							const ul = $$('#contacts ul')
+							const list = ul.querySelectorAll('li')
+							ul.detach()
+							list.forEach(function (li) {
+								li.isVisible = checkbox.checked ? li.model.authorized : true
+							})
+							ul.attach()
+							$id('checkOnline').disabled = checkbox.checked
+							$id('checkOffline').disabled = checkbox.checked
+						}
+					});
+
+					$id('contacts').show()
+				})
+			})
+			.catch(function (err) {
+				console.error(err)
+			})
+
 </script>
 </body>
 </html>
