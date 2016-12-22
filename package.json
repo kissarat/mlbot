@@ -18,8 +18,8 @@
   "description": "",
   "dependencies": {
     "electron": "^1.4.12",
+    "jquery": "^3.1.1",
     "lodash": "^4.17.2",
-    "webix": "^4.1.0"
-  },
-  "electronVersion": "1.4.12"
+    "skyweb": "^0.2.0"
+  }
 }

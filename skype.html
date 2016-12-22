@@ -4,7 +4,8 @@
 	<meta charset="UTF-8">
 	<title>MLBot</title>
 	<style>
-		.page {
+		body > * {
+			/*display: none;*/
 			position: fixed;
 			top: 0;
 			right: 0;
@@ -16,9 +17,94 @@
 	</style>
 </head>
 <body>
-<webview class="page" src="https://web.skype.com/"></webview>
+<form style="display: none">
+	<h1>Войдите</h1>
+	<input name="email" type="email"/>
+	<input name="password" type="password"/>
+	<button type="submit">Войти</button>
+</form>
+<div style="display: none">
+	
+</div>
 <script>
+	const {extend, each} = require('lodash')
+	const EventEmitter = require('events')
 
+	function $$(selector) {
+		return document.querySelector(selector)
+	}
+
+	function $all(selector) {
+		return document.querySelectorAll(selector)
+	}
+
+	['map', 'forEach'].forEach(function (fn) {
+		NodeList.prototype[fn] = Array.prototype[fn]
+		HTMLFormControlsCollection.prototype[fn] = Array.prototype[fn]
+	})
+
+	function createBrowser() {
+		const browser = document.createElement('webview')
+		browser.src = 'https://web.skype.com/'
+		switch (process.platform) {
+			case 'darwin':
+				browser.setAttribute('useragent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36')
+				break
+			case 'linux':
+				browser.setAttribute('useragent', 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1478.0 Safari/537.36')
+				break
+			default:
+				browser.setAttribute('useragent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
+				break
+		}
+		return browser
+	}
+
+	const browser = createBrowser()
+
+	document.body.appendChild(browser)
+
+	extend(Element.prototype, {
+		show() {
+			this.style.display = 'block'
+			return this
+		},
+
+		hide() {
+			this.style.display = 'none'
+			return this
+		}
+	})
+
+	extend(HTMLFormElement.prototype, EventEmitter.prototype)
+	extend(HTMLFormElement.prototype, {
+		init(events) {
+			EventEmitter.call(this)
+			each(events, (fn, name) => this.on(name, fn))
+			this.addEventListener('submit', (e) => {
+				e.preventDefault()
+				this.emit('submit', this.toJSON())
+			})
+			return this
+		},
+
+		toJSON() {
+			const object = {}
+			this.elements.forEach(function (input) {
+				if (input.hasAttribute('name')) {
+					object[input.getAttribute('name')] = input.value
+				}
+			})
+			return object
+		}
+	})
+
+	const loginForm = $$('form').init({
+		submit(data) {
+			console.log(data)
+		}
+	})
+	//			.show()
 </script>
 </body>
 </html>
