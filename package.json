@@ -1,0 +1,25 @@
+{
+  "name": "mlbot",
+  "version": "0.0.1",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Taras Labiak <kissarat@gmail.com>",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/kissarat/mlbot.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/kissarat/mlbot/issues"
+  },
+  "homepage": "https://gitlab.com/kissarat/mlbot#README",
+  "description": "",
+  "dependencies": {
+    "electron": "^1.4.12",
+    "lodash": "^4.17.2",
+    "webix": "^4.1.0"
+  },
+  "electronVersion": "1.4.12"
+}
