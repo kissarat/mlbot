@@ -61,13 +61,22 @@
 	<div class="fill">
 		<ul></ul>
 		<form>
+			<div>
+				Загрузка контактов
+				<input id="loadContacts" type="file"/>
+				<div id="loadContactsInformer" style="display: none">
+					<span class="actual"></span>
+					из
+					<span class="expected"></span>
+				</div>
+			</div>
 			<textarea></textarea>
 			<button id="send" type="button">Послать</button>
 		</form>
 	</div>
 </div>
 <script>
-	const {extend, each} = require('lodash')
+	const {extend, each, debounce} = require('lodash')
 	const EventEmitter = require('events')
 	const Skype = require('skyweb')
 
@@ -215,11 +224,17 @@
 	}
 
 	const skype = new Skype()
+	const {accept, multi, send} = require('./skapi')(skype)
+
 	skype.login('viktor.anatolievi4', 'lbpfqywtrhenj!!!')
 			.then(function (account) {
+
 				skype.contactsService.loadContacts(account, function (_1, contacts) {
 					$$('#contacts ul').append(contacts.map(contact => {
-						const li = $new('li', {class: contact.authorized ? 'online' : 'offline'}, [
+						const li = $new('li', {
+							class: contact.authorized ? 'online' : 'offline',
+							id: contact.id
+						}, [
 							$new('input', {type: 'checkbox', checked: contact.authorized}),
 							$new('span', null, contact.display_name)
 						])
@@ -268,12 +283,90 @@
 					});
 
 					$id('contacts').show()
+
+
+					const elLoadContacts = $id('loadContacts')
+					const elLoadContactsInformer = $id('loadContactsInformer')
+					const elLoadContactsActual = elLoadContactsInformer.querySelector('.actual')
+					const elLoadContactsExpected = elLoadContactsInformer.querySelector('.expected')
+					elLoadContacts.addEventListener('change', function (e) {
+						elLoadContacts.hide()
+						const reader = new FileReader()
+						reader.addEventListener('load', function (e) {
+							const nicks = []
+							e.target.result.split(/\s+/).forEach(function (s) {
+								s = s.trim()
+								if (s) {
+									nicks.push(s)
+								}
+							})
+							elLoadContactsActual.innerHTML = '0'
+							elLoadContactsExpected.innerHTML = nicks.length
+							multi(nicks.map(function (nick, i) {
+								return function () {
+									elLoadContactsActual.innerHTML = i
+									return accept(account, nick)
+											.then(function (data) {
+												console.log(data)
+											})
+								}
+							}))
+									.then(function () {
+										elLoadContactsInformer.hide()
+										elLoadContacts.show()
+									})
+									.catch(function (err) {
+										console.error(err)
+									})
+							elLoadContactsInformer.show()
+						})
+						reader.readAsText(e.target.files[0])
+					})
+
+					const elTextarea = $$('textarea')
+					const sendButton = $id('send')
+					sendButton.addEventListener('click', function () {
+						const contacts = []
+						$all('#contacts li').forEach(function (li) {
+							if (li.querySelector('[type=checkbox]').checked) {
+								contacts.push(li.model)
+							}
+						})
+						multi(contacts.map(function (contact) {
+							return function () {
+								return send(account, contact.person_id, elTextarea.value)
+										.then(function (o) {
+											console.log(o)
+										});
+							}
+						}))
+					})
 				})
 			})
 			.catch(function (err) {
 				console.error(err)
 			})
 
+	$$('[type=search]').addEventListener('keyup', debounce(function (e) {
+		const ul = $$('#contacts ul')
+		const matches = []
+		e.target.value.split(/\s+/).forEach(function (s) {
+			s = s.trim()
+			if (s) {
+				matches.push(new RegExp(s, 'i'))
+			}
+		})
+		function find(s) {
+			return 0 === matches.length || (s && matches.every(m => m.test(s)))
+		}
+
+		const list = ul.querySelectorAll('li')
+		ul.detach()
+		list.forEach(function (li) {
+			li.isVisible = find(li.model.display_name) || find(li.model.id)
+		})
+		ul.attach()
+	}, 40))
 </script>
 </body>
 </html>
