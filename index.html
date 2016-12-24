@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>MLBot</title>
+	<style>
+		body > * {
+			/*display: none;*/
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+		}
+
+		#contacts {
+			display: flex;
+			flex-direction: column;
+		}
+
+		#contacts ul {
+			overflow-y: scroll;
+			height: calc(100vh - 40px);
+		}
+
+		#contacts .fill {
+			display: flex;
+		}
+
+		#contacts form {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.online {
+			background-color: rgba(0, 128, 0, 0.2);
+		}
+	</style>
+	<script src="https://swx.cdn.skype.com/shared/v/1.2.15/SkypeBootstrap.min.js"></script>
+</head>
+<body>
+<form style="display: none">
+	<h1>Войдите</h1>
+	<input name="email" type="email"/>
+	<input name="password" type="password"/>
+	<button type="submit">Войти</button>
+</form>
+<div id="contacts" style="display: none">
+	<input type="search"/>
+	<div>
+		<button id="checkAll" type="button">все</button>
+		<button id="checkNobody" type="button">никого</button>
+		<button id="checkOnline" type="button">онлайн</button>
+		<button id="checkOffline" type="button">офлайн</button>
+		<label id="showOnline">
+			<input type="checkbox"/>
+			только онлайн
+		</label>
+	</div>
+	<div class="fill">
+		<ul></ul>
+		<form>
+			<div>
+				Загрузка контактов
+				<input id="loadContacts" type="file"/>
+				<div id="loadContactsInformer" style="display: none">
+					<span class="actual"></span>
+					из
+					<span class="expected"></span>
+				</div>
+			</div>
+			<textarea></textarea>
+			<button id="send" type="button">Послать</button>
+		</form>
+	</div>
+</div>
+<script src="index.js"></script>
+</body>
+</html>
