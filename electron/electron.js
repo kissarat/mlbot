@@ -8,7 +8,12 @@ module.exports = function (webview) {
       const data = JSON.parse(e.message)
       if ('string' === typeof data.type && data.mid > sky.mid) {
         sky.mid = data.mid
-        sky.emit(data.type, data)
+        if ('number' === typeof data.rid) {
+          sky.reply(data)
+        }
+        else {
+          sky.emit(data.type, data)
+        }
       }
     }
     catch (ex) {
