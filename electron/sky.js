@@ -37,4 +37,4 @@ module.exports.request = function (inData) {
 extend(module.exports, EventEmitter.prototype)
 EventEmitter.call(module.exports)
 
-global.sky = module.exports
+window.sky = module.exports

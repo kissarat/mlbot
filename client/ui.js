@@ -235,6 +235,13 @@ extend(HTMLFormElement.prototype, {
   }
 })
 
-setTimeout(function () {
-  console.log('abc')
-}, 3000)
+const xhrSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader
+
+XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
+  if ('X-Skypetoken' === key && !sky.token) {
+    sky.token = value
+    sky.emit('token', value)
+    XMLHttpRequest.prototype.setRequestHeader = xhrSetRequestHeader
+  }
+  xhrSetRequestHeader.call(this, key, value)
+}

@@ -73,4 +73,19 @@ function logout() {
   })
 }
 
+sky.on('token', function (token) {
+  const login = 'taradox89'
+  fetch(`https://contacts.skype.com/contacts/v1/users/${login}/contacts`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'X-Skypetoken': token
+    }
+  })
+    .then(a => a.json())
+    .then(function ({contacts}) {
+      console.log(contacts)
+    })
+})
+
 extend(window, {login, logout, addContact, sendMessage})
