@@ -261,3 +261,4 @@ XMLHttpRequest.prototype.open = function (method, url) {
   XHROpen.apply(this, arguments)
 }
 
+delete window.Notification

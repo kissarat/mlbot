@@ -48,19 +48,18 @@ function sendMessage(loginName, text) {
 }
 
 function login(nick, password) {
-  waiter('[name=loginfmt]', function (login) {
-    login.focus()
-    login.value = nick
-    // idSIButton9.click()
+  const login = $$('[name=loginfmt]') || $$('[name=username]')
+  login.focus()
+  login.value = nick
+  // idSIButton9.click()
+  document.forms[0].submit()
+  waiter('[type=password]', function (passwordInput) {
+    passwordInput.value = password
+    const checkbox = document.querySelector('[type=checkbox]')
+    if (checkbox) {
+      checkbox.checked = true
+    }
     document.forms[0].submit()
-    waiter('[type=password]', function (passwordInput) {
-      passwordInput.value = password
-      const checkbox = document.querySelector('[type=checkbox]')
-      if (checkbox) {
-        checkbox.checked = true
-      }
-      document.forms[0].submit()
-    })
   })
 }
 
