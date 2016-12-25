@@ -1,5 +1,33 @@
-const EventEmitter = require('events')
 const {extend, each} = require('lodash')
+
+class Emitter {
+  constructor() {
+    Emitter.mix(this)
+  }
+
+  static mix(object) {
+    object._events = {}
+  }
+
+  on(eventName, listener) {
+    let listeners = this._events[eventName]
+    if (!listeners) {
+      listeners = this._events[eventName] = []
+    }
+    listeners.push(listener)
+    return this
+  }
+
+  emit(eventName) {
+    const listeners = this._events[eventName]
+    if (listeners) {
+      const args = [].slice.call(arguments, 1)
+      listeners.forEach(listener => listener.apply(this, args))
+      return true
+    }
+    return false
+  }
+}
 
 function $$(selector) {
   return document.querySelector(selector)
@@ -68,7 +96,27 @@ function click(key, code) {
   this.dispatchEvent(new MouseEvent('click'))
 }
 
-extend(window, {$$, $all, $id, $new, bar, keydown, keyup, keypress, click});
+class Sky extends Emitter {
+  constructor() {
+    super()
+    this.mid = 0
+  }
+
+  receive(data) {
+    if (data.mid > this.mid) {
+      this.mid = data.mid
+      this.emit(data.type, data)
+    }
+  }
+
+  send(data) {
+    data.mid = ++this.mid
+    console.log(JSON.stringify(data))
+  }
+}
+
+extend(window, {$$, $all, $id, $new, bar, keydown, keyup, keypress, click, Emitter, Sky})
+window.sky = new Sky();
 
 ['map', 'forEach', 'filter'].forEach(function (fn) {
   NodeList.prototype[fn] = Array.prototype[fn]
@@ -137,7 +185,7 @@ Object.defineProperties(Element.prototype, {
   }
 })
 
-extend(HTMLFormElement.prototype, EventEmitter.prototype)
+extend(HTMLFormElement.prototype, Emitter.prototype)
 extend(HTMLFormElement.prototype, {
   init(events) {
     EventEmitter.call(this)
@@ -159,3 +207,7 @@ extend(HTMLFormElement.prototype, {
     return object
   }
 })
+
+setTimeout(function () {
+  console.log('abc')
+}, 3000)

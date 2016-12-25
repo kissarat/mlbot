@@ -1,4 +1,5 @@
 require('./waiter')
+const {extend} = require('lodash')
 
 function addFriend(loginName) {
   waiter('[role=search]', function (input) {
@@ -45,3 +46,5 @@ function logout() {
     })
   })
 }
+
+extend(window, {addFriend, login, logout})
