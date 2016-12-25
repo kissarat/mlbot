@@ -1,4 +1,4 @@
-const {extend, each} = require('lodash')
+const {extend, each, pick} = require('lodash')
 
 class Emitter {
   constructor() {
@@ -118,14 +118,6 @@ class Sky extends Emitter {
     data.mid = ++this.mid
     console.log(JSON.stringify(data))
   }
-
-  paste(text) {
-    document.execCommand('insertText', true, text)
-    // this.send({
-    //   type: 'paste',
-    //   text
-    // })
-  }
 }
 
 extend(window, {$$, $all, $id, $new, bar, keydown, keyup, keypress, Emitter, Sky})
@@ -235,13 +227,37 @@ extend(HTMLFormElement.prototype, {
   }
 })
 
-const xhrSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader
+const XHROpen = XMLHttpRequest.prototype.open
 
-XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
-  if ('X-Skypetoken' === key && !sky.token) {
-    sky.token = value
-    sky.emit('token', value)
-    XMLHttpRequest.prototype.setRequestHeader = xhrSetRequestHeader
+XMLHttpRequest.prototype.open = function (method, url) {
+  if ('https://api.skype.com/users/self/profile' === url && 'GET' === method) {
+    this.setRequestHeader = function (key, value) {
+      if ('X-Skypetoken' === key) {
+        sky.token = value
+      }
+      XMLHttpRequest.prototype.setRequestHeader.call(this, key, value)
+    }
+
+    this.addEventListener('load', function () {
+      sky.profile = JSON.parse(this.responseText)
+      sky.profile.type = 'profile'
+      sky.profile.token = sky.token
+      fetch(`https://contacts.skype.com/contacts/v1/users/${sky.profile.username}/contacts`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'X-Skypetoken': sky.token
+        }
+      })
+        .then(a => a.json())
+        .then(function ({contacts}) {
+          sky.profile.contacts = contacts
+          sky.send(sky.profile)
+        })
+    })
+
+    XMLHttpRequest.prototype.open = XHROpen
   }
-  xhrSetRequestHeader.call(this, key, value)
+  XHROpen.apply(this, arguments)
 }
+

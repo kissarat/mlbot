@@ -4,7 +4,7 @@ const {extend} = require('lodash')
 function addContact(loginName) {
   waiter('[role=search]', function (input) {
     input.focus()
-    sky.paste(loginName)
+    document.execCommand('insertText', true, loginName)
     waiter('.searchDirectory', function (button) {
       button.click()
       waiter('.directory li:nth-child(2)', function (li) {
@@ -73,19 +73,13 @@ function logout() {
   })
 }
 
-sky.on('token', function (token) {
-  const login = 'taradox89'
-  fetch(`https://contacts.skype.com/contacts/v1/users/${login}/contacts`, {
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-      'X-Skypetoken': token
-    }
+function clearData() {
+  localStorage.clear()
+  const zero = new Date(0).toUTCString()
+  document.cookie.split(/;\s*/).forEach(function (s) {
+    s = s.split('=')
+    document.cookie = s[0] + `=; path=/; expires=${zero}`
   })
-    .then(a => a.json())
-    .then(function ({contacts}) {
-      console.log(contacts)
-    })
-})
+}
 
-extend(window, {login, logout, addContact, sendMessage})
+extend(window, {login, logout, addContact, sendMessage, clearData})

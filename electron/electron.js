@@ -1,5 +1,7 @@
 const sky = require('./sky')
 
+window.profiles = {}
+
 module.exports = function (webview) {
   webview.openDevTools()
   webview.setAudioMuted(true)
@@ -8,11 +10,9 @@ module.exports = function (webview) {
       const data = JSON.parse(e.message)
       if ('string' === typeof data.type && data.mid > sky.mid) {
         sky.mid = data.mid
+        console.log(data.mid)
         if ('number' === typeof data.rid) {
           sky.reply(data)
-        }
-        else if ('paste' === data.type) {
-          webview.paste(data.text)
         }
         else {
           sky.emit(data.type, data)
@@ -20,8 +20,11 @@ module.exports = function (webview) {
       }
     }
     catch (ex) {
-
     }
+  })
+
+  sky.on('profile', function (profile) {
+    profiles[profile.username] = profile
   })
 
   sky.send = function (data) {
@@ -30,3 +33,4 @@ module.exports = function (webview) {
     webview.executeJavaScript(`sky.receive(${string})`)
   }
 }
+//login('viktor.anatolievi4', 'bpfqywtrhenj!!!')
