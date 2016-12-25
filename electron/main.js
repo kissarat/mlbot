@@ -12,7 +12,7 @@ let win = null
 
 app.on('ready', function () {
   win = new BrowserWindow({
-    width: 1024,
+    width: 1400,
     // nodeIntegration: false,
     // webSecurity: false,
     // allowRunningInsecureContent: true,

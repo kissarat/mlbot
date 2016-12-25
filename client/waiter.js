@@ -1,4 +1,5 @@
 require('./ui')
+const {each, isObject} = require('lodash')
 
 function waiter(selectors, cb) {
   const found = {}
@@ -48,6 +49,31 @@ function waiter(selectors, cb) {
 
   setTimeout(loop, 0)
 }
+
+waiter.next = function (selectors, cb, vars = {}) {
+  selectors = 'string' === typeof selectors ? `'${selectors}'` : JSON.stringify(selectors)
+  cb = cb.toString()
+  let names = []
+  let values = []
+  each(vars, function (value, name) {
+    if ('string' === typeof value) {
+      value = `'${value}'`
+    }
+    else if (isObject(value)) {
+      value = JSON.stringify(value)
+    }
+    names.push(name)
+    values.push(value)
+  })
+  names = names.join(',')
+  values = values.join(',')
+  localStorage.next = `(function(${names})\n{waiter(${selectors}, ${cb})})\n(${values})`
+}
+
+// if ('string' === typeof localStorage.next) {
+//   eval(localStorage.next)
+//   localStorage.removeItem('next')
+// }
 
 waiter.form = function (fields, selectors, cb) {
   selectors = selectors || {}

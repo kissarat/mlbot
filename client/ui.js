@@ -81,19 +81,24 @@ function bar(events) {
 }
 
 function keydown(key, code) {
+  if (!code) {
+    code = key.charCodeAt(0)
+  }
   this.dispatchEvent(new KeyboardEvent('keydown', {key, code: key, charCode: code, keyCode: code}))
 }
 
 function keyup(key, code) {
+  if (!code) {
+    code = key.charCodeAt(0)
+  }
   this.dispatchEvent(new KeyboardEvent('keyup', {key, code: key, charCode: code, keyCode: code}))
 }
 
 function keypress(key, code) {
+  if (!code) {
+    code = key.charCodeAt(0)
+  }
   this.dispatchEvent(new KeyboardEvent('keypress', {key, code: key, charCode: code, keyCode: code}))
-}
-
-function click(key, code) {
-  this.dispatchEvent(new MouseEvent('click'))
 }
 
 class Sky extends Emitter {
@@ -113,9 +118,17 @@ class Sky extends Emitter {
     data.mid = ++this.mid
     console.log(JSON.stringify(data))
   }
+
+  paste(text) {
+    document.execCommand('insertText', true, text)
+    // this.send({
+    //   type: 'paste',
+    //   text
+    // })
+  }
 }
 
-extend(window, {$$, $all, $id, $new, bar, keydown, keyup, keypress, click, Emitter, Sky})
+extend(window, {$$, $all, $id, $new, bar, keydown, keyup, keypress, Emitter, Sky})
 window.sky = new Sky();
 
 ['map', 'forEach', 'filter'].forEach(function (fn) {
@@ -127,8 +140,6 @@ extend(Element.prototype, {
   keydown,
   keyup,
   keypress,
-  click,
-
   show() {
     this.style.display = 'block'
     return this
@@ -170,6 +181,22 @@ extend(Element.prototype, {
       fragment.appendChild(element)
     })
     this.appendChild(fragment)
+  },
+
+  findParent(cb) {
+    if (this.parentNode) {
+      return cb(this.parentNode)
+        ? this.parentNode
+        : this.parentNode.findParent(cb)
+    }
+    return false
+  },
+
+  findParentByTag(name) {
+    name = name.toUpperCase()
+    return this.findParent(function (element) {
+      return name === element.tagName
+    })
   }
 })
 

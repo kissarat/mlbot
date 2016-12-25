@@ -19,8 +19,9 @@
 			position: fixed;
 			top: 0;
 			right: 0;
-			width: 1600px;
-			height: 1024px;
+			width: 1024px;
+			height: 768px;
+			overflow: scroll;
 		}
 
 		#contacts {
@@ -87,15 +88,21 @@
 </div>
 <webview src="https://web.skype.com" disablewebsecurity preload="inject.js"></webview>
 <script>
+	let webview
 	setTimeout(function () {
 		let electron
-		const webview = document.querySelector('webview')
+		webview = document.querySelector('webview')
 		webview.addEventListener('did-stop-loading', function () {
 			if (!electron) {
 				electron = require('./electron')(webview)
 			}
 		})
 	}, 0)
+
+//	function abc() {
+//		const s = document.createElement('script')
+//		s.src = 'http://localskype.ternopil.ru/electron/inject.js'
+//	}
 </script>
 </body>
 </html>

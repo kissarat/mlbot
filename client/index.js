@@ -1,12 +1,11 @@
 require('./waiter')
 const {extend} = require('lodash')
 
-function addFriend(loginName) {
+function addContact(loginName) {
   waiter('[role=search]', function (input) {
     input.focus()
-    input.value = loginName
-    input.keypress('Enter', 13)
-    waiter('.searchDictionary', function (button) {
+    sky.paste(loginName)
+    waiter('.searchDirectory', function (button) {
       button.click()
       waiter('.directory li:nth-child(2)', function (li) {
         li.click()
@@ -18,33 +17,55 @@ function addFriend(loginName) {
   })
 }
 
-function login(loginName, password) {
-  waiter({
-    form: '#i0281',
-    email: '[type=email]'
-  }, function ({form, email}) {
-    email.value = loginName
-    form.submit()
+function sendMessage(loginName, text) {
+  $$('swx-search-input button').click()
+  // $all('.searchItem').forEach(function (item) {
+  //   item.remove()
+  // })
+  waiter('[role=search]', function (input) {
+    input.value = ''
+    input.focus()
+    document.execCommand('insertText', true, loginName)
+    input.blur()
+    waiter(`.searchItem[data-title*="${loginName}"]`, function (button) {
+      button.click()
+      waiter('textarea', function (textarea) {
+        textarea.focus()
+        document.execCommand('insertText', false, text)
+        textarea.blur()
+        textarea.click()
+        waiter('.send-button:enabled', function (button) {
+          button.click()
+        })
+      })
+    })
   })
-  waiter({
-    form: '#i0281',
-    password: '[type=password]',
-    remember: '[name=KMSI]'
-  }, function ({form, password, remember}) {
-    password.value = ''
-    password.value = password
-    remember.checked = true
-    form.submit()
+}
+
+function login(nick, password) {
+  waiter('[name=loginfmt]', function (login) {
+    login.focus()
+    login.value = nick
+    // idSIButton9.click()
+    document.forms[0].submit()
+    waiter('[type=password]', function (passwordInput) {
+      passwordInput.value = password
+      const checkbox = document.querySelector('[type=checkbox]')
+      if (checkbox) {
+        checkbox.checked = true
+      }
+      document.forms[0].submit()
+    })
   })
 }
 
 function logout() {
   waiter('.Me-sky', function (button) {
     button.click()
-    waiter('.Me-linkText', function (button) {
+    waiter('.signOut', function (button) {
       button.click()
     })
   })
 }
 
-extend(window, {addFriend, login, logout})
+extend(window, {login, logout, addContact, sendMessage})

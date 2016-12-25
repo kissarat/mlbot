@@ -11,6 +11,9 @@ module.exports = function (webview) {
         if ('number' === typeof data.rid) {
           sky.reply(data)
         }
+        else if ('paste' === data.type) {
+          webview.paste(data.text)
+        }
         else {
           sky.emit(data.type, data)
         }
