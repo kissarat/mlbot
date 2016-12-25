@@ -19,21 +19,26 @@ function addContact(loginName) {
 
 function sendMessage(loginName, text) {
   $$('swx-search-input button').click()
-  // $all('.searchItem').forEach(function (item) {
+  // $all('swx-recent-item').forEach(function (item) {
   //   item.remove()
   // })
   waiter('[role=search]', function (input) {
     input.value = ''
     input.focus()
     document.execCommand('insertText', true, loginName)
-    input.blur()
     waiter(`.searchItem[data-title*="${loginName}"]`, function (button) {
       button.click()
-      waiter('textarea', function (textarea) {
-        textarea.focus()
+      input.blur()
+      waiter('textarea:enabled', function (textarea) {
+        // textarea.click()
+        // textarea.focus()
+        textarea.value = ''
         document.execCommand('insertText', false, text)
         textarea.blur()
-        textarea.click()
+        setTimeout(function () {
+          document.execCommand('insertText', false, text)
+          textarea.blur()
+        }, 1800)
         waiter('.send-button:enabled', function (button) {
           button.click()
         })
