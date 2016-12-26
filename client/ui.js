@@ -1,14 +1,10 @@
-const {extend, each} = require('lodash')
+const {extend, each, isObject} = require('lodash')
 
-class Emitter {
-  constructor() {
-    Emitter.mix(this)
-  }
+function Emitter() {
+  this._events = {}
+}
 
-  static mix(object) {
-    object._events = {}
-  }
-
+Emitter.prototype = {
   on(eventName, listener) {
     let listeners = this._events[eventName]
     if (!listeners) {
@@ -16,7 +12,7 @@ class Emitter {
     }
     listeners.push(listener)
     return this
-  }
+  },
 
   emit(eventName) {
     const listeners = this._events[eventName]
@@ -48,7 +44,12 @@ function $new(tag, attributes, children) {
   }
   const element = document.createElement(tag)
   if ('string' === typeof attributes) {
-    element.setAttribute('class', attributes)
+    if (children) {
+      element.setAttribute('class', attributes)
+    }
+    else {
+      element.innerHTML = attributes
+    }
   }
   else {
     each(attributes, function (value, name) {
@@ -72,6 +73,36 @@ function $new(tag, attributes, children) {
     })
   }
   return element
+}
+
+function $list(items) {
+  const ul = document.createElement('ul')
+  items.forEach(function (item) {
+    ul.appendChild($new('li', item))
+  })
+  return ul
+}
+
+function $table(rows) {
+  const table = document.createElement('table')
+  rows.forEach(function (row) {
+    const tr = document.createElement('tr')
+    each(row, function (value) {
+      if (value instanceof Element) {
+        tr.appendChild(value)
+      }
+      else if (isObject(value)) {
+        tr.appendChild($new('td', value))
+      }
+      else {
+        const td = document.createElement('td')
+        td.innerHTML = value
+        tr.appendChild(tr)
+      }
+    })
+    table.appendChild(tr)
+  })
+  return table
 }
 
 function bar(events) {
@@ -116,7 +147,7 @@ class Sky extends Emitter {
   }
 }
 
-extend(window, {$$, $all, $id, $new, bar, keydown, keyup, keypress, Emitter, Sky})
+extend(window, {$$, $all, $id, $new, $list, $table, bar, keydown, keyup, keypress, Emitter, Sky})
 if (!window.sky) {
   window.sky = new Sky();
 }
@@ -154,6 +185,7 @@ extend(Element.prototype, {
     else {
       console.error('Parent not defined')
     }
+    return this
   },
 
   detach() {
@@ -163,14 +195,16 @@ extend(Element.prototype, {
       this._nextSibling = nextSibling
     }
     this.remove()
+    return this
   },
 
-  append(array) {
+  add(array) {
     const fragment = document.createDocumentFragment()
     array.forEach(function (element) {
       fragment.appendChild(element)
     })
     this.appendChild(fragment)
+    return this
   },
 
   findParent(cb) {
@@ -187,6 +221,50 @@ extend(Element.prototype, {
     return this.findParent(function (element) {
       return name === element.tagName
     })
+  },
+
+  import() {
+    return document.importNode(this, true).content
+  },
+
+  assign(vars) {
+    each(vars, (value, selector) => this.querySelector(selector).innerHTML = value)
+    return this
+  },
+
+  appropriate(attrs) {
+    each(attrs, (value, key) => this.setAttribute(key, value))
+    return this
+  },
+
+  create(vars) {
+    const element = this.import()
+    if (vars) {
+      element.assign(vars)
+    }
+    return element
+  },
+
+  place(selector, vars) {
+    const element = $$(selector).create(vars)
+    this.detach()
+    this.innerHTML = ''
+    this.appendChild(element)
+    this.attach()
+    return this.children[0]
+  },
+
+  $$(selector) {
+    return this.querySelector(selector)
+  },
+
+  set(selector, value) {
+    this.querySelector(selector, value)
+    return this
+  },
+
+  add(tag, attributes, children) {
+    this.appendChild($new(tag, attributes, children))
   }
 })
 
@@ -202,10 +280,9 @@ Object.defineProperties(Element.prototype, {
   }
 })
 
-extend(HTMLFormElement.prototype, Emitter.prototype)
-extend(HTMLFormElement.prototype, {
+extend(HTMLFormElement.prototype, Emitter.prototype, {
   init(events) {
-    EventEmitter.call(this)
+    Emitter.call(this)
     each(events, (fn, name) => this.on(name, fn))
     this.addEventListener('submit', (e) => {
       e.preventDefault()

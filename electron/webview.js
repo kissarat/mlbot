@@ -65,6 +65,24 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
     else {
       console.error('Data has no type', data)
     }
+  },
+
+  invoke(fn, args) {
+    const formatted = []
+    args.forEach(function(a) {
+      if ('string' === typeof a) {
+        a = `'${a}'`
+      }
+      else if (isObject(a)) {
+        a = JSON.stringify(a)
+      }
+      formatted.push(a)
+    })
+    this.executeJavaScript(`${fn}(${formatted})`)
+  },
+
+  login(username, password) {
+    this.invoke('login', [username, password])
   }
 })
 
