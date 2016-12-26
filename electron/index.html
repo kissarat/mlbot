@@ -86,23 +86,9 @@
 		</div>
 	</div>
 </div>
-<webview src="https://web.skype.com" disablewebsecurity preload="inject.js" partition="persist:taradox89"></webview>
 <script>
-	let webview
-	setTimeout(function () {
-		let electron
-		webview = document.querySelector('webview')
-		webview.addEventListener('did-stop-loading', function () {
-			if (!electron) {
-				electron = require('./electron')(webview)
-			}
-		})
-	}, 0)
-
-//	function abc() {
-//		const s = document.createElement('script')
-//		s.src = 'http://localskype.ternopil.ru/electron/inject.js'
-//	}
+	const webview = require('./webview').create()
+	document.body.appendChild(webview)
 </script>
 </body>
 </html>

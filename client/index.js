@@ -82,3 +82,5 @@ function clearData() {
 }
 
 extend(window, {login, logout, addContact, sendMessage, clearData})
+
+console.log(location.href)

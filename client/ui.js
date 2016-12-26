@@ -121,7 +121,9 @@ class Sky extends Emitter {
 }
 
 extend(window, {$$, $all, $id, $new, bar, keydown, keyup, keypress, Emitter, Sky})
-window.sky = new Sky();
+if (!window.sky) {
+  window.sky = new Sky();
+}
 
 ['map', 'forEach', 'filter'].forEach(function (fn) {
   NodeList.prototype[fn] = Array.prototype[fn]
@@ -262,3 +264,5 @@ XMLHttpRequest.prototype.open = function (method, url) {
 }
 
 delete window.Notification
+delete window.ServiceWorker
+delete window.ServiceWorkerContainer
