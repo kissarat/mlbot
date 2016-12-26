@@ -48,11 +48,12 @@ function sendMessage(loginName, text) {
 }
 
 function login(nick, password) {
-  const login = $$('[name=loginfmt]') || $$('[name=username]')
-  login.focus()
-  login.value = nick
-  // idSIButton9.click()
-  document.forms[0].submit()
+  const username = $$('[name=loginfmt]') || $$('[name=username]')
+  if (username) {
+    username.focus()
+    username.value = nick
+    document.forms[0].submit()
+  }
   waiter('[type=password]', function (passwordInput) {
     passwordInput.value = password
     const checkbox = document.querySelector('[type=checkbox]')
@@ -81,6 +82,8 @@ function clearData() {
   })
 }
 
-extend(window, {login, logout, addContact, sendMessage, clearData})
+addEventListener('load', function () {
+  sky.send({type: 'load'})
+})
 
-console.log(location.href)
+extend(window, {login, logout, addContact, sendMessage, clearData})

@@ -1,0 +1,46 @@
+#root {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#dark {
+    opacity: 0;
+}
+
+webview {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 1024px;
+    height: 768px;
+    overflow: scroll;
+}
+
+#contacts {
+    display: flex;
+    flex-direction: column;
+}
+
+#contacts ul {
+    overflow-y: scroll;
+    height: calc(100vh - 40px);
+}
+
+#contacts .fill {
+    display: flex;
+}
+
+#contacts form {
+    display: flex;
+    flex-direction: column;
+}
+
+.online {
+    background-color: rgba(0, 128, 0, 0.2);
+}

@@ -3,57 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<title>MLBot</title>
-	<style>
-		#root {
-			display: flex;
-			position: fixed;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			width: 100vw;
-			height: 100vh;
-		}
-
-		#dark {
-			/*display: none;*/
-		}
-
-		webview {
-			position: fixed;
-			top: 0;
-			right: 0;
-			width: 1024px;
-			height: 768px;
-			overflow: scroll;
-		}
-
-		#contacts {
-			display: flex;
-			flex-direction: column;
-		}
-
-		#contacts ul {
-			overflow-y: scroll;
-			height: calc(100vh - 40px);
-		}
-
-		#contacts .fill {
-			display: flex;
-		}
-
-		#contacts form {
-			display: flex;
-			flex-direction: column;
-		}
-
-		.online {
-			background-color: rgba(0, 128, 0, 0.2);
-		}
-	</style>
+	<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-
+<div id="dark"></div>
 <div id="root"></div>
 
 <template id="app-layout">
@@ -123,8 +76,6 @@
 		</form>
 	</div>
 </template>
-
-<div id="dark"></div>
 
 <script src="master.js"></script>
 </body>

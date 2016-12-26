@@ -41,6 +41,16 @@ function skypeLogin() {
   $id('main').place('#skype-login').init({
     submit(data) {
       const skype = WebView.create(data.login)
+      skype.once('load', function () {
+        skype.login(data.login, data.password)
+        skype.once('load', function () {
+          skype.login(data.login, data.password)
+          skype.once('profile', function(profile) {
+            $$('aside ul').add('li', profile.username)
+            $id('main').place('#tabs-layout')
+          })
+        })
+      })
       $id('dark').appendChild(skype)
     }
   })
