@@ -1,80 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>MLBot</title>
-	<link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <title>ML Skype AutoBot beta v0.1</title>
+    <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 <div id="dark"></div>
 <div id="root"></div>
 
 <template id="app-layout">
-	<div>
-		<aside>
-			<button type="button" id="addSkype">Добавить Skype</button>
-			<ul></ul>
-		</aside>
-		<div id="main"></div>
-	</div>
+    <div>
+        <aside>
+            <button type="button" id="addSkype">Добавить Skype</button>
+            <ul></ul>
+        </aside>
+        <div id="main"></div>
+    </div>
 </template>
 
 <template id="tabs-layout">
-	<div>
-		<ul>
-			<li id="tab-messages">Сообщения</li>
-			<li id="tab-invites">Добавление контактов</li>
-		</ul>
-		<div id="tab"></div>
-	</div>
+    <div>
+        <ul>
+            <li id="tab-messages">Сообщения</li>
+            <li id="tab-invites">Добавление контактов</li>
+        </ul>
+        <div id="tab"></div>
+    </div>
 </template>
 
 <template id="login">
-	<form>
-		<h1>Войдите</h1>
-		<input name="email" type="email" placeholder="Email"/>
-		<input name="password" type="password" placeholder="Пароль"/>
-		<button type="submit">Войти</button>
-	</form>
+    <header>
+        <img src="logo.png">
+
+        <p>ML Skype AutoBot ™ </p>
+    </header>
+    <div class="body">
+        <div class="column1">
+            <form>
+                <h1>Войдите</h1>
+                <input name="email" type="email" placeholder="Email"/>
+                <input name="password" type="password" placeholder="Пароль"/>
+                <button type="submit">Войти</button>
+            </form>
+            <img src="images/logo-leader.png" class="leader-logo">
+        </div>
+        <div class="column1">
+            <div class="howuse">
+                <h3>Как войти?</h3>
+                <p>Для входа используйте почту и пароль проекта</p>
+                <p class="site-name"><strong>club-leader.com</strong></p>
+                <p>Без покупки программы Silver бот не работает</p>
+            </div>
+        </div>
+        <div class="column1">
+            <div class="info">
+                <h4>Что это?</h4>
+                <p>ML Skype AutoBot — кроссплатфоренный бот-спаммер Skype для Windows, Mac OS, Linux.</p>
+                <h4>Возможности:</h4>
+                <ul>
+                    <li>Добавление в друзья;</li>
+                    <li>Рассылка сообщений.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>© ML Skype Autobot beta v0.1 www.mlautobot.com</p>
+    </footer>
 </template>
 
 <template id="skype-login">
-	<form>
-		<h1>Вход в учетную запись Skype</h1>
-		<input name="login" placeholder="Логин" />
-		<input name="password" type="password" placeholder="Пароль" />
-		<button type="submit">Войти</button>
-	</form>
+    <form>
+        <h1>Вход в учетную запись Skype</h1>
+        <input name="login" placeholder="Логин"/>
+        <input name="password" type="password" placeholder="Пароль"/>
+        <button type="submit">Войти</button>
+    </form>
 </template>
 
 <template id="contacts">
-	<input type="search"/>
-	<div>
-		<button id="checkAll" type="button">все</button>
-		<button id="checkNobody" type="button">никого</button>
-		<button id="checkOnline" type="button">онлайн</button>
-		<button id="checkOffline" type="button">офлайн</button>
-		<label id="showOnline">
-			<input type="checkbox"/>
-			только онлайн
-		</label>
-	</div>
-	<div class="fill">
-		<ul></ul>
-		<form>
-			<div>
-				Загрузка контактов
-				<input id="loadContacts" type="file"/>
-				<div id="loadContactsInformer" style="display: none">
-					<span class="actual"></span>
-					из
-					<span class="expected"></span>
-				</div>
-			</div>
-			<textarea></textarea>
-			<button id="send" type="button">Послать</button>
-		</form>
-	</div>
+    <input type="search"/>
+
+    <div>
+        <button id="checkAll" type="button">все</button>
+        <button id="checkNobody" type="button">никого</button>
+        <button id="checkOnline" type="button">онлайн</button>
+        <button id="checkOffline" type="button">офлайн</button>
+        <label id="showOnline">
+            <input type="checkbox"/>
+            только онлайн
+        </label>
+    </div>
+    <div class="fill">
+        <ul></ul>
+        <form>
+            <div>
+                Загрузка контактов
+                <input id="loadContacts" type="file"/>
+
+                <div id="loadContactsInformer" style="display: none">
+                    <span class="actual"></span>
+                    из
+                    <span class="expected"></span>
+                </div>
+            </div>
+            <textarea></textarea>
+            <button id="send" type="button">Послать</button>
+        </form>
+    </div>
 </template>
 
 <script src="master.js"></script>

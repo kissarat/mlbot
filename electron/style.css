@@ -1,5 +1,64 @@
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-Black.otf) format("opentype");
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-Bold.otf) format("opentype");
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-ExtraBlack.otf) format("opentype");
+    font-weight: 900;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-ExtraBold.otf) format("opentype");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-ExtraLight.otf) format("opentype");
+    font-weight: 200;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-Light.otf) format("opentype");
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-Regular.otf) format("opentype");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-SemiBold.otf) format("opentype");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url(images/Panton-Thin.otf) format("opentype");
+    font-weight: 100;
+}
+
+* {
+    font-family: 'Panton';
+}
+
 #root {
     display: flex;
+    flex-direction: column;
     position: fixed;
     top: 0;
     right: 0;
@@ -29,7 +88,7 @@ webview {
 
 #contacts ul {
     overflow-y: scroll;
-    height: calc(100vh - 40px);
+    height: calc(100vh -40px);
 }
 
 #contacts .fill {
@@ -43,4 +102,120 @@ webview {
 
 .online {
     background-color: rgba(0, 128, 0, 0.2);
+}
+
+header, footer {
+    display: flex;
+    color: #fff;
+    padding: 0 15px;
+    width: 100%;
+}
+
+header {
+    background: linear-gradient(to right, #2b91de, #004e97);
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.15);
+}
+
+footer {
+    background: linear-gradient(to left, #2b91de, #004e97);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-top: 1px solid rgba(200, 200, 200, 0.15);
+}
+
+.body {
+    display: flex;
+    padding: 0 0 0 15px;
+    background: linear-gradient(118deg, #2b91de, #004e97);
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.column1 {
+    width: 30%;
+    min-width: 200px;
+}
+
+.leader-logo {
+    max-width: 100%;
+}
+
+h1 {
+    color: #ffffff;
+}
+
+input {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #ffffff;
+    width: 92%;
+    color: #ffffff;
+    padding: 10px 4%;
+    margin: 10px 0;
+    text-transform: uppercase;
+}
+
+input:focus {
+    outline: none;
+}
+
+input::-webkit-input-placeholder{
+    color: #ffffff;
+}
+
+input:focus::-webkit-input-placeholder {
+    color: transparent;
+}
+
+button {
+    background: #fac255;
+    border: 0;
+    color: #ffffff;
+    box-shadow: 3px 0 7px rgba(0,0,0,0.2);
+    font-size: 18px;
+    padding: 13px 30px 11px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    font-weight: 100;
+    margin: 20px 0;
+}
+
+.howuse {
+    background: url("images/bg_how_to_use.png") no-repeat;
+    background-size: 100%;
+    height: 264px;
+    width: 252px;
+    padding: 70px 20px 0;
+}
+
+.howuse > h3 {
+    color: #2689d6;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.info {
+    background: #ffffff;
+    height: 500px;
+    border-radius: 200px 0 0 0;
+    padding: 40px 20px 20px 60px;
+    text-align: right;
+}
+
+
+.info li, .info ul, .info p {
+    list-style: none;
+    margin: 0;
+    color: #a9a9a9;
+}
+
+.info h4 {
+    color: #565656;
+    font-size: 18px;
+    margin: 10px 0 0 ;
 }
