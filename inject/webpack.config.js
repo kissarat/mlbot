@@ -1,4 +1,4 @@
-const _mode = (process.env.SAM || '').split(',')
+const _mode = (process.env.MLBOT || '').split(',')
 function mode(name) {
   return _mode.indexOf(name) >= 0
 }
@@ -6,7 +6,7 @@ function mode(name) {
 const config = {
   entry: __dirname + '/index.js',
   output: {
-    path: __dirname + '/../electron',
+    path: __dirname + '/../app/js',
     filename: 'inject.js',
     comments: false
   },
@@ -32,7 +32,7 @@ const config = {
     ]
   },
   resolve: {
-    modulesDirectories: [__dirname + '/../node_modules']
+    modulesDirectories: [__dirname + '/../app/node_modules']
   },
   plugins: []
 }

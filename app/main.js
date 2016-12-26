@@ -1,6 +1,6 @@
 const {app, Tray, Menu, BrowserWindow} = require('electron')
 const path = require('path')
-const config = require('./config')
+const config = require('./js/config')
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)

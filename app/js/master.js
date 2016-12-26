@@ -1,6 +1,6 @@
-require('./ui')
-const WebView = require('./webview')
-const api = require('./api')
+require('./js/ui')
+const WebView = require('./js/webview')
+const api = require('./js/api')
 
 const skypes = {}
 

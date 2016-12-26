@@ -2,6 +2,7 @@ module.exports = {
   dev: true,
   origin: 'http://mac.ternopil.ru',
   window: {
-    width: 1400
+    minWidth: 640,
+    minHeight: 480
   }
 }
