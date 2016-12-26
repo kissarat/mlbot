@@ -1,6 +1,6 @@
 const {app, Tray, Menu, BrowserWindow} = require('electron')
 const path = require('path')
-// const config = require('./client/config')
+const config = require('./config')
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)
@@ -11,16 +11,9 @@ let appIcon = null
 let win = null
 
 app.on('ready', function () {
-  win = new BrowserWindow({
-    width: 1400,
-    // nodeIntegration: false,
-    // webSecurity: false,
-    // allowRunningInsecureContent: true,
-    // allowDisplayingInsecureContent: true
-  })
-  // win.loadURL('https:/web.skype.com/')
+  win = new BrowserWindow(config.window)
   win.loadFile('/index.html')
-  // if (config.dev) {
+  if (config.dev) {
     win.openDevTools()
-  // }
+  }
 })

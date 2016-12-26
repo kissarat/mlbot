@@ -1,4 +1,4 @@
-const {extend, each, pick} = require('lodash')
+const {extend, each} = require('lodash')
 
 class Emitter {
   constructor() {
@@ -102,20 +102,16 @@ function keypress(key, code) {
 }
 
 class Sky extends Emitter {
-  constructor() {
-    super()
-    this.mid = 0
-  }
-
   receive(data) {
-    if (data.mid > this.mid) {
-      this.mid = data.mid
+    if ('string' === typeof data.type) {
       this.emit(data.type, data)
+    }
+    else {
+      console.error('Data has no type', data)
     }
   }
 
   send(data) {
-    data.mid = ++this.mid
     console.log(JSON.stringify(data))
   }
 }
@@ -242,6 +238,7 @@ XMLHttpRequest.prototype.open = function (method, url) {
 
     this.addEventListener('load', function () {
       sky.profile = JSON.parse(this.responseText)
+      sky.profile.v = 1
       sky.profile.type = 'profile'
       sky.profile.token = sky.token
       fetch(`https://contacts.skype.com/contacts/v1/users/${sky.profile.username}/contacts`, {
