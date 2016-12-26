@@ -1,4 +1,4 @@
-require('./ui')
+require('../electron/ui')
 const {each, isObject} = require('lodash')
 
 function waiter(selectors, cb) {

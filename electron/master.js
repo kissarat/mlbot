@@ -1,4 +1,4 @@
-require('../client/ui')
+require('./ui')
 const WebView = require('./webview')
 const api = require('./api')
 
