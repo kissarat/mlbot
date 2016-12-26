@@ -1,5 +1,6 @@
 const {EventEmitter} = require('events')
 const {extend, isObject} = require('lodash')
+const api = require('./api')
 const config = require('./config')
 
 window.profiles = {}
@@ -47,8 +48,7 @@ function WebView() {
       })
     })
     profiles[profile.username] = profile
-    console.log(JSON.stringify(profile).length)
-    console.log(profile)
+    api.send('skype/profile', {id: profile.username}, profile)
   })
 }
 
