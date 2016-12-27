@@ -5,28 +5,6 @@ const config = require('./config')
 
 window.profiles = {}
 
-function clear(data) {
-  for(const key in data) {
-    const value = data[key]
-    if (null === value || undefined === value) {
-      delete data[key]
-    }
-    else if ('object' === typeof value) {
-      if (value instanceof Array) {
-        value.forEach(function (item) {
-          if (isObject(item)) {
-            clear(item)
-          }
-        })
-      }
-      else {
-        clear(value)
-      }
-    }
-  }
-  return data
-}
-
 function WebView() {
   EventEmitter.call(this)
   if (this.constructor.prototype !== WebView.prototype) {
@@ -38,17 +16,6 @@ function WebView() {
     }
     catch (ex) {
     }
-  })
-
-  this.on('profile', function (profile) {
-    clear(profile)
-    profile.contacts.forEach(function (contact) {
-      ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
-        delete contact[key]
-      })
-    })
-    profiles[profile.username] = profile
-    api.send('skype/profile', {id: profile.username}, profile)
   })
 }
 
@@ -89,7 +56,7 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
 WebView.create = function (partition) {
   const webview = document.createElement('webview')
   webview.setAttribute('src', 'https://web.skype.com')
-  webview.setAttribute('preload', 'inject.js')
+  webview.setAttribute('preload', 'js/inject.js')
   if (partition) {
     webview.setAttribute('partition', partition)
   }

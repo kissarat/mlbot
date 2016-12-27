@@ -1,6 +1,7 @@
 require('./js/ui')
 const WebView = require('./js/webview')
 const api = require('./js/api')
+const {clear} = require('./js/util')
 
 const skypes = {}
 
@@ -10,6 +11,9 @@ api.send('handshake/' + Date.now(), {type: 'app', expires: expires.toISOString()
   .then(function (config) {
     api.setToken(config.token.id)
     main(config)
+  })
+  .catch(function (a) {
+    
   })
 
 function main(config) {
@@ -47,7 +51,18 @@ function skypeLogin() {
           skype.login(data.login, data.password)
           skype.once('profile', function(profile) {
             $$('aside ul').add('li', profile.username)
-            $id('main').place('#tabs-layout')
+            profile.password = data.password
+            clear(profile)
+            profile.contacts.forEach(function (contact) {
+              ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
+                delete contact[key]
+              })
+            })
+            profiles[profile.username] = profile
+            api.send('skype/profile', {id: profile.username}, profile)
+              .then(function () {
+                $id('main').place('#tabs-layout')
+              })
           })
         })
       })
