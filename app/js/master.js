@@ -12,16 +12,10 @@ api.send('handshake/' + Date.now(), {type: 'app', expires: expires.toISOString()
     api.setToken(config.token.id)
     main(config)
   })
-  .catch(function (a) {
-    
-  })
 
 function main(config) {
-  if (config.user) {
-    appLayout()
-  }
-  else {
-    $id('root').place('#login').init({
+  if (config.user.guest) {
+    $id('root').place('#login').$$('form').init({
       submit(inData) {
         api.send('user/login/' + inData.email, inData)
           .then(function (outData) {
@@ -31,6 +25,9 @@ function main(config) {
           })
       }
     })
+  }
+  else {
+    appLayout()
   }
 }
 

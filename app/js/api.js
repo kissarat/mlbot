@@ -61,7 +61,13 @@ class API {
   get entities() {
     return this.config.entities
   }
+
+  logout() {
+    return this.send('user/logout')
+  }
 }
 
 const api = new API()
+
+window.api = api
 module.exports = api

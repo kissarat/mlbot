@@ -66,6 +66,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
+    background: linear-gradient(118deg, #2b91de, #004e97);
 }
 
 #dark {
@@ -130,15 +131,23 @@ footer {
 .body {
     display: flex;
     padding: 0 0 0 15px;
-    background: linear-gradient(118deg, #2b91de, #004e97);
     justify-content: space-between;
     align-items: center;
     height: 100%;
+
 }
 
 .column1 {
-    width: 30%;
-    min-width: 200px;
+    width: 20%;
+    min-width: 252px;
+}
+
+.column1:nth-child(2) {
+    align-self: flex-end;
+}
+
+.column1:nth-child(3) {
+    align-self: flex-start;
 }
 
 .leader-logo {
@@ -153,10 +162,10 @@ input {
     background: transparent;
     border: 0;
     border-bottom: 1px solid #ffffff;
-    width: 92%;
+    width: 90%;
     color: #ffffff;
     padding: 10px 4%;
-    margin: 10px 0;
+    margin: 10px 2% 10px 0;
     text-transform: uppercase;
 }
 
@@ -164,7 +173,7 @@ input:focus {
     outline: none;
 }
 
-input::-webkit-input-placeholder{
+input::-webkit-input-placeholder {
     color: #ffffff;
 }
 
@@ -176,46 +185,59 @@ button {
     background: #fac255;
     border: 0;
     color: #ffffff;
-    box-shadow: 3px 0 7px rgba(0,0,0,0.2);
+    box-shadow: 3px 0 7px rgba(0, 0, 0, 0.2);
     font-size: 18px;
     padding: 13px 30px 11px;
     text-transform: uppercase;
     border-radius: 50px;
-    font-weight: 100;
+    font-weight: 300;
     margin: 20px 0;
+}
+
+button:hover {
+    cursor: pointer;
 }
 
 .howuse {
     background: url("images/bg_how_to_use.png") no-repeat;
-    background-size: 100%;
-    height: 264px;
-    width: 252px;
-    padding: 70px 20px 0;
+    padding: 50px 30px 0 20px;
+    min-height: 300px;
+
 }
 
 .howuse > h3 {
     color: #2689d6;
     text-transform: uppercase;
-    margin: 0;
+    margin: 0 0 10px;
 }
 
 .info {
     background: #ffffff;
-    height: 500px;
-    border-radius: 200px 0 0 0;
-    padding: 40px 20px 20px 60px;
+    height: 250px;
+    border-radius: 0 0 0 200px;
+    padding: 70px 20px 20px 60px;
     text-align: right;
+    border-left: 1px solid #ffc44b;
+    border-bottom: 1px solid #ffc44b;
 }
-
 
 .info li, .info ul, .info p {
     list-style: none;
-    margin: 0;
+    margin: 0 !important;
     color: #a9a9a9;
+    padding: 0 ;
+}
+
+.howuse > * {
+    display: block;
+    -webkit-margin-before: 0px;
+    -webkit-margin-after: 5px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
 }
 
 .info h4 {
     color: #565656;
     font-size: 18px;
-    margin: 10px 0 0 ;
+    margin: 10px 0;
 }
