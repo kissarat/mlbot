@@ -254,17 +254,23 @@ extend(Element.prototype, {
     return this.children[0]
   },
 
+  replace(element) {
+    this.parentNode.insertBefore(element, this)
+    this.remove()
+    return element
+  },
+
   $$(selector) {
     return this.querySelector(selector)
+  },
+
+  $all(selector) {
+    return this.querySelectorAll(selector)
   },
 
   set(selector, value) {
     this.querySelector(selector, value)
     return this
-  },
-
-  add(tag, attributes, children) {
-    this.appendChild($new(tag, attributes, children))
   }
 })
 
