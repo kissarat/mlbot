@@ -32,38 +32,61 @@ function main(config) {
 }
 
 function appLayout() {
-  $id('root').place('#app-layout')
-  bar({
-    addSkype: skypeLogin
+  api.get('skype/accounts').then(function (accounts) {
+    $id('root')
+      .place('#app-layout')
+      .$$('aside ul')
+      .add(accounts.map(function (a) {
+        const li = $new('li')
+        li.addEventListener('click', function () {
+          openSkype(a)
+        })
+        return li
+      }))
+    bar({
+      addSkype: skypeLogin
+    })
   })
 }
 
 function skypeLogin() {
   $id('main').place('#skype-login').init({
-    submit(data) {
-      const skype = WebView.create(data.login)
-      skype.once('load', function () {
-        skype.login(data.login, data.password)
-        skype.once('load', function () {
-          skype.login(data.login, data.password)
-          skype.once('profile', function(profile) {
-            $$('aside ul').add('li', profile.username)
-            profile.password = data.password
-            clear(profile)
-            profile.contacts.forEach(function (contact) {
-              ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
-                delete contact[key]
-              })
-            })
-            profiles[profile.username] = profile
-            api.send('skype/profile', {id: profile.username}, profile)
-              .then(function () {
-                $id('main').place('#tabs-layout')
-              })
+    submit: openSkype
+  })
+}
+
+function openSkype(data) {
+  const skype = WebView.create(data.login)
+  skype.once('load', function () {
+    skype.login(data.login, data.password)
+    skype.once('load', function () {
+      skype.login(data.login, data.password)
+      skype.once('profile', function(profile) {
+        $$('aside ul').add('li', profile.username)
+        profile.password = data.password
+        clear(profile)
+        profile.contacts.forEach(function (contact) {
+          ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
+            delete contact[key]
           })
         })
+        profiles[profile.username] = profile
+        api.send('skype/profile', {id: profile.username}, profile)
+          .then(function () {
+            $id('main').place('#tabs-layout')
+          })
       })
-      $id('dark').appendChild(skype)
-    }
+    })
   })
+  $id('dark').appendChild(skype)
+}
+
+window.showSkype = function (value) {
+  if (value) {
+    $id('dark').style.opacity = 1
+    $id('root').hide()
+  }
+  else {
+    $id('root').show()
+  }
 }
