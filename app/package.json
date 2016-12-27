@@ -17,7 +17,9 @@
   "homepage": "https://gitlab.com/kissarat/mlbot#README",
   "description": "",
   "dependencies": {
-    "electron": "^1.4.12",
+    "babel": "^6.5.2",
+    "babel-core": "^6.21.0",
+    "electron-prebuilt": "^1.4.13",
     "jquery": "^3.1.1",
     "lodash": "^4.17.2",
     "request-promise": "^4.1.1",
