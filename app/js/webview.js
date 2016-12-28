@@ -2,6 +2,7 @@ const {EventEmitter} = require('events')
 const {extend, isObject} = require('lodash')
 const api = require('./api')
 const config = require('./config')
+const {clear} = require('./util')
 
 window.profiles = {}
 
@@ -36,7 +37,7 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
 
   invoke(fn, args) {
     const formatted = []
-    args.forEach(function(a) {
+    args.forEach(function (a) {
       if ('string' === typeof a) {
         a = `'${a}'`
       }
@@ -50,6 +51,22 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
 
   login(username, password) {
     this.invoke('login', [username, password])
+  },
+
+  getProfile() {
+    return this.profile
+      ? Promise.resolve(this.profile)
+      : new Promise(resolve => this.once('profile', profile => {
+        this.profile = profile
+        clear(profile)
+        profile.contacts.forEach(function (contact) {
+          ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
+            delete contact[key]
+          })
+        })
+        resolve(profile)
+      })
+    )
   }
 })
 

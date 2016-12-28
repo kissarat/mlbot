@@ -1,6 +1,7 @@
-const {app, Tray, Menu, BrowserWindow} = require('electron')
+const {app, nativeImage, BrowserWindow} = require('electron')
 const path = require('path')
 const config = require('./js/config')
+const {defaults} = require('lodash')
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)
@@ -11,7 +12,13 @@ let appIcon = null
 let win = null
 
 app.on('ready', function () {
-  win = new BrowserWindow(config.window)
+  const windowConfig = defaults(config.window, {
+    icon: nativeImage.createFromPath(__dirname + '/images/bitcoin.png')
+  })
+  win = new BrowserWindow({
+    icon: nativeImage.createFromPath(__dirname + '/images/bitcoin.png')
+  })
+  win.setOverlayIcon(windowConfig.icon, 'MLBot')
   win.loadFile('/index.html')
   if (config.dev) {
     win.openDevTools()
