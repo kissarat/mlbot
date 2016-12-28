@@ -33,20 +33,16 @@ function appLayout() {
     $id('root')
       .place('#app-layout')
       .$$('aside ul')
-      .add(accounts.map(function (a) {
+      .fragment(accounts.map(function (a) {
         const li = $new('li')
         li.innerHTML = a.login
         li.addEventListener('click', function () {
           openSkype(a).getProfile().then(function (profile) {
-            const tbody = $$('#tab tbody')
-            profile.contacts.forEach(function (contact) {
-              let tr = tbody.$$(`#${profile.username}-${contact.login}`)
-              if (!tr) {
-                tr = $new('tr')
-              }
-            })
-              // .place('tbody')
-              // .$$('ul').replace($table(profile.contacts.map(c => [c.login, c.display_name])))
+            $id('tab').place('#contacts').$$('table').update(profile.contacts.map(o => ({
+              _id: `${a.username}-${o.id}`,
+              username: o.id,
+              display_name: o.display_name
+            })))
           })
         })
         return li

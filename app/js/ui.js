@@ -85,17 +85,25 @@ function $list(items) {
 
 function $row(row) {
   const tr = document.createElement('tr')
-  each(row, function (value) {
-    if (value instanceof Element) {
-      tr.appendChild(value)
-    }
-    else if (isObject(value)) {
-      tr.appendChild($new('td', value))
-    }
-    else {
-      const td = document.createElement('td')
-      td.innerHTML = value
-      tr.appendChild(td)
+  if (row._id) {
+    tr.id = row._id
+  }
+  else {
+    console.warn('_id not found', row)
+  }
+  each(row, function (value, key) {
+    if ('_' != key[0]) {
+      if (value instanceof Element) {
+        tr.appendChild(value)
+      }
+      else if (isObject(value)) {
+        tr.appendChild($new('td', value))
+      }
+      else {
+        const td = document.createElement('td')
+        td.innerHTML = value
+        tr.appendChild(td)
+      }
     }
   })
   return tr
@@ -202,12 +210,8 @@ extend(Element.prototype, {
     return this
   },
 
-  add(array) {
-    const fragment = document.createDocumentFragment()
-    array.forEach(function (element) {
-      fragment.appendChild(element)
-    })
-    this.appendChild(fragment)
+  add(tag, attrs, children) {
+    this.appendChild($new(tag, attrs, children))
     return this
   },
 
@@ -274,6 +278,15 @@ extend(Element.prototype, {
 
   set(selector, value) {
     this.querySelector(selector, value)
+    return this
+  },
+
+  fragment(array) {
+    const fragment = document.createDocumentFragment()
+    array.forEach(function (element) {
+      fragment.appendChild(element)
+    })
+    this.appendChild(fragment)
     return this
   }
 })
