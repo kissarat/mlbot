@@ -97,7 +97,7 @@ function $table(rows) {
       else {
         const td = document.createElement('td')
         td.innerHTML = value
-        tr.appendChild(tr)
+        tr.appendChild(td)
       }
     })
     table.appendChild(tr)
