@@ -273,7 +273,26 @@ button:hover {
     margin: 10px 0;
 }
 
-.add-skype {
+.add-skype, .error  {
     padding: 70px 15px;
 }
 .login {}
+
+
+.error {
+    display: flex;
+}
+
+.error > .message, .error > .background {
+    flex-direction: column;
+    width: 50%;
+}
+
+.background {
+    height: 100vh;
+    background: url(images/logo.png);
+}
+
+.error > * {
+    color: #fff;
+}
