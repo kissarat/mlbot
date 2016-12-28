@@ -86,6 +86,10 @@
 	</form>
 </template>
 
+<template id="error">
+	<div>Ошибка</div>
+</template>
+
 <template id="contacts">
 	<div>
 		<input type="search"/>
@@ -101,7 +105,19 @@
 			</label>
 		</div>
 		<div class="fill">
-			<ul></ul>
+			<table>
+				<thead>
+				<tr>
+					<th colspan="2">Контакт</th>
+					<th rowspan="2">Skype</th>
+				</tr>
+				<tr>
+					<th>Логин</th>
+					<th>Имя</th>
+				</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
 			<form>
 				<div>
 					Загрузка контактов

@@ -38,9 +38,15 @@ function appLayout() {
         li.innerHTML = a.login
         li.addEventListener('click', function () {
           openSkype(a).getProfile().then(function (profile) {
-            $$('#tab')
-              .place('#contacts')
-              .$$('ul').replace($table(profile.contacts.map(c => [c.login, c.display_name])))
+            const tbody = $$('#tab tbody')
+            profile.contacts.forEach(function (contact) {
+              let tr = tbody.$$(`#${profile.username}-${contact.login}`)
+              if (!tr) {
+                tr = $new('tr')
+              }
+            })
+              // .place('tbody')
+              // .$$('ul').replace($table(profile.contacts.map(c => [c.login, c.display_name])))
           })
         })
         return li
@@ -90,4 +96,8 @@ window.showSkype = function (value) {
   else {
     $id('root').show()
   }
+}
+
+window.errorPage = function () {
+  $id('root').place('#error')
 }

@@ -83,24 +83,28 @@ function $list(items) {
   return ul
 }
 
+function $row(row) {
+  const tr = document.createElement('tr')
+  each(row, function (value) {
+    if (value instanceof Element) {
+      tr.appendChild(value)
+    }
+    else if (isObject(value)) {
+      tr.appendChild($new('td', value))
+    }
+    else {
+      const td = document.createElement('td')
+      td.innerHTML = value
+      tr.appendChild(td)
+    }
+  })
+  return tr
+}
+
 function $table(rows) {
   const table = document.createElement('table')
   rows.forEach(function (row) {
-    const tr = document.createElement('tr')
-    each(row, function (value) {
-      if (value instanceof Element) {
-        tr.appendChild(value)
-      }
-      else if (isObject(value)) {
-        tr.appendChild($new('td', value))
-      }
-      else {
-        const td = document.createElement('td')
-        td.innerHTML = value
-        tr.appendChild(td)
-      }
-    })
-    table.appendChild(tr)
+    table.appendChild($row(row))
   })
   return table
 }
@@ -305,6 +309,32 @@ extend(HTMLFormElement.prototype, Emitter.prototype, {
       }
     })
     return object
+  }
+})
+
+extend(HTMLTableElement.prototype, {
+  update(objects) {
+    objects.forEach(o => this.upsertRow(o))
+  },
+
+  upsertRow(object) {
+    let tr = this.$$(`#${object.id}`)
+    if (tr) {
+      const keys = Object.keys(object)
+      tr.$all('td').forEach(function (td, i) {
+        const value = object[keys[i]]
+        if (value instanceof Element) {
+          td.innerHTML = ''
+          td.appendChild(value)
+        }
+        else {
+          td.innerHTML = value
+        }
+      })
+    }
+    else {
+      this.appendChild($row(object))
+    }
   }
 })
 

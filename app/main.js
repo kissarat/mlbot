@@ -13,12 +13,9 @@ let win = null
 
 app.on('ready', function () {
   const windowConfig = defaults(config.window, {
-    icon: nativeImage.createFromPath(__dirname + '/images/bitcoin.png')
+    icon: __dirname + '/images/icon.icns'
   })
-  win = new BrowserWindow({
-    icon: nativeImage.createFromPath(__dirname + '/images/bitcoin.png')
-  })
-  win.setOverlayIcon(windowConfig.icon, 'MLBot')
+  win = new BrowserWindow(windowConfig)
   win.loadFile('/index.html')
   if (config.dev) {
     win.openDevTools()
