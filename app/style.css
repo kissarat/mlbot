@@ -57,8 +57,7 @@
 }
 
 #root {
-    display: flex;
-    flex-direction: column;
+    
     position: fixed;
     top: 0;
     right: 0;
@@ -67,6 +66,17 @@
     width: 100vw;
     height: 100vh;
     background: linear-gradient(118deg, #2b91de, #004e97);
+}
+
+.login {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.add-skype {
+    display: flex;
+    flex-direction: column;
 }
 
 #dark {
@@ -142,11 +152,6 @@ footer {
     min-width: 252px;
 }
 
-body > div > div {
-    height: 100vw;
-    display: flex;
-}
-
 .column1:nth-child(2) {
     align-self: flex-end;
 }
@@ -186,21 +191,42 @@ input:focus::-webkit-input-placeholder {
     color: transparent;
 }
 
-button {
+.login button {
     background: #fac255;
-    border: 0;
     color: #ffffff;
+}
+
+.add-skype button {
+    background: #fff;
+}
+
+.skype-login .skype-button {
+  background: #fac255;
+      
+}
+
+.skype-login {
+    width: 40%;
+    min-width: 200px;
+
+}
+
+button {
+    color: #000;
+    border: 0;
     box-shadow: 3px 0 7px rgba(0, 0, 0, 0.2);
     font-size: 18px;
-    padding: 13px 30px 11px;
+    padding: 13px 30px 8px;
     text-transform: uppercase;
     border-radius: 50px;
-    font-weight: 300;
+    font-weight: 400;
     margin: 20px 0;
+    opacity: 0.95;
 }
 
 button:hover {
     cursor: pointer;
+    opacity: 1;
 }
 
 .howuse {
@@ -246,3 +272,8 @@ button:hover {
     font-size: 18px;
     margin: 10px 0;
 }
+
+.add-skype {
+    padding: 70px 15px;
+}
+.login {}
