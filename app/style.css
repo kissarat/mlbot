@@ -142,6 +142,11 @@ footer {
     min-width: 252px;
 }
 
+body > div > div {
+    height: 100vw;
+    display: flex;
+}
+
 .column1:nth-child(2) {
     align-self: flex-end;
 }
