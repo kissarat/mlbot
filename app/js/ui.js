@@ -155,6 +155,7 @@ class Sky extends Emitter {
   }
 
   send(data) {
+    data.time = Date.now()
     console.log(JSON.stringify(data))
   }
 }

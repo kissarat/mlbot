@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "main.js",
   "scripts": {
+    "rebuild": "electron-rebuild",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Taras Labiak <kissarat@gmail.com>",
@@ -17,15 +18,15 @@
   "homepage": "https://gitlab.com/kissarat/mlbot#README",
   "description": "",
   "dependencies": {
-    "babel": "^6.5.2",
-    "babel-core": "^6.21.0",
     "electron-prebuilt": "^1.4.13",
+    "fs-promise": "^1.0.0",
     "jquery": "^3.1.1",
     "lodash": "^4.17.2",
     "request-promise": "^4.1.1",
-    "skyweb": "^0.2.0"
+    "sqlite3": "^3.1.8"
   },
   "devDependencies": {
+    "babel": "^6.5.2",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.8",
@@ -33,6 +34,7 @@
     "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-es2017": "^6.16.0",
-    "babel-preset-react": "^6.16.0"
+    "babel-preset-react": "^6.16.0",
+    "electron-rebuild": "^1.4.0"
   }
 }

@@ -1,6 +1,8 @@
 require('./js/ui')
 const WebView = require('./js/webview')
 const api = require('./js/api')
+const {ipcRenderer} = require('electron')
+const {initDatabase} = require('./js/sqlite')
 
 const expires = new Date()
 expires.setMonth(expires.getMonth() + 6)
@@ -10,22 +12,31 @@ api.send('handshake/' + Date.now(), {type: 'app', expires: expires.toISOString()
     main(config)
   })
 
+// ipcRenderer.on('config', function (e, data) {
+//   console.log(data)
+// })
+
 function main(config) {
-  if (config.user.guest) {
-    $id('root').place('#login').$$('form').init({
-      submit(inData) {
-        api.send('user/login/' + inData.email, inData)
-          .then(function (outData) {
-            if (outData.success) {
-              appLayout()
-            }
-          })
-      }
+  initDatabase().then(function () {
+    if (config.user.guest) {
+      $id('root').place('#login').$$('form').init({
+        submit(inData) {
+          api.send('user/login/' + inData.email, inData)
+            .then(function (outData) {
+              if (outData.success) {
+                appLayout()
+              }
+            })
+        }
+      })
+    }
+    else {
+      appLayout()
+    }
+  })
+    .catch(function (err) {
+      console.error(err)
     })
-  }
-  else {
-    appLayout()
-  }
 }
 
 function appLayout() {

@@ -124,6 +124,12 @@ header {
     top: 0;
     left: 0;
     border-bottom: 1px solid rgba(200, 200, 200, 0.15);
+    display: flex;
+    align-items: center;
+}
+
+header img {
+    max-height: 40px
 }
 
 footer {

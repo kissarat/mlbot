@@ -2,6 +2,7 @@ const {app, nativeImage, BrowserWindow} = require('electron')
 const path = require('path')
 const config = require('./js/config')
 const {defaults} = require('lodash')
+const sqlite = require('./js/sqlite')
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)
@@ -17,6 +18,11 @@ app.on('ready', function () {
   })
   win = new BrowserWindow(windowConfig)
   win.loadFile('/index.html')
+  win.webContents.on('did-finish-load', function () {
+    win.webContents.send('config', {
+      userDataPath: app.getPath('userData')
+    })
+  })
   if (config.dev) {
     win.openDevTools()
   }

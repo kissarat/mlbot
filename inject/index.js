@@ -41,6 +41,10 @@ function sendMessage(loginName, text) {
         }, 1800)
         waiter('.send-button:enabled', function (button) {
           button.click()
+          sky.send({
+            type: 'message',
+            login: loginName
+          })
         })
       })
     })
