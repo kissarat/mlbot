@@ -74,10 +74,6 @@
     height: 100vh;
 }
 
-.add-skype {
-    display: flex;
-    flex-direction: column;
-}
 
 #dark {
     opacity: 0;
@@ -175,7 +171,7 @@ input {
     width: 90%;
     color: #ffffff;
     padding: 10px 4%;
-    margin: 10px 2% 10px 0;
+    margin: 0px 2% 5px 0;
     text-transform: uppercase;
 }
 
@@ -197,18 +193,85 @@ input:focus::-webkit-input-placeholder {
 }
 
 .add-skype button {
-    background: #fff;
+    background: white;
+    margin: 0;
+    padding: 5px 11px;
+    color: #999;
+    font-weight: 600;
+    box-shadow: 0 0 0;
+    border: 0;
 }
 
-.skype-login .skype-button {
-  background: #fac255;
+.add-skype button:hover {
+    background: #fff;
+    color: #004e97;
+}
+
+.skype-login .skype-button, .add-friends .skype-button {
+    background-color: #b5cc18;
+    background-image: none;
+    color: #ffffff;
+    text-shadow: none;
+    font-size: 1rem;
+    -moz-user-select: none;
+    border: medium none;
+    border-radius: 0.285714rem;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0) inset, 0 0 0 0 rgba(34, 36, 38, 0.15) inset;
+    color: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    display: inline-block;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1em;
+    margin: 0 0.25em 0 0;
+    height: 37px;
+    outline: 0 none;
+    padding: 10px 1.5em;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    transition: opacity 0.1s ease 0s, background-color 0.1s ease 0s, color 0.1s ease 0s, box-shadow 0.1s ease 0s, background 0.1s ease 0s;
+    vertical-align: baseline;
       
 }
 
-.skype-login {
-    width: 40%;
-    min-width: 200px;
+.skype-login input {
+    border: medium none;
+    -moz-box-flex: 1;
+background: #ffffff none repeat scroll 0 0;
+border: 1px solid rgba(34, 36, 38, 0.15);
+border-radius: 0.285714rem;
+box-shadow: none;
+color: rgba(0, 0, 0, 0.87);
+flex: 1 0 auto;
+font-family: Lato,"Helvetica Neue",Arial,Helvetica,sans-serif;
+line-height: 1.2142em;
+margin: 0;
+max-width: 100%;
+outline: 0 none;
+padding: 0.678614em 1em;
+text-align: left;
+transition: box-shadow 0.1s ease 0s, border-color 0.1s ease 0s;
+color: #333;
+text-transform: none;
+margin-bottom: 5px;
+}
 
+.skype-login input::-webkit-input-placeholder {
+    color: rgba(191, 191, 191, 0.87);
+}
+
+.skype-login input:focus::-webkit-input-placeholder {
+ color: rgba(191, 191, 191, 0);   
+}
+
+.skype-login {
+    min-width: 200px;
+}
+
+.add-skype #main {
+    width: 50%;
 }
 
 button {
@@ -273,8 +336,8 @@ button:hover {
     margin: 10px 0;
 }
 
-.add-skype, .error  {
-    padding: 70px 15px;
+.add-skype, .error, .add-friends, .send-message  {
+    padding: 60px 15px;
 }
 .login {}
 
@@ -295,4 +358,299 @@ button:hover {
 
 .error > * {
     color: #fff;
+}
+
+.add-skype #tab .fill .contacts-table {
+    height: 200px;
+    overflow-y: scroll;
+    background: white;
+    font-size: 12px;
+    margin: 10px 0;
+    width: 500px;
+}
+
+#tab input {
+    background: white;
+    color: black;
+    width: 250px;
+    border-bottom: 1px solid skyblue;
+    margin: 0 0 10px;
+    padding: 12px 10px 9px;
+}
+
+#tab > div > div > button {
+    margin: 0;
+    padding: 5px 12px 3px;
+    font-size: 14px;
+    background: teal;
+    color: white;
+}
+
+#showOnline input {
+    width: 20px;
+    margin: 0 0 0 20px;
+}
+
+table {
+    width: 100%;
+    display: block;
+}
+
+.fill {
+    display: flex;
+    flex-direction: row;
+}
+
+.fill form {
+    padding: 10px 20px;
+}
+
+.fill form > div {
+    background: white;
+    padding: 5px 20px 0;
+    margin: 0 0 10px;
+    width: 418px;
+}
+
+.fill textarea {
+    width: 98%;
+    height: 80px;
+    padding: 1%;
+    border: 0;
+}
+
+.fill button {
+    background: yellow;
+    margin: 6px 0;
+    padding: 5px 15px 3px;
+}
+
+nav ul {
+    margin: 0 0 5px;
+    padding: 0px;
+    display: flex;
+    flex-direction: row;
+    min-width: 350px;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+    padding: 10px 15px;
+    color: #fff;
+    border: 1px solid #fff;
+    border-left: 0px; 
+}
+
+nav ul li:first-child {
+    border-left: 1px solid #fff;
+    border-radius: 5px 0 0 5px;
+} 
+nav ul li:last-child {
+    border-radius: 0 5px 5px 0;
+}
+
+nav ul li:hover, nav ul li:active, nav ul li:focus {
+    background: #fff;
+    color: grey;
+    cursor: pointer;
+}
+
+.add-skype aside ol {
+    margin: 0;
+    padding: 0 15px;
+    color: white;
+}
+
+.add-skype aside {
+        width: 50%;
+}
+
+.add-skype aside ol li {
+    margin: 5px 0 0 ;
+    padding-left: 5px;
+    font-weight: 600;
+}
+
+h1 {
+    margin: 25px 0 10px;
+    font-size: 30px;
+    text-align: center;
+}
+
+.flex {
+    display: flex;
+}
+
+.skype-login p {
+    color: #fff;
+    margin: 0 0 5px;
+}
+
+.skype-login p:last-child {
+    color: #fff;
+    margin: 5px 0 5px;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.fa {
+    margin-left: 25px; 
+}
+
+.fa:hover {
+    cursor: pointer;
+}
+
+.fa-times {
+    color: #fff;
+    text-shadow: 2px 2px 3px #D74937;
+    font-size: 28px;
+}
+
+acc:hover {
+    cursor: pointer;
+}
+
+.flex-checkbox {
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+}
+
+.checkbox {
+ display: flex;   
+ color: white;
+ margin-right: 20px;
+}
+
+.checkbox .hidden {
+ width: 17px;
+ margin: 3px 0 0;
+}
+
+.checkbox:first-child .hidden:first-child {
+ margin: 3px 0 0;   
+}
+
+p {
+    text-align: center;
+    color: white;
+}
+
+.flex-textarea {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex-textarea textarea {
+    width: 96%;
+    height: 90px;
+    padding: 2%
+}
+
+.flex-textarea .field, .upload-txt {
+    width: 96%;
+}
+
+.upload-txt {
+    padding: 2%;
+}
+
+.flex-textarea input {
+    border: 0;
+    margin: 5px 0;
+    padding: 0;
+}
+
+.flex-textarea p {
+    margin: 0; 
+}
+
+.flex-radiobutton {
+    display: flex;
+    justify-content: center;
+ flex-flow: wrap;   
+}
+
+.table {
+    height: 157px;
+    overflow-y: scroll;
+        margin: 10px 10px 0 0;
+        width: 50%;
+}
+
+table .hidden {
+    width: 17px;
+    padding: 0;
+    margin: 0;
+}
+
+table {
+    background: #ddd;
+    font-size: 13px;
+    display: table;
+    border-spacing: 1px !important;
+
+}
+
+table thead {
+    font-weight: 700;
+    border: 0;
+}
+
+table tr:nth-child(odd){
+    background: white;
+
+}
+
+.send-message .fields p {
+    margin: 0 20px 0 0;
+}
+
+.send-message button {
+ background-color: #b5cc18;
+    background-image: none;
+    color: #ffffff;
+    text-shadow: none;
+    font-size: 1rem;
+    -moz-user-select: none;
+    border: medium none;
+    border-radius: 0.285714rem;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0) inset, 0 0 0 0 rgba(34, 36, 38, 0.15) inset;
+    color: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    display: inline-block;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1em;
+    margin: 0 0.25em 0 0;
+    height: 37px;
+    outline: 0 none;
+    padding: 10px 1.5em;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    transition: opacity 0.1s ease 0s, background-color 0.1s ease 0s, color 0.1s ease 0s, box-shadow 0.1s ease 0s, background 0.1s ease 0s;
+    vertical-align: baseline;   
+}
+
+.flex-table {
+    display: flex;
+}
+
+.flex-table .field {
+    width: 50%;
+    margin: 10px 0 0 10px;
+}
+
+.flex-table textarea {
+        width: 98%;
+    height: 110px;
+    padding: 1%;
+    border: 0;
 }

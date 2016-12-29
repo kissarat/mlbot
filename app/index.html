@@ -5,23 +5,224 @@
 	<title>ML Skype AutoBot beta v0.1</title>
 	<link rel="icon" href="images/icon.png">
 	<link rel="stylesheet" href="style.css"/>
+	<script src="https://use.fontawesome.com/c5c4b80c19.js"></script>
 </head>
 <body>
 <div id="dark"></div>
 <div id="root"></div>
 
 <template id="app-layout">
-	<div class="add-skype">
+<!--	<div class="add-skype">	-->
+<!--	<div class="add-friends"> -->
+	<div class="send-message"> 
 		<header>
             <img src="images/logo.png">
 
             <p>ML Skype AutoBot ™ </p>
         </header>
-        <aside>
-			<button type="button" id="addSkype">Добавить Skype</button>
-			<ul></ul>
-		</aside>
-		<div id="main"></div>
+        <nav>
+        	<ul>
+        		<li>
+        			Аккаунты
+        		</li>
+		   		<li>
+        			Друзья
+        		</li>
+        		<li>
+        			Рассылка
+        		</li>
+        		<li>
+        			Контакты
+        		</li>
+        	</ul>
+        </nav>
+		
+		<h1>Разослать сообщение</h1>
+		<div class="fields flex-radiobutton">
+          <p>Выберите аккаунт</p>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input name="frequency" checked="checked" tabindex="0" class="hidden" type="radio">
+              <label>viktorbiznes</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input name="frequency" tabindex="0" class="hidden" type="radio">
+              <label>viktorbiznes2</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input name="frequency" tabindex="0" class="hidden" type="radio">
+              <label>viktorbiznes@vik.tor</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox checked">
+              <input name="frequency" tabindex="0" class="hidden" type="radio">
+              <label>live:vikt</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox checked">
+              <input name="frequency" tabindex="0" class="hidden" type="radio">
+              <label>live:viktooo</label>
+            </div>
+          </div>
+        </div>
+<br>
+        <p>Выберите контакты и отправьте сообщение</p>
+        <button>Друзья</button>
+        <button>Онлайн</button>
+        <button>Все</button>
+        <button>Офлайн</button>
+        <div class="flex-table">
+        <div class="table">
+        <table>
+        	<thead>
+        		<tr>
+        			<td></td>
+        			<td>Skype логин</td>
+        			<td>Имя в Skype</td>
+        		</tr>
+        	</thead>
+        	<tbody>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		<tr>
+        			<td><input class="hidden" checked="" tabindex="0" type="checkbox"></td>
+        			<td>viktorbiznes</td>
+        			<td>- Виктор Мачальський -</td>
+        		</tr>
+        		
+        	</tbody>
+        </table>
+        </div>
+        <div class="field">
+			<textarea placeholder="Введите Ваше сообщение. Отправка занимает длительное время ~ 2c на одно сообщение. Не выключайте компьютер и не отключайтесь от интернета"></textarea>
+		<button class="skype-button">Разослать</button>
+		</div>
+		</div>
+<!--	<h1>Добавить друзей</h1>
+        <p><strong>Выберите Skype'ы</strong></p>
+        <div class="flex-checkbox">
+			<div class="ui checkbox checked">
+				<input class="hidden" checked="" tabindex="0" type="checkbox">
+				<label>biznesviktor</label>
+			</div>
+			<div class="ui checkbox checked">
+				<input class="hidden" checked="" tabindex="0" type="checkbox">
+				<label>vovvavova</label>
+			</div>
+			<div class="ui checkbox checked">
+				<input class="hidden" checked="" tabindex="0" type="checkbox">
+				<label>ananakldsjfkj</label>
+			</div>
+			<div class="ui checkbox checked">
+				<input class="hidden" checked="" tabindex="0" type="checkbox">
+				<label>live:sdjhfg</label>
+			</div>
+			<div class="ui checkbox checked">
+				<input class="hidden" checked="" tabindex="0" type="checkbox">
+				<label>viktor.jhdsfgdjfhg.@kdjfhg.fvdh</label>
+			</div>
+		</div>
+		<br>
+		<p><strong>Введите или загрузите TXT-файл со списком контактов:</strong></p>
+		<div class="flex-textarea">
+			<div class="field">
+				<textarea placeholder="Введите контакты или загрузите их в файле справа. На аккаунт программа добавляется 40 контактов в день. Это оптимальное количество с гарантией избежания бана и 100% доставляемости заявок по Вашей базе. Обратите внимание, что на каждый аккаунт добавляются разные контакты, что позволяет эффективнее использовать ограничения Skype"></textarea>
+			</div>
+			<div class="upload-txt">
+				<p>Загрузите TXT-файл со списком контактов</p>
+				<input id="loadContacts" type="file"/>
+				<p><i style="font-size: 12px">Каждый Skype контакт, который Вы хотите добавить, должен быть в новой строчке файла</i></p>
+			</div>
+		</div>
+		<br>
+		<center><button class="skype-button">Добавить друзей</button></center>
+		<p><i style="font-size: 12px">На каждый аккаунт в день добавляется 40 друзей. Вы можете повторить добавление вручную, просто запустив программу еще раз, но рискуете получить бан от MicroSoft и потерять аккаунты.</i></p>
+
+-->
+<!--	<h1>Добавить мои Skype'ы</h1>
+        <div class="flex">
+	        <aside>
+				<ol>
+					<li><acc title="Отобразить детали">biznesviktor</acc>  	<i class="fa fa-repeat" aria-hidden="true" title="Обновить контакты"></i>    <i class="fa fa-times" aria-hidden="true" title="Удалить аккаунт"></i> </li>
+					<li><button type="button" id="addSkype">+</button></li>
+					<li><button type="button" id="addSkype">+</button></li>
+					<li><button type="button" id="addSkype">+</button></li>
+					<li><button type="button" id="addSkype">+</button></li>
+				</ol>
+				<ul></ul>
+			</aside>
+			<div id="main"></div>
+		</div>
+-->
         <footer>
             <p>© ML Skype Autobot beta v0.1 www.mlautobot.com</p>
         </footer>
@@ -87,10 +288,11 @@
 
 <template id="skype-login">
 	<form class="skype-login">
-		<h1>Вход в учетную запись Skype</h1>
+		<p style="text-align: center;">Введите логин и пароль Skype</p>
 		<input name="login" placeholder="Логин"/>
 		<input name="password" type="password" placeholder="Пароль"/>
 		<button type="submit" class="skype-button">Войти</button>
+		<p>Вход в Skype занимает некоторое время... После добавления логин появиться слева!</p>
 	</form>
 </template>
 
@@ -130,26 +332,25 @@
 			<button id="checkOffline" type="button">офлайн</button>
 			<label id="showOnline">
 				<input type="checkbox"/>
-				только онлайн
+				<span>только онлайн</span>
 			</label>
 		</div>
 		<div class="fill">
+			<div class="contacts-table">
 			<table>
 				<thead>
-				<tr>
-					<th colspan="2">Контакт</th>
-					<th rowspan="2">Skype</th>
-				</tr>
 				<tr>
 					<th>Логин</th>
 					<th>Имя</th>
 				</tr>
+
 				</thead>
 				<tbody></tbody>
 			</table>
+			</div>
 			<form>
 				<div>
-					Загрузка контактов
+					<span>Загрузите логины в формате .txt для добавления в друзья:</span>
 					<input id="loadContacts" type="file"/>
 
 					<div id="loadContactsInformer" style="display: none">
