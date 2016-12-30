@@ -1,7 +1,12 @@
 const fs = require('fs-promise')
 const os = require('os')
+const config = require('./config')
 
-const dataPath = process.env.HOME + '/.mlbot'
+const dataPath = 'win32' === process.platform
+  ? 'C:\\mlbot'
+  : process.env.HOME + '/.mlbot'
+
+fs.removeSync(dataPath)
 
 try {
   fs.accessSync(dataPath, fs.constants.W_OK | fs.constants.X_OK)

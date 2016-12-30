@@ -1,5 +1,6 @@
 require('./waiter')
 const {extend} = require('lodash')
+const config = require('../app/js/config')
 
 function addContact(loginName) {
   waiter('[role=search]', function (input) {
@@ -17,7 +18,7 @@ function addContact(loginName) {
   })
 }
 
-function sendMessage(loginName, text) {
+function sendMessage(message) {
   $$('swx-search-input button').click()
   // $all('swx-recent-item').forEach(function (item) {
   //   item.remove()
@@ -25,25 +26,26 @@ function sendMessage(loginName, text) {
   waiter('[role=search]', function (input) {
     input.value = ''
     input.focus()
-    document.execCommand('insertText', true, loginName)
-    waiter(`.searchItem[data-title*="${loginName}"]`, function (button) {
+    document.execCommand('insertText', true, message.login)
+    waiter(`.searchItem[data-title*="${message.login}"]`, function (button) {
       button.click()
       input.blur()
       waiter('textarea:enabled', function (textarea) {
         // textarea.click()
         // textarea.focus()
         textarea.value = ''
-        document.execCommand('insertText', false, text)
+        document.execCommand('insertText', false, message.text)
         textarea.blur()
         setTimeout(function () {
-          document.execCommand('insertText', false, text)
+          document.execCommand('insertText', false, message.text)
           textarea.blur()
         }, 1800)
         waiter('.send-button:enabled', function (button) {
           button.click()
           sky.send({
             type: 'message',
-            login: loginName
+            id: message.id,
+            status: config.task.status.SEND
           })
         })
       })

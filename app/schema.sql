@@ -28,8 +28,9 @@ CREATE TABLE task_status (
 
 INSERT INTO task_status VALUES
   (0, 'created'),
-  (1, 'invited'),
-  (2, 'send');
+  (1, 'processing'),
+  (2, 'invited'),
+  (3, 'send');
 
 CREATE TABLE task (
   id      INT PRIMARY KEY,
@@ -37,3 +38,12 @@ CREATE TABLE task (
   message INT REFERENCES message (id),
   status  INT REFERENCES task_status (id)
 );
+
+CREATE VIEW task_view AS
+  SELECT
+    t.id,
+    c.account,
+    c.login,
+    m.text
+  FROM task t JOIN contact c ON t.contact = c.id
+  JOIN message m ON t.message = m.id;

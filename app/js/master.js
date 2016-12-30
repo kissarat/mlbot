@@ -2,7 +2,8 @@ require('./js/ui')
 const WebView = require('./js/webview')
 const api = require('./js/api')
 const {ipcRenderer} = require('electron')
-const {initDatabase} = require('./js/sqlite')
+const {initDatabase, table, raw} = require('./js/sqlite')
+const config = require('./js/config')
 
 const expires = new Date()
 expires.setMonth(expires.getMonth() + 6)
@@ -12,9 +13,16 @@ api.send('handshake/' + Date.now(), {type: 'app', expires: expires.toISOString()
     main(config)
   })
 
-// ipcRenderer.on('config', function (e, data) {
-//   console.log(data)
-// })
+function run() {
+  return raw(`
+  UPDATE task_view SET status = 1 WHERE id =
+  (SELECT min(id) FROM task_view WHERE status = 0)
+  RETURNING id, account, login, text
+`)
+    .then(function (task) {
+
+    })
+}
 
 function main(config) {
   initDatabase().then(function () {
@@ -33,6 +41,7 @@ function main(config) {
     else {
       appLayout()
     }
+    return run()
   })
     .catch(function (err) {
       console.error(err)
@@ -89,6 +98,14 @@ function openSkype(data) {
           api.send('skype/profile', {id: profile.username}, profile)
         })
       })
+    })
+    skype.on('message', function ({id, status}) {
+      table('task')
+        .where('id', id)
+        .update({status: status})
+        .then(function () {
+          console.log(id, status)
+        })
     })
     $id('dark').appendChild(skype)
   }
