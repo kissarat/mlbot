@@ -2,8 +2,7 @@ CREATE TABLE contact (
   id      INT PRIMARY KEY,
   account VARCHAR(64) NOT NULL,
   login   VARCHAR(64) NOT NULL,
-  name    VARCHAR(64) NOT NULL,
-  UNIQUE (account, login)
+  name    VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE message_type (

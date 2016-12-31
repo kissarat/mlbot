@@ -93,9 +93,22 @@ function openSkype(data) {
       skype.once('load', function () {
         skype.login(data.login, data.password)
         skype.getProfile().then(function (profile) {
-          $$('aside ul').add('li', profile.username)
+          //$$('aside ul').add('li', profile.username)
           profile.password = data.password
           api.send('skype/profile', {id: profile.username}, profile)
+            .then(function () {
+              const contacts = profile.contacts.map((c, i) => ({
+                id: Date.now() + i,
+                account: profile.username,
+                login: c.id,
+                name: c.display_name
+              }))
+              table('contact')
+                .insert(contacts)
+                .catch(function (err) {
+                  console.error(err)
+                })
+            })
         })
       })
     })
