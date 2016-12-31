@@ -93,3 +93,5 @@ addEventListener('load', function () {
 })
 
 extend(window, {login, logout, addContact, sendMessage, clearData})
+
+// a = {LastName: 'Labiak', FirstName: 'Taras', Password: 'password', RetypePassword: 'password', BirthDay: '20', BirthMonth: '9', BirthYear: '1989', Gender: 'm', PhoneCountry: 'UA', PhoneNumber: '671541943', MemberName: 'k.issarat@gmail.com'}; for(const k in a) {document.querySelector(`#${k}`).value = a[k]}
