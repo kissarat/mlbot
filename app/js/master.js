@@ -4,6 +4,9 @@ const api = require('./js/api')
 const {ipcRenderer} = require('electron')
 const {initDatabase, table, raw} = require('./js/sqlite')
 const config = require('./js/config')
+const {render} = require('react-dom')
+const ContactList = require('./js/react/contact')
+const React = require('react')
 
 const expires = new Date()
 expires.setMonth(expires.getMonth() + 6)
@@ -25,24 +28,32 @@ function run() {
 }
 
 function main(config) {
-  initDatabase().then(function () {
-    if (config.user.guest) {
-      $id('root').place('#login').$$('form').init({
-        submit(inData) {
-          api.send('user/login/' + inData.email, inData)
-            .then(function (outData) {
-              if (outData.success) {
-                appLayout()
-              }
-            })
-        }
-      })
-    }
-    else {
-      appLayout()
-    }
-    return run()
-  })
+  initDatabase()
+    .then(function () {
+      /*
+       if (config.user.guest) {
+       $id('root').place('#login').$$('form').init({
+       submit(inData) {
+       api.send('user/login/' + inData.email, inData)
+       .then(function (outData) {
+       if (outData.success) {
+       appLayout()
+       }
+       })
+       }
+       })
+       }
+       else {
+       appLayout()
+       }
+       return run()
+       */
+
+      render(
+        React.createElement(ContactList, null),
+        $id('root')
+      )
+    })
     .catch(function (err) {
       console.error(err)
     })

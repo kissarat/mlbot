@@ -6,7 +6,7 @@ const dataPath = 'win32' === process.platform
   ? 'C:\\mlbot'
   : process.env.HOME + '/.mlbot'
 
-fs.removeSync(dataPath)
+// fs.removeSync(dataPath)
 
 try {
   fs.accessSync(dataPath, fs.constants.W_OK | fs.constants.X_OK)
@@ -45,7 +45,7 @@ sqlite.initDatabase = function () {
       if (count <= 0) {
         return fs
           .readFile(__dirname + '/../schema.sql')
-          .then(sql => sqlite.raw(sql.toString()))
+          .then(sql => sqlite.raw(sql.toString().split(';')[0]))
           .then(function () {
             console.log('Database schema created')
           })
