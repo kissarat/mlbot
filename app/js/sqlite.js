@@ -37,6 +37,12 @@ const sqlite = require('knex')({
   }
 })
 
+function seq(promises) {
+  return promises.length > 1
+    ? promises[0].then(() => seq(promises.slice(1)))
+    : promises[0]
+}
+
 sqlite.initDatabase = function () {
   return sqlite.table('sqlite_master')
     .where({type: 'table'})
@@ -45,7 +51,10 @@ sqlite.initDatabase = function () {
       if (count <= 0) {
         return fs
           .readFile('schema.sql')
-          .then(sql => sqlite.raw(sql.toString()))
+          .then(function(sql) {
+            sql = sql.toString().split(/\s*;\s*/).filter(sql => sql.trim())
+            return seq(sql.map(sql => sqlite.raw(sql)))
+          })
           .then(function () {
             console.log('Database schema created')
           })
