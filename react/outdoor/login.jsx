@@ -4,7 +4,7 @@ export default class Login extends Component {
   render() {
     return <div className="login">
       <header>
-        <img src="images/logo.png"/>
+        <img src="images/logo-leader.png"/>
         <p>ML Skype AutoBot ™ </p>
       </header>
       <div className="body">

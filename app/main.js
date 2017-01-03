@@ -1,8 +1,7 @@
 const {app, nativeImage, BrowserWindow} = require('electron')
 const path = require('path')
-const config = require('./js/config')
+const config = require('../config')
 const {defaults} = require('lodash')
-const sqlite = require('./js/sqlite')
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)

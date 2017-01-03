@@ -1,4 +1,5 @@
 const {isObject} = require('lodash')
+const {parse, stringify} = require('./urlencoded')
 
 function clear(data) {
   for(const key in data) {
@@ -22,4 +23,8 @@ function clear(data) {
   return data
 }
 
-module.exports = {clear}
+module.exports = {
+  clear,
+  parse,
+  stringify
+}

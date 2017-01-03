@@ -139,4 +139,3 @@ WebView.create = function (partition) {
 }
 
 module.exports = WebView
-//login('viktor.anatolievi4', 'bpfqywtrhenj!!!')

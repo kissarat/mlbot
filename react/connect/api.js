@@ -1,6 +1,6 @@
 const {isEmpty, each} = require('lodash')
-const qs = require('./urlencoded')
-const config = require('./config')
+const qs = require('../util')
+const config = require('../../config')
 
 const headers = {
   'Accept': 'application/json',

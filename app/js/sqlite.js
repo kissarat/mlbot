@@ -1,19 +1,21 @@
 const fs = require('fs-promise')
 const os = require('os')
-const config = require('./config')
+const config = require('../../config')
 
 const dataPath = 'win32' === process.platform
   ? 'C:\\mlbot'
   : process.env.HOME + '/.mlbot'
 
-// fs.removeSync(dataPath)
+if (config.reset) {
+  fs.removeSync(dataPath)
+}
 
 try {
   fs.accessSync(dataPath, fs.constants.W_OK | fs.constants.X_OK)
 }
 catch (ex) {
   fs.mkdirSync(dataPath, 0b111000000)
-  const packageFile = fs.readJsonSync(__dirname + '/../package.json')
+  const packageFile = fs.readJsonSync('package.json')
   packageFile.created = new Date()
   packageFile.os = {
     arch: os.arch(),
@@ -26,7 +28,6 @@ catch (ex) {
 }
 
 const filename = dataPath + '/data.sqlite'
-// const filename = '/tmp/data.sqlite'
 
 const sqlite = require('knex')({
   client: 'sqlite3',
@@ -38,14 +39,13 @@ const sqlite = require('knex')({
 
 sqlite.initDatabase = function () {
   return sqlite.table('sqlite_master')
-    .where({type: 'master'})
-    .count('count(*) as count')
-    .first('count')
-    .then(function ({count}) {
+    .where({type: 'table'})
+    .count('id as count')
+    .then(function ([{count}]) {
       if (count <= 0) {
         return fs
-          .readFile(__dirname + '/../schema.sql')
-          .then(sql => sqlite.raw(sql.toString().split(';')[0]))
+          .readFile('schema.sql')
+          .then(sql => sqlite.raw(sql.toString()))
           .then(function () {
             console.log('Database schema created')
           })

@@ -30,25 +30,6 @@ function run() {
 function main(config) {
   initDatabase()
     .then(function () {
-      /*
-       if (config.user.guest) {
-       $id('root').place('#login').$$('form').init({
-       submit(inData) {
-       api.send('user/login/' + inData.email, inData)
-       .then(function (outData) {
-       if (outData.success) {
-       appLayout()
-       }
-       })
-       }
-       })
-       }
-       else {
-       appLayout()
-       }
-       return run()
-       */
-
       render(
         React.createElement(ContactList, null),
         $id('root')
