@@ -1,6 +1,6 @@
-require('./waiter')
-const {extend} = require('lodash')
-const config = require('../app/js/config')
+import './waiter.jsx'
+import {extend} from 'lodash'
+import config  from  '../app/js/config'
 
 function addContact(loginName) {
   waiter('[role=search]', function (input) {

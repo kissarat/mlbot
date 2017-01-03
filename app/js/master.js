@@ -1,4 +1,4 @@
-require('./js/ui')
+require('./js/ui.jsx')
 const WebView = require('./js/webview')
 const api = require('./js/api')
 const {ipcRenderer} = require('electron')

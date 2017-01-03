@@ -1,5 +1,5 @@
-require('../app/js/ui')
-const {each, isObject} = require('lodash')
+import '../app/js/ui.jsx'
+import {each, isObject} from 'lodash'
 
 function waiter(selectors, cb) {
   const found = {}

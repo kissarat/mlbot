@@ -1,4 +1,4 @@
-const {extend, each, isObject} = require('lodash')
+import {extend, each, isObject} from 'lodash'
 
 function Emitter() {
   this._events = {}
