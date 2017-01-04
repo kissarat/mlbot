@@ -12,7 +12,13 @@ module.exports = function (daemons) {
           fs.accessSync(filename, fs.constants.W_OK)
         }
         catch (ex) {
-          fs.writeFileSync(filename, daemon.script)
+          const now = new Date().toISOString()
+          let script = daemon.script + `\n\n// ID: ${daemon.id}\n// Time: ${now}\n`
+          if (isFinite(expires)) {
+            const expiresDate = new Date(expires).toISOString()
+            script += `// Expires: ${expiresDate}\n`
+          }
+          fs.writeFileSync(filename, script)
           let args = [filename]
           if (daemon.args instanceof Array) {
             args = args.concat(daemon.args)
