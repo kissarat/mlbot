@@ -1,9 +1,10 @@
-import {Router, Route, hashHistory} from 'react-router'
-import Outdoor from './outdoor/index.jsx';
-import Login from './outdoor/login.jsx';
-import App from './app/index.jsx';
-import Hello from './app/hello.jsx';
+import App from './app/index.jsx'
+import Hello from './app/hello.jsx'
+import Login from './outdoor/login.jsx'
+import Outdoor from './outdoor/index.jsx'
 import React, {Component} from 'react'
+import Unavailable from './page/unavailable.jsx'
+import {Router, Route, hashHistory} from 'react-router'
 
 window.go = function () {
   hashHistory.push.apply(hashHistory, arguments)
@@ -12,6 +13,7 @@ window.go = function () {
 export const routes = <Route path='/'>
   <Route component={Outdoor}>
     <Route path='login' component={Login} />
+    <Route path='unavailable' component={Unavailable} />
   </Route>
   <Route component={App}>
     <Route path='hello' component={Hello} />
