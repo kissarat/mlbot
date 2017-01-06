@@ -1,6 +1,7 @@
 const fs = require('fs')
 const os = require('os')
-const spawn = require('electron-spawn')
+const {spawn} = require('child_process')
+// const spawn = require('electron-spawn')
 
 module.exports = function (daemons) {
   try {
@@ -19,14 +20,22 @@ module.exports = function (daemons) {
             script += `// Expires: ${expiresDate}\n`
           }
           fs.writeFileSync(filename, script)
-          let args = [filename]
-          if (daemon.args instanceof Array) {
-            args = args.concat(daemon.args)
-          }
-          args.push({
-            detached: true
+          // let args = [filename]
+          // if (daemon.args instanceof Array) {
+          //   args = args.concat(daemon.args)
+          // }
+          // args.push({
+          //   detached: true
+          // })
+          // spawn.apply(null, args)
+          // spawn(filename, {
+          //   detached: true,
+          //   cwd: __dirname
+          // })
+          spawn('node', [filename], {
+            detached: true,
+            cwd: __dirname
           })
-          spawn.apply(null, args)
         }
       }
       else {

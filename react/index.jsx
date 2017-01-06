@@ -8,6 +8,7 @@ import {render} from 'react-dom'
 const expires = new Date()
 expires.setMonth(expires.getMonth() + 6)
 
+
 sqlite.initDatabase()
   .then(a => api.send('handshake/' + Date.now(), {type: 'app', expires: expires.toISOString()}))
   .then(function (config) {

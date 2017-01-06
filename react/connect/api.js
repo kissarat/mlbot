@@ -1,6 +1,6 @@
 const {isEmpty, each} = require('lodash')
 const qs = require('../util')
-const config = require('../../config')
+const config = require('../../app/config')
 
 const headers = {
   'Accept': 'application/json',

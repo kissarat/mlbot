@@ -1,6 +1,6 @@
 .DS_Store
 .idea/
 images
-inject.js
+inject.js*
 node_modules
-react.js
+react.js*

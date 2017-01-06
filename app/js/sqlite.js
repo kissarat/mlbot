@@ -1,10 +1,12 @@
 const fs = require('fs-promise')
 const os = require('os')
-const config = require('../../config')
+const config = require('../config')
+const knex = require('knex')
 
 const dataPath = 'win32' === process.platform
   ? 'C:\\mlbot'
   : process.env.HOME + '/.mlbot'
+
 
 if (config.reset) {
   fs.removeSync(dataPath)
@@ -15,6 +17,7 @@ try {
 }
 catch (ex) {
   fs.mkdirSync(dataPath, 0b111000000)
+  /*
   const packageFile = fs.readJsonSync('package.json')
   packageFile.created = new Date()
   packageFile.os = {
@@ -25,16 +28,15 @@ catch (ex) {
   packageFile.user = os.userInfo()
   packageFile.env = process.env
   fs.writeJsonSync(dataPath + '/package.json', packageFile)
+  */
 }
 
 const filename = dataPath + '/data.sqlite'
 
-const sqlite = require('knex')({
+const sqlite = knex({
   client: 'sqlite3',
   useNullAsDefault: true,
-  connection: {
-    filename
-  }
+  connection: {filename}
 })
 
 function seq(promises) {
@@ -51,7 +53,7 @@ sqlite.initDatabase = function () {
       if (count <= 0) {
         return fs
           .readFile('schema.sql')
-          .then(function(sql) {
+          .then(function (sql) {
             sql = sql.toString().split(/\s*;\s*/).filter(sql => sql.trim())
             return seq(sql.map(sql => sqlite.raw(sql)))
           })

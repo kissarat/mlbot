@@ -1,6 +1,6 @@
 import './waiter.jsx'
 import {extend} from 'lodash'
-import config  from  '../app/js/config'
+import config  from  '../app/config'
 
 function addContact(loginName) {
   waiter('[role=search]', function (input) {

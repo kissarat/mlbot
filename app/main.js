@@ -1,28 +1,25 @@
-const {app, nativeImage, BrowserWindow} = require('electron')
+// const config = require('./config')
 const path = require('path')
-const config = require('../config')
+const {app, BrowserWindow} = require('electron')
 const {defaults} = require('lodash')
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)
 }
 
-const iconPath = path.join(__dirname, 'images/icon.png')
-let appIcon = null
-let win = null
-
 app.on('ready', function () {
-  const windowConfig = defaults(config.window, {
-    icon: __dirname + '/images/icon.icns'
-  })
-  win = new BrowserWindow(windowConfig)
+  // const windowConfig = defaults(config.window, {
+  //   icon: __dirname + '/images/icon.icns'
+  // })
+  // const win = new BrowserWindow(windowConfig)
+  const win = new BrowserWindow({})
   win.loadFile('/index.html')
   win.webContents.on('did-finish-load', function () {
     win.webContents.send('config', {
       userDataPath: app.getPath('userData')
     })
   })
-  if (config.dev) {
-    win.openDevTools()
-  }
+  // if (config.dev) {
+  win.webContents.openDevTools()
+  // }
 })
