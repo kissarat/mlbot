@@ -1,45 +1,28 @@
 import React, {Component} from 'react'
+import {Button, Checkbox, Form} from 'semantic-ui-react'
+import {hashHistory} from 'react-router'
+import api from '../connect/api'
 
 export default class Login extends Component {
+  state = {loading: false}
+
+  onSubmit = (e, {formData}) => {
+    e.preventDefault()
+    this.setState({loading: true})
+    api.send('user/login/' + formData.email, formData)
+      .then((data) => {
+        if (data.success) {
+          this.setState({loading: false})
+          hashHistory.push('/app')
+        }
+      })
+  }
+
   render() {
-    return <div className="login">
-      <header>
-        <img src="images/logo-leader.png"/>
-        <p>ML Skype AutoBot ™ </p>
-      </header>
-      <div className="body">
-        <div className="column1">
-          <form>
-            <h1>Войдите</h1>
-            <input name="email" type="email" placeholder="Email"/>
-            <input name="password" type="password" placeholder="Пароль"/>
-            <button type="submit">Войти</button>
-          </form>
-          <img src="images/logo-leader.png" className="leader-logo"/>
-        </div>
-        <div className="column1">
-          <div className="howuse">
-            <h3>Как войти?</h3>
-            <p>Для входа используйте почту и пароль проекта</p>
-            <p className="site-name"><strong>club-leader.com</strong></p>
-            <p>Без покупки программы Silver бот не работает</p>
-          </div>
-        </div>
-        <div className="column1">
-          <div className="info">
-            <h4>Что это?</h4>
-            <p>ML Skype AutoBot — кроссплатфоренный бот-спаммер Skype для Windows, Mac OS, Linux.</p>
-            <h4>Возможности:</h4>
-            <ul>
-              <li>Добавление в друзья;</li>
-              <li>Рассылка сообщений.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <footer>
-        <p>© ML Skype Autobot beta v0.1 www.mlautobot.com</p>
-      </footer>
-    </div>
+    return <Form onSubmit={this.onSubmit} loading={this.state.loading}>
+      <Form.Field name="email" label="Email" control="input" type="text"/>
+      <Form.Field name="password" label="Пароль" control="input" type="password"/>
+      <Button type="submit">Вход</Button>
+    </Form>
   }
 }
