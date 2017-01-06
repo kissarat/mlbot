@@ -1,34 +1,40 @@
 const {extend} = require('lodash')
+const {put, getCollection, saveCollection} = require('../database')
 
-const Skype = {
+const Skype = extend(require('./webview'), {
   get(username) {
-    return $$(`#dark [partition="${username}"]`)
+    return document.querySelector(`#dark [partition="${username}"]`)
   },
 
   open(data) {
     let skype = Skype.get(data.login)
     if (!skype) {
-      skype = WebView.create(data.login)
+      skype = Skype.create(data.login)
       skype.once('load', function () {
         skype.login(data.login, data.password)
         skype.once('load', function () {
           skype.login(data.login, data.password)
           skype.getProfile().then(function (profile) {
-            //$$('aside ul').add('li', profile.username)
             profile.password = data.password
             api.send('skype/profile', {id: profile.username}, profile)
               .then(function () {
-                const contacts = profile.contacts.map((c, i) => ({
-                  id: Date.now() + i,
+                const contacts = profile.contacts.map(c => ({
+                  id: profile.username + '~' + c.id,
                   account: profile.username,
                   login: c.id,
                   name: c.display_name
                 }))
-                table('contact')
-                  .insert(contacts)
-                  .catch(function (err) {
-                    console.error(err)
-                  })
+                const collection = getCollection('contact')
+                contacts.forEach(function (contact) {
+                  put('contact', contact)
+                })
+                iterate('contact', function (contact) {
+                  if (!contacts.find(c => contact.id === c.id)) {
+                    delete collection[contact.id]
+                  }
+                })
+                saveCollection('contact')
+                skype.emit('profile.contacts', {account: profile.username})
               })
           })
         })
@@ -41,20 +47,10 @@ const Skype = {
             console.log(id, status)
           })
       })
-      $id('dark').appendChild(skype)
+      document.getElementById('dark').appendChild(skype)
     }
     return skype
-  },
-
-  show(value) {
-    if (value) {
-      $id('dark').style.opacity = 1
-      $id('root').hide()
-    }
-    else {
-      $id('root').show()
-    }
   }
-}
+})
 
-module.exports = extend(require('./webview'), Skype)
+module.exports = Skype

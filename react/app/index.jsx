@@ -1,7 +1,11 @@
 import React, {Component} from 'react'
+import {Link} from 'react-router'
+import {Button, List} from 'semantic-ui-react'
 
 export default class App extends Component {
-  state = {}
+  state = {
+    accounts: []
+  }
 
   componentWillMount() {
     api.get('skype/accounts').then(accounts => this.setState({accounts}))
@@ -9,11 +13,12 @@ export default class App extends Component {
 
   render() {
     const accounts = this.state.accounts.map(a =>
-      <li key={a.username}>{a.username}</li>
+      <List.Item key={a.username}>{a.username}</List.Item>
     )
     return <div className="layout app">
       <div>
-        <ul>{accounts}</ul>
+        <Link to="/skype/login">Добавить Skype</Link>
+        <List>{accounts}</List>
       </div>
       {this.props.children}
     </div>

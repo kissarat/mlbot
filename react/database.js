@@ -1,4 +1,4 @@
-import {debounce, each, find} from 'lodash'
+const {debounce, each, find} = require('lodash')
 
 const data = {}
 
@@ -18,19 +18,19 @@ addEventListener('load', function () {
   })
 })
 
-export const MessageType = Object.freeze({
+const MessageType = Object.freeze({
   PLAIN: 0,
   INVITE: 1
 })
 
-export const TaskStatus = Object.freeze({
+const TaskStatus = Object.freeze({
   CREATED: 0,
   PROCESSING: 1,
   INVITED: 2,
   SEND: 3
 })
 
-export function saveCollection(name) {
+function saveCollection(name) {
   localStorage.setItem(name, JSON.stringify(data[name]))
 }
 
@@ -38,26 +38,20 @@ addEventListener('unload', function () {
   Object.keys(data).forEach(saveCollection)
 })
 
-export function put(name, record) {
+function put(name, record) {
   data[name][record.id] = record
   debounce(() => saveCollection(name), 30)
 }
 
-export function findOne(name, predicate) {
+function findOne(name, predicate) {
   return find(data[name], predicate)
 }
 
-export function findById(name, id) {
-  const c = data[name]
-  for (const key in c) {
-    const value = c[key]
-    if (id == value) {
-      return value
-    }
-  }
+function getCollection(name) {
+  return data[name]
 }
 
-export function replaceCollection(name, collection) {
+function replaceCollection(name, collection) {
   if (collection instanceof Array) {
     const c = {}
     collection.forEach(function (item) {
@@ -69,7 +63,21 @@ export function replaceCollection(name, collection) {
   saveCollection(name)
 }
 
-export function removeCollection(name) {
+function removeCollection(name) {
   delete data[name]
   localStorage.removeItem(name)
+}
+
+function iterate(name, fn) {
+  const c = data[name]
+  for(const key in c) {
+    if (fn.call(c, c[key])) {
+      return
+    }
+  }
+}
+
+module.exports = {
+  MessageType, TaskStatus, put, findOne, iterate,
+  getCollection, saveCollection, replaceCollection, removeCollection
 }

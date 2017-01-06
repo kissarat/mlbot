@@ -1,8 +1,8 @@
 const {EventEmitter} = require('events')
 const {extend, isObject, sample} = require('lodash')
-const api = require('./api')
-const config = require('./config')
-const {clear} = require('./util')
+const api = require('../connect/api')
+const config = require('../../app/config')
+const {clear} = require('../util')
 
 window.profiles = {}
 
@@ -123,7 +123,7 @@ WebView.create = function (partition) {
   const webview = document.createElement('webview')
   webview.setAttribute('src', 'https://web.skype.com')
   webview.setAttribute('preload', 'js/inject.js')
-  webview.setAttribute('useragent', sample(userAgents))
+  // webview.setAttribute('useragent', sample(userAgents))
   if (partition) {
     webview.setAttribute('partition', partition)
   }
