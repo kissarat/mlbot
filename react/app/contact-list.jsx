@@ -4,15 +4,16 @@ import {Form, Table, Checkbox, Button, List} from 'semantic-ui-react'
 import {getCollection} from '../database'
 import Skype from '../skype'
 import {toArray} from 'lodash'
+// import {seq} from '../util'
 
 export default class ContactList extends Component {
   componentWillMount() {
     this.setState({
       contacts: toArray(getCollection('contact')),
-      contactsSend: []
+      contactsSent: []
     })
-    Skype.all().forEach(skype => skype.on('profile.contacts',
-      () => this.setState({contacts: getCollection('contact')})))
+    Skype.on('profile.contacts', () => this.setState({contacts: getCollection('contact')}))
+    Skype.on('message', this.send)
   }
 
   checkAll(value) {
@@ -26,9 +27,31 @@ export default class ContactList extends Component {
     this.setState({contacts: this.state.contacts})
   }
 
+  getChecked() {
+    return this.state.contacts.filter(c => c.checked)
+  }
+
   onSend = (e, {formData}) => {
     e.preventDefault()
-    console.log(formData)
+    this.setState({text: formData.text})
+    setTimeout(this.send, 0)
+  }
+
+  send = (a, b, c) => {
+    console.log(a, b, c)
+    const contact = this.state.contacts.find(c => c.checked)
+    if (contact) {
+      const message = {
+        login: contact.login,
+        text: this.state.text
+      }
+      console.log(contact, message)
+      const skype = Skype.open({login: contact.account})
+      skype.sendMessage(message)
+    }
+    else {
+      console.log('Messages sent!')
+    }
   }
 
   render() {
@@ -39,7 +62,7 @@ export default class ContactList extends Component {
       <Table.Cell>{c.account}</Table.Cell>
     </Table.Row>)
 
-    const contactsSend = this.state.contactsSend.map(c =>
+    const contactsSent = this.state.contactsSent.map(c =>
       <List.Item key={c}>{c}</List.Item>)
 
     return <div className="sender">
@@ -63,10 +86,10 @@ export default class ContactList extends Component {
       </div>
       <div className="right">
         <Form onSubmit={this.onSend}>
-          <Form.TextArea name="text" placeholder="Текст" />
+          <Form.TextArea name="text" placeholder="Текст"/>
           <Button type="submit">Послать</Button>
         </Form>
-        <div>{contactsSend}</div>
+        <List>{contactsSent}</List>
       </div>
     </div>
   }

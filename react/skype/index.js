@@ -1,7 +1,8 @@
 const {extend, toArray} = require('lodash')
 const {put, iterate, getCollection, saveCollection} = require('../database')
 
-const Skype = extend(require('./webview'), {
+const Skype = require('./webview')
+extend(Skype, {
   get(username) {
     return document.querySelector(`#dark [partition="${username}"]`)
   },
@@ -43,18 +44,38 @@ const Skype = extend(require('./webview'), {
           })
         })
       })
-      skype.on('message', function ({id, status}) {
-        table('task')
-          .where('id', id)
-          .update({status: status})
-          .then(function () {
-            console.log(id, status)
-          })
-      })
       document.getElementById('dark').appendChild(skype)
     }
     return skype
   }
 })
+
+extend(Skype.prototype, {
+  getProfile() {
+    return this.profile
+      ? Promise.resolve(this.profile)
+      : new Promise(resolve => this.once('profile', profile => {
+        this.profile = profile
+        clear(profile)
+        profile.contacts.forEach(function (contact) {
+          ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
+            delete contact[key]
+          })
+        })
+        resolve(profile)
+      })
+    )
+  },
+
+  sendMessage(message) {
+    this.invoke('sendMessage', [message])
+  }
+})
+
+Skype.on = function (event, callback) {
+  Skype.all().forEach(function (skype) {
+    skype.on(event, callback)
+  })
+}
 
 module.exports = Skype

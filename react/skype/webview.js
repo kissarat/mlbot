@@ -100,22 +100,6 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
 
   logout() {
     this.invoke('logout')
-  },
-
-  getProfile() {
-    return this.profile
-      ? Promise.resolve(this.profile)
-      : new Promise(resolve => this.once('profile', profile => {
-        this.profile = profile
-        clear(profile)
-        profile.contacts.forEach(function (contact) {
-          ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
-            delete contact[key]
-          })
-        })
-        resolve(profile)
-      })
-    )
   }
 })
 

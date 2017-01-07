@@ -23,8 +23,19 @@ function clear(data) {
   return data
 }
 
+function qq(promise) {
+  return 'function' === typeof promise ? promise() : promise
+}
+
+function seq(promises) {
+  return promises.length > 1
+    ? qq(promises[0]).then(() => seq(promises.slice(1)))
+    : qq(promises[0])
+}
+
 module.exports = {
   clear,
+  seq,
   parse,
   stringify
 }
