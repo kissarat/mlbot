@@ -94,3 +94,7 @@ webview {
     flex: 1;
     overflow-y: scroll;
 }
+
+.sender {
+    display: flex;
+}
