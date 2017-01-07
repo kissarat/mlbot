@@ -78,3 +78,19 @@ webview {
     width: 100vw;
     height: 100vh;
 }
+
+.layout.app {
+    display: flex;
+    height: 100%;
+}
+
+.app .right {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.app .right .content {
+    flex: 1;
+    overflow-y: scroll;
+}

@@ -1,4 +1,4 @@
-const {debounce, each, find} = require('lodash')
+const {debounce, each, find, keyBy, toArray} = require('lodash')
 
 const data = {}
 
@@ -10,7 +10,8 @@ const initialData = {
 addEventListener('load', function () {
   each(initialData, function (value, key) {
     try {
-      data[key] = JSON.parse(localStorage.getItem(key))
+      const v = JSON.parse(localStorage.getItem(key))
+      data[key] = v instanceof Array ? keyBy(v, 'id') : value
     }
     catch (ex) {
       data[key] = value
@@ -31,7 +32,7 @@ const TaskStatus = Object.freeze({
 })
 
 function saveCollection(name) {
-  localStorage.setItem(name, JSON.stringify(data[name]))
+  localStorage.setItem(name, JSON.stringify(toArray(data[name])))
 }
 
 addEventListener('unload', function () {
@@ -70,7 +71,7 @@ function removeCollection(name) {
 
 function iterate(name, fn) {
   const c = data[name]
-  for(const key in c) {
+  for (const key in c) {
     if (fn.call(c, c[key])) {
       return
     }

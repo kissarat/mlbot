@@ -7,10 +7,13 @@ import React, {Component} from 'react'
 import SkypeLogin from './skype/login.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
+import ContactList from './app/contact-list.jsx'
 
 window.go = function () {
   hashHistory.push.apply(hashHistory, arguments)
 }
+
+window._ = require('lodash')
 
 export const routes = <Route path='/'>
   <IndexRoute component={Loader}/>
@@ -21,6 +24,7 @@ export const routes = <Route path='/'>
   <Route path='app' component={App}/>
   <Route component={App}>
     <Route path='skype/login' component={SkypeLogin}/>
+    <Route path='messages' component={ContactList}/>
     <Route path='hello' component={Hello}/>
   </Route>
 </Route>

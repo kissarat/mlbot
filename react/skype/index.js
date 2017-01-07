@@ -1,9 +1,13 @@
-const {extend} = require('lodash')
-const {put, getCollection, saveCollection} = require('../database')
+const {extend, toArray} = require('lodash')
+const {put, iterate, getCollection, saveCollection} = require('../database')
 
 const Skype = extend(require('./webview'), {
   get(username) {
     return document.querySelector(`#dark [partition="${username}"]`)
+  },
+
+  all() {
+    return toArray(document.querySelectorAll(`#dark [partition]`))
   },
 
   open(data) {
