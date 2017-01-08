@@ -1,8 +1,7 @@
-const {extend, toArray} = require('lodash')
-const {put, iterate, getCollection, saveCollection} = require('../database')
-const {clear} = require('../util')
-
-const Skype = require('./webview')
+import Skype from './webview.jsx'
+import {clear} from '../util/index.jsx'
+import {extend, toArray} from 'lodash'
+import {put, iterate, getCollection, saveCollection} from '../database.jsx'
 
 extend(Skype.prototype, {
   getProfile() {

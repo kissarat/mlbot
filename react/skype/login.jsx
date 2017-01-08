@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import Skype from './index'
+import Skype from './index.jsx'
 import {Button, Form} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 

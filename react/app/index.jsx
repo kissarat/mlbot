@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router'
-import {Button, List} from 'semantic-ui-react'
-import Skype from '../skype'
+import {List} from 'semantic-ui-react'
+import Skype from '../skype/index.jsx'
 
 export default class App extends Component {
   state = {

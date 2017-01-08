@@ -1,8 +1,6 @@
-const {EventEmitter} = require('events')
-const {extend, isObject, sample} = require('lodash')
-const api = require('../connect/api')
-const config = require('../../app/config')
-const {clear} = require('../util')
+import {EventEmitter} from 'events'
+import {extend, isObject, sample} from 'lodash'
+import config from '../../app/config'
 
 window.profiles = {}
 

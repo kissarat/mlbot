@@ -1,6 +1,6 @@
-const {isEmpty, each} = require('lodash')
-const qs = require('../util')
-const config = require('../../app/config')
+import {isEmpty, each} from 'lodash'
+import qs from '../util/index.jsx'
+import config from '../../app/config'
 
 const headers = {
   'Accept': 'application/json',
@@ -68,6 +68,5 @@ class API {
 }
 
 const api = new API()
-
+export default api
 window.api = api
-module.exports = api

@@ -1,7 +1,6 @@
-const {isObject} = require('lodash')
-const {parse, stringify} = require('./urlencoded')
+import {isObject} from 'lodash'
 
-function clear(data) {
+export function clear(data) {
   for(const key in data) {
     const value = data[key]
     if (null === value || undefined === value) {
@@ -27,15 +26,27 @@ function qq(promise) {
   return 'function' === typeof promise ? promise() : promise
 }
 
-function seq(promises) {
+export function seq(promises) {
   return promises.length > 1
     ? qq(promises[0]).then(() => seq(promises.slice(1)))
     : qq(promises[0])
 }
 
-module.exports = {
-  clear,
-  seq,
-  parse,
-  stringify
+export function parse(string, sep = '&', eq = '=') {
+  const object = {}
+  if (string) {
+    string.split(sep).forEach(function (r) {
+      r = r.split(eq)
+      object[r[0]] = r[1]
+    })
+  }
+  return object
+}
+
+export function stringify(object, sep = '&', eq = '=') {
+  const strings = []
+  for (var key in object) {
+    strings.push(key + eq + object[key])
+  }
+  return strings.join(sep)
 }

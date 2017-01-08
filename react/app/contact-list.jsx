@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Form, Table, Checkbox, Button, List} from 'semantic-ui-react'
-import {getCollection} from '../database'
-import Skype from '../skype'
+import {getCollection} from '../database.jsx'
+import Skype from '../skype/index.jsx'
 import {toArray} from 'lodash'
 
 export default class ContactList extends Component {

@@ -1,4 +1,4 @@
-const {debounce, each, find, keyBy, toArray} = require('lodash')
+import {debounce, each, find, keyBy, toArray} from 'lodash'
 
 const data = {}
 

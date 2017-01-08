@@ -1,7 +1,7 @@
+import api from '../connect/api.jsx'
 import React, {Component} from 'react'
 import {Button, Form} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
-import api from '../connect/api'
 
 export default class Login extends Component {
   state = {loading: false}
