@@ -1,7 +1,5 @@
-// const config = require('./config')
 const path = require('path')
 const {app, BrowserWindow} = require('electron')
-const {defaults} = require('lodash')
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)

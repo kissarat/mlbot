@@ -1,4 +1,4 @@
-import '../app/js/ui.jsx'
+import './ui.jsx'
 import {each, isObject} from 'lodash'
 
 function waiter(selectors, cb) {
