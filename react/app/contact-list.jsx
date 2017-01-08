@@ -1,10 +1,8 @@
 import React, {Component} from 'react'
-import {Link} from 'react-router'
 import {Form, Table, Checkbox, Button, List} from 'semantic-ui-react'
 import {getCollection} from '../database'
 import Skype from '../skype'
 import {toArray} from 'lodash'
-// import {seq} from '../util'
 
 export default class ContactList extends Component {
   componentWillMount() {

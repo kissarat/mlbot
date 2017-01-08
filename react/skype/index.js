@@ -1,7 +1,34 @@
 const {extend, toArray} = require('lodash')
 const {put, iterate, getCollection, saveCollection} = require('../database')
+const {clear} = require('../util')
 
 const Skype = require('./webview')
+
+extend(Skype.prototype, {
+  getProfile() {
+    return this.profile
+      ? Promise.resolve(this.profile)
+      : new Promise(resolve => this.once('profile', profile => {
+        this.profile = profile
+        clear(profile)
+        profile.contacts.forEach(function (contact) {
+          ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
+            delete contact[key]
+          })
+        })
+        resolve(profile)
+      })
+    )
+      .catch(function (err) {
+        console.error(err)
+      })
+  },
+
+  sendMessage(message) {
+    this.invoke('sendMessage', [message])
+  }
+})
+
 extend(Skype, {
   get(username) {
     return document.querySelector(`#dark [partition="${username}"]`)
@@ -9,6 +36,12 @@ extend(Skype, {
 
   all() {
     return toArray(document.querySelectorAll(`#dark [partition]`))
+  },
+
+  on(event, callback) {
+    Skype.all().forEach(function (skype) {
+      skype.on(event, callback)
+    })
   },
 
   open(data) {
@@ -49,33 +82,5 @@ extend(Skype, {
     return skype
   }
 })
-
-extend(Skype.prototype, {
-  getProfile() {
-    return this.profile
-      ? Promise.resolve(this.profile)
-      : new Promise(resolve => this.once('profile', profile => {
-        this.profile = profile
-        clear(profile)
-        profile.contacts.forEach(function (contact) {
-          ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
-            delete contact[key]
-          })
-        })
-        resolve(profile)
-      })
-    )
-  },
-
-  sendMessage(message) {
-    this.invoke('sendMessage', [message])
-  }
-})
-
-Skype.on = function (event, callback) {
-  Skype.all().forEach(function (skype) {
-    skype.on(event, callback)
-  })
-}
 
 module.exports = Skype
