@@ -6,4 +6,4 @@ export default class Outdoor extends Component {
   }
 }
 
-window.navigator._ = 'baa0shoh4eeloh3aji3Thei8AhNaej6aoXash7quucheapai'
+window.theif7ohla4R = 'kai0xei5QueiCun1OhChigeeWo4Icheibaiv'

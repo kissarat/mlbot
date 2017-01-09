@@ -1,6 +1,6 @@
 {
   "name": "mlbot",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "main.js",
   "scripts": {
     "webpack": "webpack -w",
@@ -33,6 +33,7 @@
     "babel-preset-react": "^6.16.0",
     "dexie": "^1.5.1",
     "fs-promise": "^1.0.0",
+    "json-loader": "^0.5.4",
     "lodash": "^4.17.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
