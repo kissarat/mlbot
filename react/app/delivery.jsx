@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Form, Table, Checkbox, Button, List} from 'semantic-ui-react'
+import {Form, Segment, Button, List, Loader, Header, Dimmer} from 'semantic-ui-react'
 import Skype from '../skype/index.jsx'
 import {toArray} from 'lodash'
 import db from '../database.jsx'
@@ -29,10 +29,18 @@ export default class Delivery extends Component {
   componentWillReceiveProps(props) {
     if (props.params && props.params.account) {
       const account = props.params.account
-      this.setState({account})
-      setTimeout( () => {
+      this.setState({
+        busy: true,
+        account,
+        contacts: [],
+        selections: [],
+        busySkype: 'Вход в скайп'
+      })
+      setTimeout(() => {
         this.loadContacts()
         this.getSkype()
+          .then(skype => skype.getProfile())
+          .then(() => this.setState({busySkype: false}))
           .then(this.loadContacts)
       }, 0)
     }
@@ -51,7 +59,10 @@ export default class Delivery extends Component {
       .limit(100)
       .toArray()
       .then((contacts) => {
-        this.setState({contacts})
+        this.setState({
+          busy: false,
+          contacts
+        })
         // Skype.on('message', this.send)
         return contacts
       })
@@ -117,28 +128,36 @@ export default class Delivery extends Component {
   }
 
   render() {
-    return <div className="page delivery">
-      <Form onSubmit={this.onSend}>
-        <SelectAccount
-          value={this.state.account}
-          select={account => this.changeAccount(account)}/>
-        <div>
-          <Button onClick={() => this.checkAll(true)}>все</Button>
-          <Button onClick={() => this.checkAll(false)}>никто</Button>
-        </div>
-        <Form.TextArea name="text" placeholder="Текст"/>
-        <Button type="submit">Послать</Button>
-      </Form>
-      <div className="two-lists">
-        <div>
-          <h2>Все контакты</h2>
-          <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
-        </div>
-        <div>
-          <h2>Избранные контакты</h2>
-          <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
-        </div>
-      </div>
-    </div>
+    return <Segment.Group horizontal className="page delivery">
+      <Loader active={this.state.busy} size="medium"/>
+      <Segment.Group>
+        <Segment>
+          <SelectAccount
+            value={this.state.account}
+            select={account => this.changeAccount(account)}/>
+          <div>
+            <Button onClick={() => this.checkAll(true)}>все</Button>
+            <Button onClick={() => this.checkAll(false)}>никто</Button>
+          </div>
+        </Segment>
+        <Dimmer.Dimmable as={Segment}>
+          <Dimmer inverted active={!!this.state.busySkype}>
+            <Loader size="medium">{this.state.busySkype}</Loader>
+          </Dimmer>
+          <Form onSubmit={this.onSend}>
+            <Form.TextArea name="text" placeholder="Текст"/>
+            <Button type="submit">Послать</Button>
+          </Form>
+        </Dimmer.Dimmable>
+      </Segment.Group>
+      <Segment>
+        <Header as="h2">Все контакты</Header>
+        <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
+      </Segment>
+      <Segment>
+        <Header as="h2">Избранные контакты</Header>
+        <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
+      </Segment>
+    </Segment.Group>
   }
 }

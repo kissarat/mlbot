@@ -11,10 +11,9 @@ export default class SkypeLogin extends Component {
     this.setState({loading: true})
     Skype
       .open(formData)
-      .getProfile()
       .then(() => {
         this.setState({loading: false})
-        hashHistory.push('/messages')
+        hashHistory.push('/accounts')
       })
   }
 

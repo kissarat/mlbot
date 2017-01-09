@@ -25,7 +25,7 @@ function all(array) {
       return function () {
         const args = arguments
         each(array, function (item) {
-          item[p].apply(array, args)
+          item[p].apply(item, args)
         })
       }
     }
@@ -88,7 +88,8 @@ extend(Skype, {
     function _open(data) {
       let skype = Skype.get(data.login)
       if (!skype) {
-        Skype.all().remove()
+        const skypes = Skype.all()
+        setTimeout(() => skypes.remove(), 10)
         return Skype.load(data)
       }
       return Promise.resolve(skype)
@@ -118,7 +119,7 @@ extend(Skype, {
 
     return this.accounts
       ? Promise.resolve(find())
-      : Skype.getAccountList().then(find)
+      : Skype.getAccountList(false).then(find)
   },
 
   queryContacts(account) {
@@ -127,6 +128,19 @@ extend(Skype, {
     // .equals(this.state.account)
       .filter(contact => account === contact.account)
   },
+
+  close(account) {
+    const skype = Skype.get(account)
+    if (skype) {
+      skype.remove()
+    }
+    return skype
+  },
+
+  closeAll() {
+    Skype.all().remove()
+  },
 });
 
+window.Skype = Skype
 module.exports = Skype

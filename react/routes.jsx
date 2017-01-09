@@ -24,8 +24,8 @@ export const routes = <Route path='/'>
   </Route>
   <Route path='app' component={App}/>
   <Route component={App}>
-    <Route path='accounts' component={AccountList}/>
     <Route path='accounts/login' component={SkypeLogin}/>
+    <Route path='accounts' component={AccountList}/>
     <Route path='delivery/:account' component={Delivery}/>
     <Route path='delivery' component={Delivery}/>
     <Route path='hello' component={Hello}/>

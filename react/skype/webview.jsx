@@ -47,6 +47,10 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
     }
   },
 
+  blank() {
+    this.src = 'blank.html'
+  },
+
   invoke(fn, args) {
     const formatted = []
     if (args instanceof Array) {
@@ -69,7 +73,7 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
 
   logout() {
     this.invoke('logout')
-  }
+  },
 })
 
 WebView.create = function (partition) {
