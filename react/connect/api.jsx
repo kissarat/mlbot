@@ -1,5 +1,5 @@
 import {isEmpty, each} from 'lodash'
-import qs from '../util/index.jsx'
+import {stringify} from '../util/index.jsx'
 import config from '../../app/config'
 
 const headers = {
@@ -31,7 +31,7 @@ class API {
       }
     }
     if (!isEmpty(params)) {
-      url += '?' + qs.stringify(params)
+      url += '?' + stringify(params)
     }
     return url
   }

@@ -1,7 +1,7 @@
 import Skype from './webview.jsx'
 import {clear} from '../util/index.jsx'
 import {extend, toArray} from 'lodash'
-import {put, iterate, getCollection, saveCollection} from '../database.jsx'
+import db from '../database.jsx'
 
 extend(Skype.prototype, {
   getProfile() {
@@ -55,23 +55,19 @@ extend(Skype, {
             profile.password = data.password
             api.send('skype/profile', {id: profile.username}, profile)
               .then(function () {
-                const contacts = profile.contacts.map(c => ({
-                  id: profile.username + '~' + c.id,
-                  account: profile.username,
-                  login: c.id,
-                  name: c.display_name
-                }))
-                const collection = getCollection('contact')
-                contacts.forEach(function (contact) {
-                  put('contact', contact)
-                })
-                iterate('contact', function (contact) {
-                  if (!contacts.find(c => contact.id === c.id)) {
-                    delete collection[contact.id]
-                  }
-                })
-                saveCollection('contact')
-                skype.emit('profile.contacts', {account: profile.username})
+                db.contact
+                  .bulkPut(profile.contacts.map(c => ({
+                    id: profile.username + '~' + c.id,
+                    account: profile.username,
+                    login: c.id,
+                    name: c.display_name
+                  })))
+                  .then(function () {
+                    skype.emit('profile.contacts', {account: profile.username})
+                  })
+                  .catch(function (err) {
+                    console.error(err)
+                  })
               })
           })
         })

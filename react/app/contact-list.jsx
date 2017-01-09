@@ -1,17 +1,33 @@
 import React, {Component} from 'react'
 import {Form, Table, Checkbox, Button, List} from 'semantic-ui-react'
-import {getCollection} from '../database.jsx'
 import Skype from '../skype/index.jsx'
 import {toArray} from 'lodash'
+import db from '../database.jsx'
 
 export default class ContactList extends Component {
+  state = {
+    contacts: [],
+    contactsSent: []
+  }
+
   componentWillMount() {
-    this.setState({
-      contacts: toArray(getCollection('contact')),
-      contactsSent: []
-    })
-    Skype.on('profile.contacts', () => this.setState({contacts: getCollection('contact')}))
-    Skype.on('message', this.send)
+    this.loadContacts()
+    Skype.on('profile.contacts', this.loadContacts)
+  }
+
+  componentWillUnmount() {
+    Skype.off('profile.contacts', this.loadContacts)
+  }
+
+  loadContacts = () => {
+    return db.contact.orderBy(':id').limit(100).toArray()
+      .then((contacts) => {
+        this.setState({contacts})
+        Skype.on('message', this.send)
+      })
+      .catch(function (err) {
+        console.error(err)
+      })
   }
 
   checkAll(value) {
@@ -59,6 +75,8 @@ export default class ContactList extends Component {
       <Table.Cell>{c.name}</Table.Cell>
       <Table.Cell>{c.account}</Table.Cell>
     </Table.Row>)
+
+    console.log(contacts.length)
 
     const contactsSent = this.state.contactsSent.map(c =>
       <List.Item key={c}>{c}</List.Item>)
