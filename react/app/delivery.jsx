@@ -3,6 +3,8 @@ import {Form, Table, Checkbox, Button, List} from 'semantic-ui-react'
 import Skype from '../skype/index.jsx'
 import {toArray} from 'lodash'
 import db from '../database.jsx'
+import {hashHistory} from 'react-router'
+import SelectAccount from './select-account.jsx'
 
 export class ContactList extends Component {
   render() {
@@ -11,22 +13,10 @@ export class ContactList extends Component {
       if (name !== c.name) {
         name += ` (${c.name})`
       }
-      return <Table.Row key={c.id} onClick={() => this.props.select(c)}>
-        <Table.Cell>{name}</Table.Cell>
-        <Table.Cell>{c.account}</Table.Cell>
-      </Table.Row>
+      return <List.Item key={c.id} onClick={() => this.props.select(c)}>{name}</List.Item>
     })
 
-    return <Table compact celled striped selectable>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>Контакт</Table.HeaderCell>
-          <Table.HeaderCell>Аккаунт</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
-
-      <Table.Body>{list}</Table.Body>
-    </Table>
+    return <List>{list}</List>
   }
 }
 
@@ -36,20 +26,34 @@ export default class Delivery extends Component {
     selections: []
   }
 
-  componentWillMount() {
-    this.loadContacts()
-    Skype.on('profile.contacts', this.loadContacts)
+  componentWillReceiveProps(props) {
+    if (props.params && props.params.account) {
+      const account = props.params.account
+      this.setState({account})
+      setTimeout( () => {
+        this.loadContacts()
+        this.getSkype()
+          .then(this.loadContacts)
+      }, 0)
+    }
   }
 
-  componentWillUnmount() {
-    Skype.off('profile.contacts', this.loadContacts)
+  getSkype() {
+    return Skype.open(this.state.account)
+  }
+
+  componentWillMount() {
+    this.componentWillReceiveProps(this.props)
   }
 
   loadContacts = () => {
-    return db.contact.orderBy(':id').limit(100).toArray()
+    return Skype.queryContacts(this.state.account)
+      .limit(100)
+      .toArray()
       .then((contacts) => {
         this.setState({contacts})
-        Skype.on('message', this.send)
+        // Skype.on('message', this.send)
+        return contacts
       })
       .catch(function (err) {
         console.error(err)
@@ -103,29 +107,37 @@ export default class Delivery extends Component {
     })
   }
 
+  changeAccount(account) {
+    if (account && account.login !== this.state.account) {
+      hashHistory.push('/delivery/' + account.login)
+    }
+    else if (!account) {
+      hashHistory.push('/delivery')
+    }
+  }
+
   render() {
     return <div className="page delivery">
-      <div className="left">
+      <Form onSubmit={this.onSend}>
+        <SelectAccount
+          value={this.state.account}
+          select={account => this.changeAccount(account)}/>
         <div>
           <Button onClick={() => this.checkAll(true)}>все</Button>
           <Button onClick={() => this.checkAll(false)}>никто</Button>
         </div>
-        <div className="two-lists">
-          <div>
-            <h2>Все контакты</h2>
-            <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
-          </div>
-          <div>
-            <h2>Избранные контакты</h2>
-            <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
-          </div>
+        <Form.TextArea name="text" placeholder="Текст"/>
+        <Button type="submit">Послать</Button>
+      </Form>
+      <div className="two-lists">
+        <div>
+          <h2>Все контакты</h2>
+          <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
         </div>
-      </div>
-      <div className="right">
-        <Form onSubmit={this.onSend}>
-          <Form.TextArea name="text" placeholder="Текст"/>
-          <Button type="submit">Послать</Button>
-        </Form>
+        <div>
+          <h2>Избранные контакты</h2>
+          <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
+        </div>
       </div>
     </div>
   }

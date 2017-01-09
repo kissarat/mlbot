@@ -1,4 +1,6 @@
+import AccountList from './app/account-list.jsx'
 import App from './app/index.jsx'
+import Delivery from './app/delivery.jsx'
 import Hello from './app/hello.jsx'
 import Loader from './page/unavailable.jsx'
 import Login from './outdoor/login.jsx'
@@ -7,7 +9,6 @@ import React, {Component} from 'react'
 import SkypeLogin from './skype/login.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
-import Delivery from './app/delivery.jsx'
 
 window.go = function () {
   hashHistory.push.apply(hashHistory, arguments)
@@ -23,8 +24,10 @@ export const routes = <Route path='/'>
   </Route>
   <Route path='app' component={App}/>
   <Route component={App}>
-    <Route path='skype/login' component={SkypeLogin}/>
-    <Route path='messages' component={Delivery}/>
+    <Route path='accounts' component={AccountList}/>
+    <Route path='accounts/login' component={SkypeLogin}/>
+    <Route path='delivery/:account' component={Delivery}/>
+    <Route path='delivery' component={Delivery}/>
     <Route path='hello' component={Hello}/>
   </Route>
 </Route>

@@ -81,18 +81,23 @@ webview {
 
 .layout.app {
     display: flex;
+    flex-direction: column;
     height: 100%;
 }
 
-.app .right {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.app .right .content {
+.layout.app .content {
     flex: 1;
     overflow-y: scroll;
+}
+
+nav ul {
+    padding: 4px 2px 0 2px;
+}
+
+nav li {
+    display: inline-block;
+    padding: 0 2px;
+    list-style: none;
 }
 
 .delivery {
@@ -103,20 +108,12 @@ webview {
     display: flex;
 }
 
-.two-lists table {
+.two-lists .list {
     min-width: 320px;
 }
 
-.two-lists td {
+.two-lists .listitem {
     overflow: hidden;
     white-space: nowrap;
     cursor: pointer;
-}
-
-.two-lists td:first-child {
-    max-width: 200px;
-}
-
-.two-lists td:last-child {
-    max-width: 160px;
 }

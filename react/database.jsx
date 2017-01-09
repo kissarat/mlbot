@@ -16,7 +16,7 @@ application.database = {
     {
       version: getVersion('2017-01-09'),
       schema: {
-        contact: '&id, [account+login], name, s',
+        contact: '&id, [account], login, name, s',
         message: '++id, type, text',
         task: '++id, [contact+message], status'
       }

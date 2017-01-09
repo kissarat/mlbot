@@ -18,6 +18,9 @@ function WebView() {
   })
 }
 
+EventEmitter.call(EventEmitter)
+extend(WebView, EventEmitter.prototype)
+
 const userAgents = [
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:50.0) Gecko/20100101 Firefox/50.0",
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36",
