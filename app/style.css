@@ -95,6 +95,28 @@ webview {
     overflow-y: scroll;
 }
 
-.sender {
+.delivery {
     display: flex;
+}
+
+.two-lists {
+    display: flex;
+}
+
+.two-lists table {
+    min-width: 320px;
+}
+
+.two-lists td {
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.two-lists td:first-child {
+    max-width: 200px;
+}
+
+.two-lists td:last-child {
+    max-width: 160px;
 }

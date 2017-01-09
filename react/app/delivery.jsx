@@ -4,10 +4,36 @@ import Skype from '../skype/index.jsx'
 import {toArray} from 'lodash'
 import db from '../database.jsx'
 
-export default class ContactList extends Component {
+export class ContactList extends Component {
+  render() {
+    const list = this.props.list.map(c => {
+      let name = c.login
+      if (name !== c.name) {
+        name += ` (${c.name})`
+      }
+      return <Table.Row key={c.id} onClick={() => this.props.select(c)}>
+        <Table.Cell>{name}</Table.Cell>
+        <Table.Cell>{c.account}</Table.Cell>
+      </Table.Row>
+    })
+
+    return <Table compact celled striped selectable>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell>Контакт</Table.HeaderCell>
+          <Table.HeaderCell>Аккаунт</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+
+      <Table.Body>{list}</Table.Body>
+    </Table>
+  }
+}
+
+export default class Delivery extends Component {
   state = {
     contacts: [],
-    contactsSent: []
+    selections: []
   }
 
   componentWillMount() {
@@ -68,44 +94,38 @@ export default class ContactList extends Component {
     }
   }
 
+  select(contact, remove) {
+    const _from = remove ? 'selections' : 'contacts'
+    const _to = remove ? 'contacts' : 'selections'
+    this.setState({
+      [_from]: this.state[_from].filter(c => contact.id !== c.id),
+      [_to]: [contact].concat(this.state[_to])
+    })
+  }
+
   render() {
-    const contacts = this.state.contacts.map(c => <Table.Row key={c.id}>
-      <Table.Cell><Checkbox onChange={() => this.check(c.id)} checked={c.checked}/></Table.Cell>
-      <Table.Cell>{c.login}</Table.Cell>
-      <Table.Cell>{c.name}</Table.Cell>
-      <Table.Cell>{c.account}</Table.Cell>
-    </Table.Row>)
-
-    console.log(contacts.length)
-
-    const contactsSent = this.state.contactsSent.map(c =>
-      <List.Item key={c}>{c}</List.Item>)
-
-    return <div className="sender">
+    return <div className="page delivery">
       <div className="left">
         <div>
           <Button onClick={() => this.checkAll(true)}>все</Button>
           <Button onClick={() => this.checkAll(false)}>никто</Button>
         </div>
-        <Table compact>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell />
-              <Table.HeaderCell>Логин</Table.HeaderCell>
-              <Table.HeaderCell>Имья</Table.HeaderCell>
-              <Table.HeaderCell>Аккаунт</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-
-          <Table.Body>{contacts}</Table.Body>
-        </Table>
+        <div className="two-lists">
+          <div>
+            <h2>Все контакты</h2>
+            <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
+          </div>
+          <div>
+            <h2>Избранные контакты</h2>
+            <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
+          </div>
+        </div>
       </div>
       <div className="right">
         <Form onSubmit={this.onSend}>
           <Form.TextArea name="text" placeholder="Текст"/>
           <Button type="submit">Послать</Button>
         </Form>
-        <List>{contactsSent}</List>
       </div>
     </div>
   }

@@ -60,7 +60,8 @@ extend(Skype, {
                     id: profile.username + '~' + c.id,
                     account: profile.username,
                     login: c.id,
-                    name: c.display_name
+                    name: c.display_name,
+                    s: db.TaskStatus.CREATED
                   })))
                   .then(function () {
                     skype.emit('profile.contacts', {account: profile.username})
