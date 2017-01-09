@@ -5,7 +5,7 @@ function mode(name) {
 
 module.exports = function (name) {
   const config = {
-    entry: `${__dirname}/${name}/index.jsx`,
+    entry: [`${__dirname}/${name}/index.jsx`],
     output: {
       path: __dirname + '/app/js',
       filename: name + '.js',
