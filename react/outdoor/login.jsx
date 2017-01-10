@@ -13,7 +13,7 @@ export default class Login extends Component {
       .then((data) => {
         if (data.success) {
           this.setState({loading: false})
-          hashHistory.push('/app')
+          hashHistory.push('/accounts')
         }
       })
   }
