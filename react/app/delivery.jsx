@@ -56,20 +56,22 @@ export default class Delivery extends Component {
 
   loadContacts = () => {
     const find = status => {
+      const account = this.state.account
       return db.contact
-        .filter(c => c.account === this.state.account && c.status === status)
+        // .filter(c => c.account === account && c.status === status)
+        .where({account, status})
         .limit(100)
         .toArray()
     }
     return find(TaskStatus.CREATED)
       .then(contacts => {
-        this.setState({contacts})
         return find(TaskStatus.SELECTED)
+          .then(selections => this.setState({
+            contacts,
+            selections,
+            busy: contacts.length + selections.length <= 0
+          }))
       })
-      .then(selections => this.setState({
-        selections,
-        busy: false
-      }))
       .catch(function (err) {
         console.error(err)
       })
@@ -77,10 +79,9 @@ export default class Delivery extends Component {
 
   selectAll(status) {
     this.setState({busy: true})
+    const account = this.state.account
     return db.contact
-      // .where('[account]')
-      // .equals(this.state.account)
-      .filter(c => this.state.account === c.account)
+      .filter(c => c.account = account)
       .modify({status})
       .then(this.loadContacts)
   }
@@ -125,7 +126,7 @@ export default class Delivery extends Component {
 
   render() {
     return <div className="page delivery">
-      <Loader active={this.state.busy} size="medium"/>
+      <Loader active={!!this.state.busy} size="medium"/>
       <Segment.Group>
         <Segment>
           <SelectAccount
