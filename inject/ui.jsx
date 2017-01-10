@@ -364,6 +364,10 @@ XMLHttpRequest.prototype.open = function (method, url) {
     }
 
     this.addEventListener('load', function () {
+      waiter('#menuItem-userSettings', function (settings) {
+        settings.click()
+      })
+
       sky.profile = JSON.parse(this.responseText)
       sky.profile.v = 1
       sky.profile.type = 'profile'

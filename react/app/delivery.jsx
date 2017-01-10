@@ -5,6 +5,7 @@ import {toArray} from 'lodash'
 import db, {TaskStatus} from '../database.jsx'
 import {hashHistory} from 'react-router'
 import SelectAccount from './select-account.jsx'
+import {seq} from '../util/index.jsx'
 
 export class ContactList extends Component {
   render() {
@@ -61,6 +62,9 @@ export default class Delivery extends Component {
   }
 
   loadContacts = () => {
+    // if (!this.isMounted()) {
+    //   return
+    // }
     const find = status => {
       return this.queryContacts(status)
         .limit(100)
@@ -95,8 +99,15 @@ export default class Delivery extends Component {
     Skype.open(account)
       .then(skype => db.contact
         .where({account, status: TaskStatus.SELECTED})
-        .each(({id, login}) => skype.sendMessage({text, login})
-          .then(db.contact.update(id, {status: TaskStatus.CREATED}))))
+        // .orderBy('login')
+        .toArray()
+        .then(contacts => {
+          return seq(contacts.map(({id, login}) => {
+            return () => skype.sendMessage({text, login})
+              .then(() => db.contact.update(id, {status: TaskStatus.CREATED}))
+              .then(() => this.loadContacts())
+          }))
+        }))
       .catch(function (err) {
         console.error(err)
       })
