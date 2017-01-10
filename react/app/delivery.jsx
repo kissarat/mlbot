@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Form, Segment, Button, List, Loader, Header, Dimmer} from 'semantic-ui-react'
 import Skype from '../skype/index.jsx'
 import {toArray} from 'lodash'
-import db from '../database.jsx'
+import db, {TaskStatus} from '../database.jsx'
 import {hashHistory} from 'react-router'
 import SelectAccount from './select-account.jsx'
 
@@ -55,35 +55,34 @@ export default class Delivery extends Component {
   }
 
   loadContacts = () => {
-    return Skype.queryContacts(this.state.account)
-      .limit(100)
-      .toArray()
-      .then((contacts) => {
-        this.setState({
-          busy: false,
-          contacts
-        })
-        // Skype.on('message', this.send)
-        return contacts
+    const find = status => {
+      return db.contact
+        .filter(c => c.account === this.state.account && c.status === status)
+        .limit(100)
+        .toArray()
+    }
+    return find(TaskStatus.CREATED)
+      .then(contacts => {
+        this.setState({contacts})
+        return find(TaskStatus.SELECTED)
       })
+      .then(selections => this.setState({
+        selections,
+        busy: false
+      }))
       .catch(function (err) {
         console.error(err)
       })
   }
 
-  checkAll(value) {
-    this.state.contacts.forEach(c => c.checked = value)
-    this.setState({contacts: this.state.contacts})
-  }
-
-  check(id) {
-    const contact = this.state.contacts.find(c => c.id === id)
-    contact.checked = !contact.checked
-    this.setState({contacts: this.state.contacts})
-  }
-
-  getChecked() {
-    return this.state.contacts.filter(c => c.checked)
+  selectAll(status) {
+    this.setState({busy: true})
+    return db.contact
+      // .where('[account]')
+      // .equals(this.state.account)
+      .filter(c => this.state.account === c.account)
+      .modify({status})
+      .then(this.loadContacts)
   }
 
   onSend = (e, {formData}) => {
@@ -109,13 +108,10 @@ export default class Delivery extends Component {
     }
   }
 
-  select(contact, remove) {
-    const _from = remove ? 'selections' : 'contacts'
-    const _to = remove ? 'contacts' : 'selections'
-    this.setState({
-      [_from]: this.state[_from].filter(c => contact.id !== c.id),
-      [_to]: [contact].concat(this.state[_to])
-    })
+  select(id, add) {
+    const status = add ? TaskStatus.SELECTED : TaskStatus.CREATED
+    db.contact.update(id, {status})
+      .then(() => this.loadContacts())
   }
 
   changeAccount(account) {
@@ -136,8 +132,8 @@ export default class Delivery extends Component {
             value={this.state.account}
             select={account => this.changeAccount(account)}/>
           <div>
-            <Button onClick={() => this.checkAll(true)}>все</Button>
-            <Button onClick={() => this.checkAll(false)}>никто</Button>
+            <Button onClick={() => this.selectAll(TaskStatus.SELECTED)}>все</Button>
+            <Button onClick={() => this.selectAll(TaskStatus.CREATED)}>никто</Button>
           </div>
         </Segment>
         <Segment>
@@ -150,11 +146,11 @@ export default class Delivery extends Component {
       </Segment.Group>
       <div>
         <Header textAlign="center" as="h2">Все контакты</Header>
-          <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
+          <ContactList list={this.state.contacts} select={c => this.select(c.id, true)}/>
       </div>
       <div>
         <Header textAlign="center" as="h2">Избранные контакты</Header>
-          <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
+          <ContactList list={this.state.selections} select={c => this.select(c.id, false)}/>
       </div>
     </div>
   }

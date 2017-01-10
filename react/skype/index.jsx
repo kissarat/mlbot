@@ -64,11 +64,20 @@ extend(Skype, {
                   id: profile.username + '~' + c.id,
                   account: profile.username,
                   login: c.id,
-                  name: c.display_name,
-                  s: TaskStatus.CREATED
+                  name: c.display_name
                 }))
                 db.contact
-                  .bulkPut(profile.contacts)
+                  .filter(c => data.login === c.account)
+                  .toArray()
+                  .then(function (existing) {
+                    return db.contact.bulkAdd(profile.contacts
+                      .filter(c => !existing.find(ex => ex.id === c.id))
+                      .map(function (c) {
+                        c.status = TaskStatus.CREATED
+                        return c
+                      })
+                    )
+                  })
                   .then(function () {
                     resolve(skype)
                     skype.emit('contacts', profile)
@@ -120,13 +129,6 @@ extend(Skype, {
     return this.accounts
       ? Promise.resolve(find())
       : Skype.getAccountList(false).then(find)
-  },
-
-  queryContacts(account) {
-    return db.contact
-    // .where('account')
-    // .equals(this.state.account)
-      .filter(contact => account === contact.account)
   },
 
   close(account) {

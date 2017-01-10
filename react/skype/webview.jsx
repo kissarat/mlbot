@@ -86,10 +86,10 @@ WebView.create = function (partition) {
   }
   WebView.call(webview)
   webview.addEventListener('did-stop-loading', function () {
-    console.log(this.getURL())
-    if (config.dev) {
-      this.openDevTools()
-    }
+    // console.log(this.getURL())
+    // if (config.dev) {
+    //   this.openDevTools()
+    // }
     this.setAudioMuted(true)
   })
   return webview

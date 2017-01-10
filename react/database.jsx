@@ -16,9 +16,9 @@ application.database = {
     {
       version: getVersion('2017-01-09'),
       schema: {
-        contact: '&id, [account], login, name, s',
-        message: '++id, type, text',
-        task: '++id, [contact+message], status'
+        contact: '&id, [account], login, name, [status]',
+        // message: '++id, type, text',
+        // task: '++id, [contact+message], status'
       }
     }
   ]
@@ -42,9 +42,10 @@ export const MessageType = Object.freeze({
 
 export const TaskStatus = Object.freeze({
   CREATED: 0,
-  PROCESSING: 1,
-  INVITED: 2,
-  SEND: 3
+  SELECTED: 1,
+  PROCESSING: 2,
+  INVITED: 3,
+  SEND: 4
 })
 
 window.db = db
