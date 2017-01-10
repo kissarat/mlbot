@@ -45,7 +45,7 @@ function sendMessage(message) {
           sky.send({
             type: 'message',
             id: message.id,
-            status: config.task.status.SEND
+            status: config.TaskStatus.SEND
           })
         })
       })

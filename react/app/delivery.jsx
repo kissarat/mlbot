@@ -54,12 +54,15 @@ export default class Delivery extends Component {
     this.componentWillReceiveProps(this.props)
   }
 
+  queryContacts(status) {
+    const account = this.state.account
+    return db.contact
+      .where({account, status})
+  }
+
   loadContacts = () => {
     const find = status => {
-      const account = this.state.account
-      return db.contact
-        // .filter(c => c.account === account && c.status === status)
-        .where({account, status})
+      return this.queryContacts(status)
         .limit(100)
         .toArray()
     }
@@ -86,27 +89,17 @@ export default class Delivery extends Component {
       .then(this.loadContacts)
   }
 
-  onSend = (e, {formData}) => {
+  onSend = (e, {formData: {text}}) => {
     e.preventDefault()
-    this.setState({text: formData.text})
-    setTimeout(this.send, 0)
-  }
-
-  send = (a, b, c) => {
-    console.log(a, b, c)
-    const contact = this.state.contacts.find(c => c.checked)
-    if (contact) {
-      const message = {
-        login: contact.login,
-        text: this.state.text
-      }
-      console.log(contact, message)
-      const skype = Skype.open({login: contact.account})
-      skype.sendMessage(message)
-    }
-    else {
-      console.log('Messages sent!')
-    }
+    const account = this.state.account
+    Skype.open(account)
+      .then(skype => db.contact
+        .where({account, status: TaskStatus.SELECTED})
+        .each(({id, login}) => skype.sendMessage({text, login})
+          .then(db.contact.update(id, {status: TaskStatus.CREATED}))))
+      .catch(function (err) {
+        console.error(err)
+      })
   }
 
   select(id, add) {
@@ -126,7 +119,7 @@ export default class Delivery extends Component {
 
   render() {
     return <div className="page delivery">
-      <Loader active={!!this.state.busy} size="medium"/>
+      <Loader active={this.state.busy} size="medium"/>
       <Segment.Group>
         <Segment>
           <SelectAccount
@@ -141,7 +134,7 @@ export default class Delivery extends Component {
           <Loader size="medium" active={!!this.state.busySkype}>{this.state.busySkype}</Loader>
           <Form onSubmit={this.onSend}>
             <Form.TextArea name="text" placeholder="Текст"/>
-            <Button type="submit">Послать</Button>
+            <Button type="submit" disabled={!!this.state.busySkype}>Послать</Button>
           </Form>
         </Segment>
       </Segment.Group>

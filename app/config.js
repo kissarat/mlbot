@@ -7,5 +7,12 @@ module.exports = {
     minHeight: 480,
     width: 1080,
     x: 0
+  },
+  TaskStatus: {
+    CREATED: 0,
+    SELECTED: 1,
+    PROCESSING: 2,
+    INVITED: 3,
+    SEND: 4
   }
 }

@@ -1,7 +1,8 @@
-import {debounce, each, find, keyBy, toArray} from 'lodash'
+import {debounce, each, find, keyBy, toArray, extend} from 'lodash'
 import Dexie from 'dexie'
 import {pick, isObject} from 'lodash'
 import package_json from '../app/package.json'
+import {TaskStatus} from '../app/config'
 
 function getVersion(time) {
   return Math.round(new Date(time).getTime() / (1000 * 3600))
@@ -24,7 +25,7 @@ application.database = {
   ]
 }
 
-const db = new Dexie(application.database.name)
+let db = new Dexie(application.database.name)
 application.database.migrations.forEach(function ({version, schema, upgrade}) {
   let _db = db.version(version)
   if (isObject(schema)) {
@@ -40,13 +41,7 @@ export const MessageType = Object.freeze({
   INVITE: 1
 })
 
-export const TaskStatus = Object.freeze({
-  CREATED: 0,
-  SELECTED: 1,
-  PROCESSING: 2,
-  INVITED: 3,
-  SEND: 4
-})
+export {TaskStatus}
 
 window.db = db
 export default db

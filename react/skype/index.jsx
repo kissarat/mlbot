@@ -15,7 +15,10 @@ extend(Skype.prototype, {
   },
 
   sendMessage(message) {
-    this.invoke('sendMessage', [message])
+    return new Promise((resolve, reject) => {
+      this.once('message', resolve)
+      this.invoke('sendMessage', [message])
+    })
   }
 })
 
@@ -142,6 +145,11 @@ extend(Skype, {
   closeAll() {
     Skype.all().remove()
   },
+
+  show(visible) {
+    document.getElementById('app').style.display = visible ? 'none' : 'block'
+    document.getElementById('dark').style.opacity = visible ? '1' : '0'
+  }
 });
 
 window.Skype = Skype
