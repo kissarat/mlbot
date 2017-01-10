@@ -128,7 +128,7 @@ export default class Delivery extends Component {
   }
 
   render() {
-    return <Segment.Group horizontal className="page delivery">
+    return <div className="page delivery">
       <Loader active={this.state.busy} size="medium"/>
       <Segment.Group>
         <Segment>
@@ -140,24 +140,22 @@ export default class Delivery extends Component {
             <Button onClick={() => this.checkAll(false)}>никто</Button>
           </div>
         </Segment>
-        <Dimmer.Dimmable as={Segment}>
-          <Dimmer inverted active={!!this.state.busySkype}>
-            <Loader size="medium">{this.state.busySkype}</Loader>
-          </Dimmer>
+        <Segment>
+          <Loader size="medium" active={!!this.state.busySkype}>{this.state.busySkype}</Loader>
           <Form onSubmit={this.onSend}>
             <Form.TextArea name="text" placeholder="Текст"/>
             <Button type="submit">Послать</Button>
           </Form>
-        </Dimmer.Dimmable>
+        </Segment>
       </Segment.Group>
-      <Segment>
-        <Header as="h2">Все контакты</Header>
-        <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
-      </Segment>
-      <Segment>
-        <Header as="h2">Избранные контакты</Header>
-        <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
-      </Segment>
-    </Segment.Group>
+      <div>
+        <Header textAlign="center" as="h2">Все контакты</Header>
+          <ContactList list={this.state.contacts} select={c => this.select(c, false)}/>
+      </div>
+      <div>
+        <Header textAlign="center" as="h2">Избранные контакты</Header>
+          <ContactList list={this.state.selections} select={c => this.select(c, true)}/>
+      </div>
+    </div>
   }
 }

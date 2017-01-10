@@ -102,18 +102,10 @@ nav li {
 
 .delivery {
     display: flex;
+    height: 100%;
 }
 
-.two-lists {
-    display: flex;
-}
-
-.two-lists .list {
-    min-width: 320px;
-}
-
-.two-lists .listitem {
-    overflow: hidden;
-    white-space: nowrap;
-    cursor: pointer;
+.delivery > * {
+    flex: 1;
+    height: 100%;
 }
