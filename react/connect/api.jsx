@@ -41,6 +41,11 @@ class API {
     return fetch(url, {headers}).then(r => r.json())
   }
 
+  del(url, params) {
+    url = this.prefix + this.buildURL(url, params)
+    return fetch(url, {method: 'DELETE', headers}).then(r => r.json())
+  }
+
   send(url, params, data) {
     if (!data) {
       data = params

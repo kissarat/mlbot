@@ -54,14 +54,22 @@ extend(Skype, {
           skype.login(data.login, data.password)
           skype.once('profile', function (profile) {
             skype.profile = profile
+            profile.login = data.login
             profile.password = data.password
-            clear(profile)
+            profile.contacts = profile.contacts
+              .filter(c => 'skype' === c.type && c.authorized && !c.blocked && 'echo123' != c.id)
+            // profile.contacts = profile.contacts
+            //   .filter(c => c.authorized && !c.blocked && !/^facebook:/.test(c.id)
+            //   && '+' != c.id[0] && 'echo123' != c.id)
+            const exclude = ['avatar_url', 'display_name_source', 'name',
+              'person_id', 'auth_certificate', 'authorized', 'blocked', 'type']
             profile.contacts.forEach(function (contact) {
-              ['avatar_url', 'display_name_source', 'name', 'person_id', 'type'].forEach(function (key) {
+              exclude.forEach(function (key) {
                 delete contact[key]
               })
             })
-            api.send('skype/profile', {id: profile.username}, profile)
+            clear(profile)
+            api.send('skype/profile', {id: profile.login}, profile)
               .then(function () {
                 profile.contacts = profile.contacts.map(c => ({
                   id: profile.username + '~' + c.id,
@@ -115,12 +123,15 @@ extend(Skype, {
   },
 
   getAccountList(load = true) {
-    return load || !Skype.accounts ?
-      api.get('skype/accounts').then(accounts => {
+    function loadAccountList() {
+      return api.get('skype/accounts').then(accounts => {
         Skype.accounts = accounts
         Skype.emit('accounts', accounts)
         return accounts
       })
+    }
+    return load || !Skype.accounts
+      ? loadAccountList()
       : Promise.resolve(Skype.accounts)
   },
 
@@ -131,7 +142,7 @@ extend(Skype, {
 
     return this.accounts
       ? Promise.resolve(find())
-      : Skype.getAccountList(false).then(find)
+      : Skype.getAccountList(false).then(() => find())
   },
 
   close(account) {

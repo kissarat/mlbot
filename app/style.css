@@ -109,3 +109,7 @@ nav li {
     flex: 1;
     height: 100%;
 }
+
+.page.account-list .item:hover {
+    background: rgba(0, 0, 0, 0.1);
+}

@@ -21,7 +21,7 @@ api.send('handshake/' + Date.now(), {type: 'app', expires: expires.toISOString()
     // }
     render(router, appRoot)
     if ('#/' === location.hash) {
-      hashHistory.push(config.user.guest ? '/login' : '/accounts')
+      hashHistory.push(!config.user || config.user.guest ? '/login' : '/accounts')
     }
   })
   .catch(function (err) {

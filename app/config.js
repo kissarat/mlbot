@@ -1,7 +1,7 @@
 module.exports = {
   dev: true,
   reset: false,
-  origin: 'http://my.mviktor.com',
+  origin: 'http://mac.ternopil.ru',
   window: {
     minWidth: 640,
     minHeight: 480,

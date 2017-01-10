@@ -1,6 +1,8 @@
 import './ui.jsx'
 import {each, isObject} from 'lodash'
 
+const DELAY = 180
+
 function waiter(selectors, cb) {
   const found = {}
   const url = location.pathname + location.search
@@ -26,7 +28,7 @@ function waiter(selectors, cb) {
           found[key] = result
         }
         else {
-          return setTimeout(loop, 500)
+          return setTimeout(loop, DELAY)
         }
       }
       if (cb instanceof Function) {
@@ -39,7 +41,7 @@ function waiter(selectors, cb) {
         cb(result)
       }
       else {
-        setTimeout(loop, 500)
+        setTimeout(loop, DELAY)
       }
     }
     else {
