@@ -25,6 +25,7 @@ export default class SelectAccount extends Component {
     return <Select
       placeholder="Выберети аккаунт"
       options={options}
+      name="account"
       value={this.props.value}
       onChange={this.onChange}
     />

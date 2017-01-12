@@ -3,7 +3,7 @@ import db from '../database.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
 import Skype from '../skype/index.jsx'
-import {Form, Segment, Button, List, Loader, Checkbox, Dimmer} from 'semantic-ui-react'
+import {Form, Segment, Button, Input, Loader, Checkbox, Header} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {seq} from '../util/index.jsx'
 import {Status} from '../../app/config'
@@ -17,12 +17,14 @@ export default class Invite extends Component {
     text: localStorage.getItem(INVITE_LIST_KEY) || '',
     limit: 40,
     sort: false,
-    account: ''
+    invites: []
   }
 
   componentWillReceiveProps(props) {
-    if (props.params && props.params.account) {
-      this.setState({account: props.params.account})
+    const account = props.params && props.params.account || false
+    if (account) {
+      this.setState({account})
+      this.loadContacts()
     }
   }
 
@@ -82,10 +84,42 @@ export default class Invite extends Component {
 
   onSubmit = async(e, {formData: {text}}) => {
     e.preventDefault()
+    this.invite(this.filterSkypeUsernames(text))
+  }
+
+  async invite(usernames) {
+    const account = this.state.account
+    if (usernames.length > 0) {
+      const existing = (
+        await db.contact
+          .filter(c => account === c.account)
+          .toArray()
+      )
+        .map(c => c.login)
+      usernames = usernames.filter(username => !existing.find(login => username === login))
+      const invites = usernames.map(login => ({
+        id: account + '~' + login,
+        login,
+        account,
+        authorized: false,
+        status: Status.SELECTED
+      }))
+      await db.contact.bulkAdd(invites)
+    }
+    return this.loadContacts()
+  }
+
+  async loadContacts() {
+    const account = this.state.account
+    const invites = await db.contact
+      .filter(c => account === c.account && Status.SELECTED === c.status && !c.authorized)
+      .toArray()
+    this.setState({invites})
+    return invites
   }
 
   render() {
-    return <div className="page invite">
+    return <Segment.Group horizontal className="page invite">
       <Loader active={this.state.busy} size="medium"/>
       <Segment>
         <Form onSubmit={this.onSubmit}>
@@ -104,10 +138,9 @@ export default class Invite extends Component {
             <Form.Field>
               <Button type="button" onClick={this.limit}>Уменьшить</Button>
               и оставить первые
-              <input
+              <Input
                 name="limit"
                 type="number"
-                size="3"
                 value={this.state.limit}
                 onChange={this.onChange}/>
               контактов
@@ -127,6 +160,10 @@ export default class Invite extends Component {
           </div>
         </Form>
       </Segment>
-    </div>
+      <Segment disabled={this.state.invites.length <= 0}>
+        <Header as='h2'>Очередь приглашений</Header>
+        <ContactList list={this.state.invites}/>
+      </Segment>
+    </Segment.Group>
   }
 }

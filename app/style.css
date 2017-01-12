@@ -115,6 +115,11 @@ nav li {
     background: rgba(0, 0, 0, 0.1);
 }
 
+.page.invite .limit .ui.input {
+    all: initial;
+    display: inline-block;
+}
+
 .page.invite .limit [type=number] {
     all: initial;
     width: 60px;
