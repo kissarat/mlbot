@@ -9,11 +9,14 @@ module.exports = {
     height: 960,
     x: 0
   },
-  TaskStatus: {
+  Status: Object.freeze({
+    FORBIDDEN: -2,
+    ABSENT: -1,
+
     CREATED: 0,
     SELECTED: 1,
     PROCESSING: 2,
     INVITED: 3,
-    SEND: 4
-  }
+    SENT: 4,
+  })
 }

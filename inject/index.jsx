@@ -1,17 +1,28 @@
 import './waiter.jsx'
+import './xhr'
 import {extend} from 'lodash'
-import config  from  '../app/config'
+import {Status}  from  '../app/config'
 
-function addContact(loginName) {
+// Do not notify user
+delete window.Notification
+delete window.ServiceWorker
+delete window.ServiceWorkerContainer
+
+function addContact(login) {
   waiter('[role=search]', function (input) {
     input.focus()
-    document.execCommand('insertText', true, loginName)
+    document.execCommand('insertText', true, login)
     waiter('.searchDirectory', function (button) {
       button.click()
       waiter('.directory li:nth-child(2)', function (li) {
         li.click()
         waiter('.contactRequestSend', function (requestButton) {
           requestButton.click()
+          sky.send({
+            type: 'invite',
+            login,
+            status: Status.INVITED
+          })
         })
       })
     })
@@ -45,7 +56,7 @@ function sendMessage(message) {
           sky.send({
             type: 'message',
             id: message.id,
-            status: config.TaskStatus.SEND
+            status: Status.SEND
           })
         })
       })

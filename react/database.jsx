@@ -2,7 +2,6 @@ import {debounce, each, find, keyBy, toArray, extend} from 'lodash'
 import Dexie from 'dexie'
 import {pick, isObject} from 'lodash'
 import package_json from '../app/package.json'
-import {TaskStatus} from '../app/config'
 
 function getVersion(time) {
   return Math.round(new Date(time).getTime() / (1000 * 3600))
@@ -35,13 +34,6 @@ application.database.migrations.forEach(function ({version, schema, upgrade}) {
     _db.upgrade(upgrade)
   }
 })
-
-export const MessageType = Object.freeze({
-  PLAIN: 0,
-  INVITE: 1
-})
-
-export {TaskStatus}
 
 window.db = db
 export default db

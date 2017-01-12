@@ -1,8 +1,9 @@
-import db, {TaskStatus} from '../database.jsx'
+import db from '../database.jsx'
 import Skype from './static.jsx'
 import {clear} from '../util/index.jsx'
 import {EventEmitter} from 'events'
 import {extend, toArray, each} from 'lodash'
+import {Status} from '../../app/config'
 
 extend(Skype.prototype, {
   async getProfile() {
@@ -50,10 +51,10 @@ extend(Skype.prototype, {
         login: c.id,
         name: c.display_name,
         authorized: c.authorized,
-        status: found ? found.status : TaskStatus.CREATED
+        status: found ? found.status : Status.CREATED
       }
-      if (c.authorized && TaskStatus.INVITED === contact.status) {
-        contact.status = TaskStatus.CREATED
+      if (c.authorized && db.INVITED === contact.status) {
+        contact.status = Status.CREATED
       }
       return contact
     })

@@ -1,11 +1,12 @@
+import db from '../database.jsx'
 import React, {Component} from 'react'
-import {Form, Segment, Button, List, Loader, Header, Dimmer} from 'semantic-ui-react'
-import Skype from '../skype/index.jsx'
-import {toArray} from 'lodash'
-import db, {TaskStatus} from '../database.jsx'
-import {hashHistory} from 'react-router'
 import SelectAccount from './select-account.jsx'
+import Skype from '../skype/index.jsx'
+import {Form, Segment, Button, List, Loader, Header, Dimmer} from 'semantic-ui-react'
+import {hashHistory} from 'react-router'
 import {seq} from '../util/index.jsx'
+import {Status} from '../../app/config'
+import {toArray} from 'lodash'
 
 export class ContactList extends Component {
   render() {
@@ -74,8 +75,8 @@ export default class Delivery extends Component {
     const find = status => this.queryContacts(status)
       .limit(100)
       .toArray()
-    const contacts = await find(TaskStatus.CREATED)
-    const selections = await find(TaskStatus.SELECTED)
+    const contacts = await find(Status.CREATED)
+    const selections = await find(Status.SELECTED)
     this.setState({
       contacts,
       selections,
@@ -100,14 +101,14 @@ export default class Delivery extends Component {
     const contacts = await db.contact
       .where(c =>
         account === c.account &&
-        TaskStatus.SELECTED === c.status &&
+        Status.SELECTED === c.status &&
         c.authorized
       )
       .toArray()
 
     const promises = contacts.map(({id, login}) => async() => {
       await skype.sendMessage({text, login})
-      await db.contact.update(id, {status: TaskStatus.CREATED})
+      await db.contact.update(id, {status: Status.CREATED})
       return this.loadContacts()
     })
 
@@ -115,7 +116,7 @@ export default class Delivery extends Component {
   }
 
   async select(id, add) {
-    const status = add ? TaskStatus.SELECTED : TaskStatus.CREATED
+    const status = add ? Status.SELECTED : Status.CREATED
     await db.contact.update(id, {status})
     return this.loadContacts()
   }
@@ -138,8 +139,8 @@ export default class Delivery extends Component {
             value={this.state.account}
             select={account => this.changeAccount(account)}/>
           <div>
-            <Button onClick={() => this.selectAll(TaskStatus.SELECTED)}>все</Button>
-            <Button onClick={() => this.selectAll(TaskStatus.CREATED)}>никто</Button>
+            <Button onClick={() => this.selectAll(Status.SELECTED)}>все</Button>
+            <Button onClick={() => this.selectAll(Status.CREATED)}>никто</Button>
           </div>
         </Segment>
         <Segment>
