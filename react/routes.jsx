@@ -2,6 +2,7 @@ import AccountList from './app/account-list.jsx'
 import App from './app/index.jsx'
 import Delivery from './app/delivery.jsx'
 import Hello from './app/hello.jsx'
+import Invite from './app/invite.jsx'
 import Loader from './page/unavailable.jsx'
 import Login from './outdoor/login.jsx'
 import Outdoor from './outdoor/index.jsx'
@@ -28,6 +29,7 @@ export const routes = <Route path='/'>
     <Route path='accounts' component={AccountList}/>
     <Route path='delivery/:account' component={Delivery}/>
     <Route path='delivery' component={Delivery}/>
+    <Route path='invite' component={Invite}/>
     <Route path='hello' component={Hello}/>
   </Route>
 </Route>

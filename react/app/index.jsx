@@ -6,7 +6,8 @@ export default class App extends Component {
   render() {
     const items = [
       {name: 'Аккаунты', url: '/accounts'},
-      {name: 'Рассылка сообщений', url: '/delivery'},
+      {name: 'Рассылка', url: '/delivery'},
+      {name: 'Приглашения', url: '/invite'},
     ]
     items.map(function (item) {
       const url = item.url

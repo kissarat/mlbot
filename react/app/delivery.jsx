@@ -1,3 +1,4 @@
+import ContactList from './contact-list.jsx'
 import db from '../database.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
@@ -7,20 +8,6 @@ import {hashHistory} from 'react-router'
 import {seq} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray} from 'lodash'
-
-export class ContactList extends Component {
-  render() {
-    const list = this.props.list.map(c => {
-      let name = c.login
-      if (name !== c.name) {
-        name += ` (${c.name})`
-      }
-      return <List.Item key={c.id} onClick={() => this.props.select(c)}>{name}</List.Item>
-    })
-
-    return <List>{list}</List>
-  }
-}
 
 export default class Delivery extends Component {
   state = {
