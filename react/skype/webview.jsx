@@ -1,6 +1,7 @@
 import config from '../../app/config'
 import {EventEmitter} from 'events'
 import {extend, isObject, sample} from 'lodash'
+window.isObject = isObject
 
 window.profiles = {}
 
@@ -29,8 +30,7 @@ const userAgents = [
   "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0",
   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/55.0.2883.87 Chrome/55.0.2883.87 Safari/537.36",
   "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0",
-];
-
+]
 
 WebView.prototype = extend(Object.create(EventEmitter.prototype), {
   sendData(data) {

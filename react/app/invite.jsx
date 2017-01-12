@@ -6,7 +6,7 @@ import {Form, Segment, Button, Input, Loader, Checkbox, Header, Message, Dimmer}
 import {seq} from '../util/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {Status} from '../../app/config'
-import {toArray, defaults, isObject} from 'lodash'
+import {toArray, defaults} from 'lodash'
 import {filterSkypeUsernames, setImmediate} from '../util/index.jsx'
 import SkypeComponent from './skype-component.jsx'
 
@@ -67,46 +67,54 @@ export default class Invite extends SkypeComponent {
   }
 
   async invite(usernames) {
-    const account = this.state.account
-    if (usernames.length > 0) {
-      const existing = (
-        await db.contact
-          .filter(c => account === c.account)
-          .toArray()
-      )
-        .map(c => c.login)
-      usernames = usernames.filter(username => !existing.find(login => username === login))
-      const invites = usernames.map(login => ({
-        id: account + '~' + login,
-        login,
-        account,
-        authorized: false,
-        status: Status.SELECTED
-      }))
-      await db.contact.bulkAdd(invites)
+    try {
+      const account = this.state.account
+      if (usernames.length > 0) {
+        const existing = (
+          await db.contact
+            .filter(c => account === c.account)
+            .toArray()
+        )
+          .map(c => c.login)
+        usernames = usernames.filter(username => !existing.find(login => username === login))
+        const invites = usernames.map(login => ({
+          id: account + '~' + login,
+          login,
+          account,
+          authorized: false,
+          status: Status.SELECTED
+        }))
+        await db.contact.bulkAdd(invites)
+      }
+      await this.loadContacts()
+      this.setBusy('Вход в скайп')
+      const skype = await this.getSkype()
+
+      const invites = await db.contact
+        .filter(c =>
+          account === c.account &&
+          Status.SELECTED === c.status &&
+          !c.authorized
+        )
+        .toArray()
+
+      const informInvited = i => this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
+
+      informInvited(0)
+      const promises = invites.map((contact, i) => async() => {
+        await skype.invite(contact)
+        await db.contact.update(id, {status: Status.CREATED})
+        informInvited(i)
+        return this.loadContacts()
+      })
+
+      await seq(promises)
+      this.setBusy(false)
+      this.alert('success', 'Все преглашены!')
     }
-    await this.loadContacts()
-    this.setBusy('Вход в скайп')
-    const skype = await this.getSkype()
-
-    const invites = await db.contact
-      .filter(c =>
-        account === c.account &&
-        Status.SELECTED === c.status &&
-        c.authorized
-      )
-      .toArray()
-
-    const promises = invites.map(({id, login}, i) => async() => {
-      await skype.invite({text, login})
-      await db.contact.update(id, {status: Status.CREATED})
-      this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
-      return this.loadContacts()
-    })
-
-    await seq(promises)
-    this.setBusy(false)
-    this.alert('success', 'Все преглашены!')
+    catch (ex) {
+      console.error(ex)
+    }
   }
 
   async loadContacts() {
