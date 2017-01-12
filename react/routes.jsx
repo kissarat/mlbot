@@ -29,6 +29,7 @@ export const routes = <Route path='/'>
     <Route path='accounts' component={AccountList}/>
     <Route path='delivery/:account' component={Delivery}/>
     <Route path='delivery' component={Delivery}/>
+    <Route path='invite/:account' component={Invite}/>
     <Route path='invite' component={Invite}/>
     <Route path='hello' component={Hello}/>
   </Route>

@@ -16,11 +16,18 @@ export default class Invite extends Component {
   state = {
     text: localStorage.getItem(INVITE_LIST_KEY) || '',
     limit: 40,
-    sort: false
+    sort: false,
+    account: ''
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.params && props.params.account) {
+      this.setState({account: props.params.account})
+    }
   }
 
   componentWillMount() {
-    // this.componentWillReceiveProps(this.props)
+    this.componentWillReceiveProps(this.props)
   }
 
   componentWillUnmount() {
@@ -33,6 +40,15 @@ export default class Invite extends Component {
       accounts.sort()
     }
     return accounts
+  }
+
+  changeAccount(account) {
+    if (account && account.login !== this.state.account) {
+      hashHistory.push('/invite/' + account.login)
+    }
+    else if (!account) {
+      hashHistory.push('/invite')
+    }
   }
 
   loadFromFile(file) {
@@ -102,7 +118,13 @@ export default class Invite extends Component {
             placeholder="Здесь вы можете вставить список контактов"
             value={this.state.text}
             onChange={this.onChange}/>
-          <Button type="submit">Пригласить</Button>
+          <div>
+            <Button type="submit">Пригласить</Button>
+            в аккаунт
+            <SelectAccount
+              value={this.state.account}
+              select={account => this.changeAccount(account)}/>
+          </div>
         </Form>
       </Segment>
     </div>
