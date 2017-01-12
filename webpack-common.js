@@ -30,8 +30,11 @@ module.exports = function (name) {
           exclude: /(node_modules)/,
           loader: 'babel',
           query: {
-            presets: ['es2015', 'es2017', 'react'],
-            plugins: ['transform-class-properties']
+            presets: ['es2017', 'es2015', 'react'],
+            plugins: [
+              'transform-regenerator',
+              'transform-class-properties'
+            ]
           }
         }
       ]

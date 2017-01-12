@@ -12,12 +12,12 @@ window.application = pick(package_json,
   'name', 'version', 'author', 'description', 'repository', 'bugs', 'homepage')
 application.database = {
   name: 'mlbot',
-  version: getVersion('2017-01-09'),
+  version: getVersion('2017-01-12'),
   migrations: [
     {
-      version: getVersion('2017-01-09'),
+      version: getVersion('2017-01-12'),
       schema: {
-        contact: '&id, [account+status], login, name',
+        contact: '&id, account, login, name, status, authorized',
         // message: '++id, type, text',
         // task: '++id, [contact+message], status'
       }

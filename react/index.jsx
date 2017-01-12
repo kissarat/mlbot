@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import api from './connect/api.jsx'
 import React, {Component} from 'react'
 import router from './routes.jsx'

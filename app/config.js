@@ -6,6 +6,7 @@ module.exports = {
     minWidth: 640,
     minHeight: 480,
     width: 1080,
+    height: 960,
     x: 0
   },
   TaskStatus: {

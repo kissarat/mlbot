@@ -18,7 +18,6 @@ export default class SelectAccount extends Component {
   }
 
   render() {
-    console.log(this.state.accounts)
     const options = this.state.accounts.map(account => ({
       value: account.login,
       text: account.login,

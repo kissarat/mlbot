@@ -37,12 +37,17 @@ export default class Delivery extends Component {
         selections: [],
         busySkype: 'Вход в скайп'
       })
-      setTimeout(() => {
-        this.loadContacts()
-        this.getSkype()
-          .then(skype => skype.getProfile())
-          .then(() => this.setState({busySkype: false}))
-          .then(this.loadContacts)
+      setTimeout(async() => {
+        try {
+          this.loadContacts()
+          const skype = await this.getSkype()
+          await skype.getProfile()
+          await this.setState({busySkype: false})
+          this.loadContacts()
+        }
+        catch (ex) {
+          console.error(ex)
+        }
       }, 0)
     }
   }
@@ -58,65 +63,61 @@ export default class Delivery extends Component {
   queryContacts(status) {
     const account = this.state.account
     return db.contact
-      .where({account, status})
+      .filter(c =>
+        account === c.account &&
+        status === c.status &&
+        c.authorized
+      )
   }
 
-  loadContacts = () => {
-    // if (!this.isMounted()) {
-    //   return
-    // }
-    const find = status => {
-      return this.queryContacts(status)
-        .limit(100)
-        .toArray()
-    }
-    return find(TaskStatus.CREATED)
-      .then(contacts => {
-        return find(TaskStatus.SELECTED)
-          .then(selections => this.setState({
-            contacts,
-            selections,
-            busy: contacts.length + selections.length <= 0
-          }))
-      })
-      .catch(function (err) {
-        console.error(err)
-      })
+   async loadContacts() {
+    const find = status => this.queryContacts(status)
+      .limit(100)
+      .toArray()
+    const contacts = await find(TaskStatus.CREATED)
+    const selections = await find(TaskStatus.SELECTED)
+    this.setState({
+      contacts,
+      selections,
+      busy: contacts.length + selections.length <= 0
+    })
   }
 
-  selectAll(status) {
+  async selectAll(status) {
     this.setState({busy: true})
     const account = this.state.account
-    return db.contact
-      .filter(c => c.account = account)
+    await db.contact
+      .filter(c => c.account === account)
       .modify({status})
-      .then(this.loadContacts)
+    return this.loadContacts()
   }
 
-  onSend = (e, {formData: {text}}) => {
+  onSend = async(e, {formData: {text}}) => {
     e.preventDefault()
     const account = this.state.account
-    Skype.open(account)
-      .then(skype => db.contact
-        .where({account, status: TaskStatus.SELECTED})
-        // .orderBy('login')
-        .toArray()
-        .then(contacts => {
-          return seq(contacts.map(({id, login}) => {
-            return () => skype.sendMessage({text, login})
-              .then(() => db.contact.update(id, {status: TaskStatus.CREATED}))
-              .then(() => this.loadContacts())
-          }))
-        }))
-      .catch(function (err) {
-        console.error(err)
-      })
+    const skype = await Skype.open(account)
+
+    const contacts = await db.contact
+      .where(c =>
+        account === c.account &&
+        TaskStatus.SELECTED === c.status &&
+        c.authorized
+      )
+      .toArray()
+
+    const promises = contacts.map(({id, login}) => async() => {
+      await skype.sendMessage({text, login})
+      await db.contact.update(id, {status: TaskStatus.CREATED})
+      return this.loadContacts()
+    })
+
+    return seq(promises)
   }
 
-  select(id, add) {
+  async select(id, add) {
     const status = add ? TaskStatus.SELECTED : TaskStatus.CREATED
-    db.contact.update(id, {status})
-      .then(() => this.loadContacts())
+    await db.contact.update(id, {status})
+    return this.loadContacts()
   }
 
   changeAccount(account) {
@@ -151,11 +152,11 @@ export default class Delivery extends Component {
       </Segment.Group>
       <div>
         <Header textAlign="center" as="h2">Все контакты</Header>
-          <ContactList list={this.state.contacts} select={c => this.select(c.id, true)}/>
+        <ContactList list={this.state.contacts} select={c => this.select(c.id, true)}/>
       </div>
       <div>
         <Header textAlign="center" as="h2">Избранные контакты</Header>
-          <ContactList list={this.state.selections} select={c => this.select(c.id, false)}/>
+        <ContactList list={this.state.selections} select={c => this.select(c.id, false)}/>
       </div>
     </div>
   }
