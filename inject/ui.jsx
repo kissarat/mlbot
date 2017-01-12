@@ -1,29 +1,5 @@
 import {extend, each, isObject} from 'lodash'
-
-function Emitter() {
-  this._events = {}
-}
-
-Emitter.prototype = {
-  on(eventName, listener) {
-    let listeners = this._events[eventName]
-    if (!listeners) {
-      listeners = this._events[eventName] = []
-    }
-    listeners.push(listener)
-    return this
-  },
-
-  emit(eventName) {
-    const listeners = this._events[eventName]
-    if (listeners) {
-      const args = [].slice.call(arguments, 1)
-      listeners.forEach(listener => listener.apply(this, args))
-      return true
-    }
-    return false
-  }
-}
+import {Emitter} from './sky.jsx'
 
 function $$(selector) {
   return document.querySelector(selector)
@@ -144,26 +120,7 @@ function keypress(key, code) {
   this.dispatchEvent(new KeyboardEvent('keypress', {key, code: key, charCode: code, keyCode: code}))
 }
 
-class Sky extends Emitter {
-  receive(data) {
-    if ('string' === typeof data.type) {
-      this.emit(data.type, data)
-    }
-    else {
-      console.error('Data has no type', data)
-    }
-  }
-
-  send(data) {
-    data.time = Date.now()
-    console.log(JSON.stringify(data))
-  }
-}
-
-extend(window, {$$, $all, $id, $new, $list, $table, bar, keydown, keyup, keypress, Emitter, Sky})
-if (!window.sky) {
-  window.sky = new Sky();
-}
+export {$$, $all, $id, $new, $list, $table, bar, keydown, keyup, keypress}
 
 ['map', 'forEach', 'filter'].forEach(function (fn) {
   NodeList.prototype[fn] = Array.prototype[fn]

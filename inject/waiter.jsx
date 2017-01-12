@@ -1,5 +1,8 @@
 import './ui.jsx'
-import {each, isObject} from 'lodash'
+import {each, isObject, extend} from 'lodash'
+import ui, {$$} from './ui.jsx'
+
+extend(window, ui)
 
 const DELAY = 180
 

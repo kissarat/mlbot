@@ -71,7 +71,7 @@ export default class Delivery extends Component {
       )
   }
 
-   async loadContacts() {
+  async loadContacts() {
     const find = status => this.queryContacts(status)
       .limit(100)
       .toArray()
@@ -99,7 +99,7 @@ export default class Delivery extends Component {
     const skype = await Skype.open(account)
 
     const contacts = await db.contact
-      .where(c =>
+      .filter(c =>
         account === c.account &&
         Status.SELECTED === c.status &&
         c.authorized

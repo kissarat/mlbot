@@ -1,7 +1,9 @@
 import './waiter.jsx'
-import './xhr'
+import './xhr.jsx'
+import {$$} from './ui.jsx'
 import {extend} from 'lodash'
-import {Status}  from  '../app/config'
+import {sky} from './sky.jsx'
+import {Status} from '../app/config'
 
 // Do not notify user
 delete window.Notification
@@ -105,4 +107,19 @@ addEventListener('load', function () {
 
 extend(window, {login, logout, addContact, sendMessage, clearData})
 
-// a = {LastName: 'Labiak', FirstName: 'Taras', Password: 'password', RetypePassword: 'password', BirthDay: '20', BirthMonth: '9', BirthYear: '1989', Gender: 'm', PhoneCountry: 'UA', PhoneNumber: '671541943', MemberName: 'k.issarat@gmail.com'}; for(const k in a) {document.querySelector(`#${k}`).value = a[k]}
+// const a = {
+//   LastName: 'Labiak',
+//   FirstName: 'Taras',
+//   Password: 'password',
+//   RetypePassword: 'password',
+//   BirthDay: '20',
+//   BirthMonth: '9',
+//   BirthYear: '1989',
+//   Gender: 'm',
+//   PhoneCountry: 'UA',
+//   PhoneNumber: '671541943',
+//   MemberName: 'k.issarat@gmail.com'
+// };
+// for (const k in a) {
+//   document.querySelector(`#${k}`).value = a[k]
+// }

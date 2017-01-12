@@ -1,7 +1,7 @@
-import {debounce, each, find, keyBy, toArray, extend} from 'lodash'
 import Dexie from 'dexie'
-import {pick, isObject} from 'lodash'
 import package_json from '../app/package.json'
+import {debounce, each, find, keyBy, toArray, extend} from 'lodash'
+import {pick, isObject} from 'lodash'
 
 function getVersion(time) {
   return Math.round(new Date(time).getTime() / (1000 * 3600))

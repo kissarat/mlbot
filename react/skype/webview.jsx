@@ -1,6 +1,6 @@
+import config from '../../app/config'
 import {EventEmitter} from 'events'
 import {extend, isObject, sample} from 'lodash'
-import config from '../../app/config'
 
 window.profiles = {}
 
@@ -87,9 +87,9 @@ WebView.create = function (partition) {
   WebView.call(webview)
   webview.addEventListener('did-stop-loading', function () {
     // console.log(this.getURL())
-    // if (config.dev) {
-    //   this.openDevTools()
-    // }
+    if (config.dev) {
+      this.openDevTools()
+    }
     this.setAudioMuted(true)
   })
   return webview
