@@ -2,20 +2,17 @@ import ContactList from './contact-list.jsx'
 import db from '../database.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
-import Skype from '../skype/index.jsx'
-import {Form, Segment, Button, Input, Loader, Checkbox, Header} from 'semantic-ui-react'
-import {hashHistory} from 'react-router'
+import {Form, Segment, Button, Input, Loader, Checkbox, Header, Message, Dimmer} from 'semantic-ui-react'
 import {seq} from '../util/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {Status} from '../../app/config'
-import {toArray, defaults} from 'lodash'
+import {toArray, defaults, isObject} from 'lodash'
 import {filterSkypeUsernames, setImmediate} from '../util/index.jsx'
+import SkypeComponent from './skype-component.jsx'
 
-const INVITE_STORE_KEY = 'invite'
-
-export default class Invite extends Component {
+export default class Invite extends SkypeComponent {
   componentWillReceiveProps(props) {
-    let state = stateStorage.register(INVITE_STORE_KEY, ['text', 'limit', 'account'], {
+    let state = stateStorage.register(this.getStorageName(), ['text', 'limit', 'account'], {
       limit: 40,
       sort: false,
       account: '',
@@ -27,18 +24,6 @@ export default class Invite extends Component {
     setImmediate(() => this.loadContacts())
   }
 
-  componentWillMount() {
-    this.componentWillReceiveProps(this.props)
-  }
-
-  componentWillUnmount() {
-    stateStorage.unregister(INVITE_STORE_KEY, this.state)
-  }
-
-  componentDidUpdate() {
-    stateStorage.save(INVITE_STORE_KEY, this.state)
-  }
-
   filterSkypeUsernames(text) {
     const accounts = filterSkypeUsernames(text)
     if (this.state.sort) {
@@ -47,19 +32,10 @@ export default class Invite extends Component {
     return accounts
   }
 
-  changeAccount(account) {
-    if (account && account.login !== this.state.account) {
-      hashHistory.push('/invite/' + account.login)
-    }
-    else if (!account) {
-      hashHistory.push('/invite')
-    }
-  }
-
   loadFromFile(file) {
     const reader = new FileReader()
-    reader.onload = ({target: {result}}) => {
-      this.setState({text: this.filterSkypeUsernames(result).join('\n')})
+    reader.onload = e => {
+      this.setState({text: this.filterSkypeUsernames(e.target.result).join('\n')})
     }
     reader.readAsText(file)
   }
@@ -109,7 +85,28 @@ export default class Invite extends Component {
       }))
       await db.contact.bulkAdd(invites)
     }
-    return this.loadContacts()
+    await this.loadContacts()
+    this.setBusy('Вход в скайп')
+    const skype = await this.getSkype()
+
+    const invites = await db.contact
+      .filter(c =>
+        account === c.account &&
+        Status.SELECTED === c.status &&
+        c.authorized
+      )
+      .toArray()
+
+    const promises = invites.map(({id, login}, i) => async() => {
+      await skype.invite({text, login})
+      await db.contact.update(id, {status: Status.CREATED})
+      this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
+      return this.loadContacts()
+    })
+
+    await seq(promises)
+    this.setBusy(false)
+    this.alert('success', 'Все преглашены!')
   }
 
   async loadContacts() {
@@ -121,13 +118,20 @@ export default class Invite extends Component {
     return invites
   }
 
-  reset = () => this.setState(stateStorage.reset(INVITE_STORE_KEY))
+  remove = async contact => {
+    await db.contact.delete(contact.id)
+    return this.loadContacts()
+  }
 
   render() {
+    const message = this.state.alert ? <Message {...this.state.alert}/> : ''
     return <Segment.Group horizontal className="page invite">
-      <Loader active={this.state.busy} size="medium"/>
+      <Dimmer active={!!this.state.busy} inverted>
+        <Loader size="medium">{this.state.busy}</Loader>
+      </Dimmer>
       <Segment>
         <Form onSubmit={this.onSubmit}>
+          {message}
           <Form.Input
             name="file"
             type="file"
@@ -168,7 +172,9 @@ export default class Invite extends Component {
       </Segment>
       <Segment className="contact-list-segment" disabled={this.state.invites.length <= 0}>
         <Header as='h2'>Очередь приглашений</Header>
-        <ContactList list={this.state.invites}/>
+        <ContactList
+          items={this.state.invites}
+        select={this.remove}/>
       </Segment>
     </Segment.Group>
   }

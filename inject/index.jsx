@@ -10,21 +10,20 @@ delete window.Notification
 delete window.ServiceWorker
 delete window.ServiceWorkerContainer
 
-function addContact(login) {
+function invite(contact) {
   waiter('[role=search]', function (input) {
     input.focus()
-    document.execCommand('insertText', true, login)
+    document.execCommand('insertText', true, contact.login)
     waiter('.searchDirectory', function (button) {
       button.click()
       waiter('.directory li:nth-child(2)', function (li) {
         li.click()
         waiter('.contactRequestSend', function (requestButton) {
           requestButton.click()
-          sky.send({
+          sky.send(extend(contact, {
             type: 'invite',
-            login,
             status: Status.INVITED
-          })
+          }))
         })
       })
     })
@@ -105,7 +104,8 @@ addEventListener('load', function () {
   sky.send({type: 'load'})
 })
 
-extend(window, {login, logout, addContact, sendMessage, clearData})
+extend(window, {login, logout, invite, sendMessage, clearData})
+export {login, logout, invite, sendMessage, clearData}
 
 // const a = {
 //   LastName: 'Labiak',

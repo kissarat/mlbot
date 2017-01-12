@@ -1,20 +1,17 @@
 import ContactList from './contact-list.jsx'
 import db from '../database.jsx'
-import React, {Component} from 'react'
+import React from 'react'
 import SelectAccount from './select-account.jsx'
-import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {Form, Segment, Button, List, Loader, Header, Dimmer} from 'semantic-ui-react'
-import {hashHistory} from 'react-router'
 import {seq, setImmediate} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
+import SkypeComponent from './skype-component.jsx'
 
-const DELIVERY_STORE_KEY = 'message'
-
-export default class Delivery extends Component {
+export default class Delivery extends SkypeComponent {
   componentWillReceiveProps(props) {
-    let state = stateStorage.register(DELIVERY_STORE_KEY, ['text', 'account'], {
+    let state = stateStorage.register(this.getStorageName(), ['text', 'account'], {
       contacts: [],
       selections: [],
       busySkype: 'Вход в скайп'
@@ -26,18 +23,6 @@ export default class Delivery extends Component {
       setImmediate(this.initialize)
     }
     this.setState(state)
-  }
-
-  componentWillMount() {
-    this.componentWillReceiveProps(this.props)
-  }
-
-  componentWillUnmount() {
-    stateStorage.unregister(DELIVERY_STORE_KEY, this.state)
-  }
-
-  componentDidUpdate() {
-    stateStorage.save(DELIVERY_STORE_KEY, this.state)
   }
 
   initialize = async() => {
@@ -54,10 +39,6 @@ export default class Delivery extends Component {
   }
 
   onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
-
-  getSkype() {
-    return Skype.open(this.state.account)
-  }
 
   queryContacts(status) {
     const account = this.state.account
@@ -91,10 +72,10 @@ export default class Delivery extends Component {
     return this.loadContacts()
   }
 
-  onSend = async(e, {formData: {text}}) => {
+  onSubmit = async(e, {formData: {text}}) => {
     e.preventDefault()
     const account = this.state.account
-    const skype = await Skype.open(account)
+    const skype = await this.getSkype()
 
     const contacts = await db.contact
       .filter(c =>
@@ -119,22 +100,11 @@ export default class Delivery extends Component {
     return this.loadContacts()
   }
 
-  changeAccount(account) {
-    if (account && account.login !== this.state.account) {
-      hashHistory.push('/delivery/' + account.login)
-    }
-    else if (!account) {
-      hashHistory.push('/delivery')
-    }
-  }
-
-  reset = () => this.setState(stateStorage.reset(DELIVERY_STORE_KEY))
-
   render() {
     return <Segment.Group horizontal className="page delivery">
       <Loader active={this.state.busy} size="medium"/>
       <Segment>
-        <Form onSubmit={this.onSend}>
+        <Form onSubmit={this.onSubmit}>
           <SelectAccount
             value={this.state.account}
             select={account => this.changeAccount(account)}/>
@@ -153,11 +123,11 @@ export default class Delivery extends Component {
       </Segment>
       <Segment className="contact-list-segment" disabled={this.state.busy}>
         <Header textAlign="center" as="h2">Все контакты</Header>
-        <ContactList list={this.state.contacts} select={c => this.select(c.id, true)}/>
+        <ContactList items={this.state.contacts} select={c => this.select(c.id, true)}/>
       </Segment>
       <Segment className="contact-list-segment" disabled={this.state.busy}>
         <Header textAlign="center" as="h2">Избранные контакты</Header>
-        <ContactList list={this.state.selections} select={c => this.select(c.id, false)}/>
+        <ContactList items={this.state.selections} select={c => this.select(c.id, false)}/>
       </Segment>
     </Segment.Group>
   }

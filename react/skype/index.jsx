@@ -17,6 +17,13 @@ extend(Skype.prototype, {
     })
   },
 
+  invite(login) {
+    return new Promise((resolve, reject) => {
+      this.once('invite', resolve)
+      this.invoke('invite', [login])
+    })
+  },
+
   setProfile(profile) {
     try {
       this.profile = profile
