@@ -6,26 +6,24 @@ import Skype from '../skype/index.jsx'
 import {Form, Segment, Button, Input, Loader, Checkbox, Header} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {seq} from '../util/index.jsx'
+import stateStorage from '../util/state-storage.jsx'
 import {Status} from '../../app/config'
-import {toArray} from 'lodash'
+import {toArray, defaults} from 'lodash'
 import {filterSkypeUsernames, setImmediate} from '../util/index.jsx'
 
-const INVITE_LIST_KEY = 'invite'
+const INVITE_STORE_KEY = 'invite'
 
 export default class Invite extends Component {
-  state = {
-    text: localStorage.getItem(INVITE_LIST_KEY) || '',
-    limit: 40,
-    sort: false,
-    invites: []
-  }
-
   componentWillReceiveProps(props) {
-    const account = props.params && props.params.account || false
-    if (account) {
-      this.setState({account})
-      this.loadContacts()
-    }
+    let state = stateStorage.register(INVITE_STORE_KEY, ['text', 'limit', 'account'], {
+      limit: 40,
+      sort: false,
+      account: '',
+      invites: []
+    })
+    state = defaults(props.params, state)
+    this.setState(state)
+    setImmediate(() => this.loadContacts())
   }
 
   componentWillMount() {
@@ -33,7 +31,11 @@ export default class Invite extends Component {
   }
 
   componentWillUnmount() {
-    localStorage.setItem(INVITE_LIST_KEY, this.state.text)
+    stateStorage.unregister(INVITE_STORE_KEY, this.state)
+  }
+
+  componentDidUpdate(props, state) {
+    stateStorage.save(INVITE_STORE_KEY, this.state)
   }
 
   filterSkypeUsernames(text) {
