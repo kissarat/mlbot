@@ -6,7 +6,7 @@ export class StateStorage {
   }
 
   register(name, props = false, state = {}) {
-    this.stores[name] = {props, state: {}}
+    this.stores[name] = {props, state: {}, defaults: state}
     return this.load(name, state)
   }
 
@@ -39,8 +39,11 @@ export class StateStorage {
     delete this.stores[name]
   }
 
-  clear(name) {
-    delete this.stores[name]
+  reset(name) {
+    const store = this.stores[name]
+    store.state = store.defaults || {}
+    localStorage.removeItem(name)
+    return store.state
   }
 }
 

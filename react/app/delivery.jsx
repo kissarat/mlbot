@@ -3,44 +3,29 @@ import db from '../database.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
 import Skype from '../skype/index.jsx'
+import stateStorage from '../util/state-storage.jsx'
 import {Form, Segment, Button, List, Loader, Header, Dimmer} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
-import {seq} from '../util/index.jsx'
+import {seq, setImmediate} from '../util/index.jsx'
 import {Status} from '../../app/config'
-import {toArray} from 'lodash'
+import {toArray, defaults} from 'lodash'
 
-const DELIVERY_TEXT_KEY = 'message'
+const DELIVERY_STORE_KEY = 'message'
 
 export default class Delivery extends Component {
-  state = {
-    text: localStorage.getItem(DELIVERY_TEXT_KEY) || '',
-    contacts: [],
-    selections: []
-  }
-
   componentWillReceiveProps(props) {
-    if (props.params && props.params.account) {
-      const account = props.params.account
-      this.setState({
-        busy: true,
-        account,
-        contacts: [],
-        selections: [],
-        busySkype: 'Вход в скайп'
-      })
-      setTimeout(async() => {
-        try {
-          this.loadContacts()
-          const skype = await this.getSkype()
-          await skype.getProfile()
-          await this.setState({busySkype: false})
-          this.loadContacts()
-        }
-        catch (ex) {
-          console.error(ex)
-        }
-      }, 0)
+    let state = stateStorage.register(DELIVERY_STORE_KEY, ['text', 'account'], {
+      contacts: [],
+      selections: [],
+      busySkype: 'Вход в скайп'
+    })
+    state = defaults(props.params, state)
+    if (state.account) {
+      state.busy = true
+      state.busySkype = 'Вход в скайп'
+      setImmediate(this.initialize)
     }
+    this.setState(state)
   }
 
   componentWillMount() {
@@ -48,7 +33,24 @@ export default class Delivery extends Component {
   }
 
   componentWillUnmount() {
-    localStorage.setItem(DELIVERY_TEXT_KEY, this.state.text)
+    stateStorage.unregister(DELIVERY_STORE_KEY, this.state)
+  }
+
+  componentDidUpdate() {
+    stateStorage.save(DELIVERY_STORE_KEY, this.state)
+  }
+
+  initialize = async() => {
+    try {
+      this.loadContacts()
+      const skype = await this.getSkype()
+      await skype.getProfile()
+      await this.setState({busySkype: false})
+      this.loadContacts()
+    }
+    catch (ex) {
+      console.error(ex)
+    }
   }
 
   onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
@@ -126,11 +128,13 @@ export default class Delivery extends Component {
     }
   }
 
+  reset = () => this.setState(stateStorage.reset(DELIVERY_STORE_KEY))
+
   render() {
-    return <div className="page delivery">
+    return <Segment.Group horizontal className="page delivery">
       <Loader active={this.state.busy} size="medium"/>
-      <Segment.Group>
-        <Segment>
+      <Segment>
+        <Form onSubmit={this.onSend}>
           <SelectAccount
             value={this.state.account}
             select={account => this.changeAccount(account)}/>
@@ -138,27 +142,23 @@ export default class Delivery extends Component {
             <Button onClick={() => this.selectAll(Status.SELECTED)}>все</Button>
             <Button onClick={() => this.selectAll(Status.CREATED)}>никто</Button>
           </div>
-        </Segment>
-        <Segment>
-          <Loader size="medium" active={!!this.state.busySkype}>{this.state.busySkype}</Loader>
-          <Form onSubmit={this.onSend}>
-            <Form.TextArea
-              name="text"
-              placeholder="Текст"
-              value={this.state.text}
-              onChange={this.onChange}/>
-            <Button type="submit" disabled={!!this.state.busySkype}>Послать</Button>
-          </Form>
-        </Segment>
-      </Segment.Group>
-      <div>
+          <Form.TextArea
+            name="text"
+            placeholder="Текст"
+            value={this.state.text}
+            onChange={this.onChange}/>
+          <Button type="submit" disabled={!!this.state.busySkype}>Послать</Button>
+          <Button floated="right" type="button" onClick={this.reset}>Очистить</Button>
+        </Form>
+      </Segment>
+      <Segment className="contact-list-segment" disabled={this.state.busy}>
         <Header textAlign="center" as="h2">Все контакты</Header>
         <ContactList list={this.state.contacts} select={c => this.select(c.id, true)}/>
-      </div>
-      <div>
+      </Segment>
+      <Segment className="contact-list-segment" disabled={this.state.busy}>
         <Header textAlign="center" as="h2">Избранные контакты</Header>
         <ContactList list={this.state.selections} select={c => this.select(c.id, false)}/>
-      </div>
-    </div>
+      </Segment>
+    </Segment.Group>
   }
 }

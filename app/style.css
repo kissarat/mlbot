@@ -88,7 +88,7 @@ webview {
 
 .layout.app .content {
     flex: 1;
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 
 nav ul {
@@ -101,14 +101,32 @@ nav li {
     list-style: none;
 }
 
-.delivery {
+.contact-list-segment {
     display: flex;
+    flex-direction: column;
+}
+
+.scroll {
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.contact-list-segment .scroll {
+    flex: 1;
+}
+
+.page.delivery {
+    display: flex;
+    height: calc(100% - 14px);
+}
+
+.page.delivery > * {
+    flex: 1;
     height: 100%;
 }
 
-.delivery > * {
-    flex: 1;
-    height: 100%;
+.page.invite {
+    height: calc(100% - 14px);
 }
 
 .page.account-list .item:hover {

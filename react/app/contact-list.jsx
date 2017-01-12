@@ -11,6 +11,6 @@ export default class ContactList extends Component {
       return <List.Item key={c.id} onClick={() => this.props.select(c)}>{name}</List.Item>
     })
 
-    return <List>{list}</List>
+    return <List className="scroll">{list}</List>
   }
 }

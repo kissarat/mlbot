@@ -19,6 +19,7 @@ export default class Invite extends Component {
       limit: 40,
       sort: false,
       account: '',
+      text: '',
       invites: []
     })
     state = defaults(props.params, state)
@@ -34,7 +35,7 @@ export default class Invite extends Component {
     stateStorage.unregister(INVITE_STORE_KEY, this.state)
   }
 
-  componentDidUpdate(props, state) {
+  componentDidUpdate() {
     stateStorage.save(INVITE_STORE_KEY, this.state)
   }
 
@@ -120,6 +121,8 @@ export default class Invite extends Component {
     return invites
   }
 
+  reset = () => this.setState(stateStorage.reset(INVITE_STORE_KEY))
+
   render() {
     return <Segment.Group horizontal className="page invite">
       <Loader active={this.state.busy} size="medium"/>
@@ -159,10 +162,11 @@ export default class Invite extends Component {
             <SelectAccount
               value={this.state.account}
               select={account => this.changeAccount(account)}/>
+            <Button floated="right" type="button" onClick={this.reset}>Очистить</Button>
           </div>
         </Form>
       </Segment>
-      <Segment disabled={this.state.invites.length <= 0}>
+      <Segment className="contact-list-segment" disabled={this.state.invites.length <= 0}>
         <Header as='h2'>Очередь приглашений</Header>
         <ContactList list={this.state.invites}/>
       </Segment>
