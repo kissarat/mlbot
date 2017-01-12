@@ -9,8 +9,11 @@ import {seq} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray} from 'lodash'
 
+const DELIVERY_TEXT_KEY = 'message'
+
 export default class Delivery extends Component {
   state = {
+    text: localStorage.getItem(DELIVERY_TEXT_KEY) || '',
     contacts: [],
     selections: []
   }
@@ -40,12 +43,18 @@ export default class Delivery extends Component {
     }
   }
 
-  getSkype() {
-    return Skype.open(this.state.account)
-  }
-
   componentWillMount() {
     this.componentWillReceiveProps(this.props)
+  }
+
+  componentWillUnmount() {
+    localStorage.setItem(DELIVERY_TEXT_KEY, this.state.text)
+  }
+
+  onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
+
+  getSkype() {
+    return Skype.open(this.state.account)
   }
 
   queryContacts(status) {
@@ -133,7 +142,11 @@ export default class Delivery extends Component {
         <Segment>
           <Loader size="medium" active={!!this.state.busySkype}>{this.state.busySkype}</Loader>
           <Form onSubmit={this.onSend}>
-            <Form.TextArea name="text" placeholder="Текст"/>
+            <Form.TextArea
+              name="text"
+              placeholder="Текст"
+              value={this.state.text}
+              onChange={this.onChange}/>
             <Button type="submit" disabled={!!this.state.busySkype}>Послать</Button>
           </Form>
         </Segment>

@@ -50,3 +50,24 @@ export function stringify(object, sep = '&', eq = '=') {
   }
   return strings.join(sep)
 }
+
+export function filterSkypeUsernames(value) {
+  const array = 'string' === typeof value ? value.split(/\s*\n\s*/) : value
+  const accounts = []
+  array.forEach(function (string) {
+    const match =
+      /[^\s]+@[\w\-.]+.\w+/.exec(string) ||
+      /([a-zA-Z]+):?[a-zA-Z0-9.,\-_]{5,31}/.exec(string)
+    if (match) {
+      const login = match[0]
+      if ('facebook:'.indexOf(login) < 0) {
+        accounts.push(login)
+      }
+    }
+  })
+  return accounts
+}
+
+export function setImmediate(fn) {
+  return setTimeout(fn, 0)
+}

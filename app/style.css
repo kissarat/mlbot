@@ -1,3 +1,4 @@
+/*
 @font-face {
     font-family: 'Panton';
     src: url(images/Panton-Black.otf) format("opentype");
@@ -51,9 +52,9 @@
     src: url(images/Panton-Thin.otf) format("opentype");
     font-weight: 100;
 }
+*/
 
 body {
-    font-family: 'Panton', Ubuntu, sans-serif;
 }
 
 #dark {
@@ -112,4 +113,11 @@ nav li {
 
 .page.account-list .item:hover {
     background: rgba(0, 0, 0, 0.1);
+}
+
+.page.invite .limit [type=number] {
+    all: initial;
+    width: 60px;
+    text-align: right;
+    font-family: 'Panton', Ubuntu, sans-serif;
 }
