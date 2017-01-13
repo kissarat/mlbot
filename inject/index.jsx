@@ -10,21 +10,49 @@ delete window.Notification
 delete window.ServiceWorker
 delete window.ServiceWorkerContainer
 
+function insertText(text) {
+  document.execCommand('insertText', true, text)
+}
+
 function invite(contact) {
+  function invited(status) {
+    $$('[role=search]').focus()
+    insertText('')
+    sky.send(extend(contact, {
+      type: 'invite',
+      status
+    }))
+  }
+
+  if ('string' === typeof contact) {
+    contact = {login: contact}
+  }
   waiter('[role=search]', function (input) {
     input.focus()
-    document.execCommand('insertText', true, contact.login)
+    insertText(contact.login)
     waiter('.searchDirectory', function (button) {
       button.click()
-      waiter('.directory li:nth-child(2)', function (li) {
-        li.click()
-        waiter('.contactRequestSend', function (requestButton) {
-          requestButton.click()
-          sky.send(extend(contact, {
-            type: 'invite',
-            status: Status.INVITED
-          }))
-        })
+      waiter.fork({
+        '.people li[data-title]': () => invited(Status.DOUBLE),
+        '.directory [data-bind="text: emptyListText"]': () => invited(Status.ABSENT),
+
+        '.directory li:nth-child(2)': function (li) {
+          li.click()
+          waiter.fork({
+            '.contactRequestSend': function (contactRequestSend) {
+              contactRequestSend.click()
+              invited(Status.INVITED)
+            },
+
+            '.contactRequestOutgoingMessage ~ .buttonRow button': function (button) {
+              button.click()
+              invited(Status.INVITED)
+            },
+
+            '.contactRequestResendMessage': () => invited(Status.DOUBLE),
+            '.contactRequestOutgoingMessage': () => invited(Status.DOUBLE)
+          })
+        },
       })
     })
   })
@@ -38,7 +66,7 @@ function sendMessage(message) {
   waiter('[role=search]', function (input) {
     input.value = ''
     input.focus()
-    document.execCommand('insertText', true, message.login)
+    insertText(message.login)
     waiter(`.searchItem[data-title*="${message.login}"]`, function (button) {
       button.click()
       input.blur()
@@ -104,22 +132,13 @@ addEventListener('load', function () {
   sky.send({type: 'load'})
 })
 
-extend(window, {login, logout, invite, sendMessage, clearData})
-export {login, logout, invite, sendMessage, clearData}
+export {
+  login,
+  logout,
+  invite,
+  sendMessage,
+  clearData,
+  insertText
+}
 
-// const a = {
-//   LastName: 'Labiak',
-//   FirstName: 'Taras',
-//   Password: 'password',
-//   RetypePassword: 'password',
-//   BirthDay: '20',
-//   BirthMonth: '9',
-//   BirthYear: '1989',
-//   Gender: 'm',
-//   PhoneCountry: 'UA',
-//   PhoneNumber: '671541943',
-//   MemberName: 'k.issarat@gmail.com'
-// };
-// for (const k in a) {
-//   document.querySelector(`#${k}`).value = a[k]
-// }
+extend(window, exports)

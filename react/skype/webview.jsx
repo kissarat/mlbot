@@ -1,7 +1,10 @@
 import config from '../../app/config'
 import {EventEmitter} from 'events'
 import {extend, isObject, sample} from 'lodash'
-window.isObject = isObject
+window.isObject = function (obj) {
+  console.error('Global isObject')
+  return isObject(obj)
+}
 
 window.profiles = {}
 

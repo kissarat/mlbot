@@ -87,30 +87,34 @@ export default class Invite extends SkypeComponent {
         await db.contact.bulkAdd(invites)
       }
       await this.loadContacts()
-      this.setBusy('Вход в скайп')
-      const skype = await this.getSkype()
+      if (this.state.invites) {
+        this.setBusy('Вход в скайп')
+        const skype = await this.getSkype()
 
-      const invites = await db.contact
-        .filter(c =>
-          account === c.account &&
-          Status.SELECTED === c.status &&
-          !c.authorized
-        )
-        .toArray()
+        const invites = await db.contact
+          .filter(c =>
+            account === c.account &&
+            Status.SELECTED === c.status && !c.authorized
+          )
+          .toArray()
 
-      const informInvited = i => this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
+        const informInvited = i => this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
 
-      informInvited(0)
-      const promises = invites.map((contact, i) => async() => {
-        await skype.invite(contact)
-        await db.contact.update(id, {status: Status.CREATED})
-        informInvited(i)
-        return this.loadContacts()
-      })
+        informInvited(0)
+        const promises = invites.map((contact, i) => async() => {
+          await skype.invite(contact)
+          await db.contact.update(contact.id, {status: Status.CREATED})
+          informInvited(i)
+          return this.loadContacts()
+        })
 
-      await seq(promises)
-      this.setBusy(false)
-      this.alert('success', 'Все преглашены!')
+        await seq(promises)
+        this.setBusy(false)
+        this.alert('success', 'Все преглашены!')
+      }
+      else {
+        this.alert('error', 'Список пуст')
+      }
     }
     catch (ex) {
       console.error(ex)

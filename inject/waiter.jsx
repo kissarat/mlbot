@@ -55,6 +55,28 @@ function waiter(selectors, cb) {
   setTimeout(loop, 0)
 }
 
+waiter.interval = function (selector, cb) {
+  const timer = setInterval(function () {
+    const element = $$(selector)
+    if (element) {
+      clearInterval(timer)
+      cb(element)
+    }
+  }, DELAY)
+  return timer
+}
+
+waiter.fork = function (selectors) {
+  const timers = []
+  each(selectors, function (cb, selector) {
+    timers.push(waiter.interval(selector, function (element) {
+      timers.forEach(clearInterval)
+      cb(element)
+    }))
+  })
+  return timers
+}
+
 waiter.next = function (selectors, cb, vars = {}) {
   selectors = 'string' === typeof selectors ? `'${selectors}'` : JSON.stringify(selectors)
   cb = cb.toString()
