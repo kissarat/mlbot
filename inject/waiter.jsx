@@ -67,14 +67,17 @@ waiter.interval = function (selector, cb) {
 }
 
 waiter.fork = function (selectors) {
-  const timers = []
-  each(selectors, function (cb, selector) {
-    timers.push(waiter.interval(selector, function (element) {
-      timers.forEach(clearInterval)
-      cb(element)
-    }))
-  })
-  return timers
+  const timer = setInterval(function () {
+    for(const selector in selectors) {
+      const element = $$(selector)
+      if (element) {
+        clearInterval(timer)
+        selectors[selector](element)
+        break
+      }
+    }
+  }, DELAY)
+  return timer
 }
 
 waiter.next = function (selectors, cb, vars = {}) {
