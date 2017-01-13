@@ -1,7 +1,7 @@
 module.exports = {
   dev: true,
   reset: false,
-  origin: 'http://sam.ternopil.ru',
+  origin: 'http://mlbot.inbisoft.ga',
   window: {
     minWidth: 640,
     minHeight: 480,
