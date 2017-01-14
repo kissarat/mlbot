@@ -1,3 +1,15 @@
+Object.defineProperties(window, {
+  isDevMode: {
+    get() {
+      return !!+localStorage.getItem('dev')
+    },
+
+    set(value) {
+      localStorage.setItem('dev', value ? 1 : 0)
+    }
+  }
+})
+
 import React, {Component} from 'react'
 import {Menu, Segment, Checkbox} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
@@ -23,7 +35,7 @@ export default class App extends Component {
         webview.closeDevTools()
       }
     })
-    localStorage.setItem('dev', value ? 1 : 0)
+    window.isDevMode = value
   }
 
   render() {
@@ -31,7 +43,7 @@ export default class App extends Component {
       <Menu.Item>
         <Checkbox
           label="Режим разработчика"
-          value={+localStorage.getItem('dev') ? 'dev' : ''}
+          value={isDevMode ? 'dev' : ''}
           onChange={(e, d) => this.developerMode(d.checked)}/>
       </Menu.Item>
     : ''

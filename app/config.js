@@ -1,4 +1,13 @@
-module.exports = {
+const _ = require('lodash')
+
+let local
+try {
+  local = require('../local')
+}
+catch (ex) {
+}
+
+const config = {
   dev: true,
   reset: false,
   origin: 'http://mlbot.inbisoft.ga',
@@ -21,3 +30,5 @@ module.exports = {
     DOUBLE: 5,
   })
 }
+
+module.exports = _.defaultsDeep(local, config)

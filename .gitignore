@@ -4,3 +4,4 @@ images
 inject.js*
 node_modules
 react.js*
+local.json
