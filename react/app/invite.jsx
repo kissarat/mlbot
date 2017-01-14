@@ -90,27 +90,7 @@ export default class Invite extends SkypeComponent {
       if (this.state.invites) {
         this.setBusy('Вход в скайп')
         const skype = await this.getSkype()
-
-        const invites = await db.contact
-          .filter(c =>
-            account === c.account &&
-            Status.SELECTED === c.status && !c.authorized
-          )
-          .toArray()
-
-        const informInvited = i => this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
-
-        informInvited(0)
-        const promises = invites.map((contact, i) => async() => {
-          await skype.invite(contact)
-          await db.contact.update(contact.id, {status: Status.CREATED})
-          informInvited(i)
-          return this.loadContacts()
-        })
-
-        await seq(promises)
-        this.setBusy(false)
-        this.alert('success', 'Все преглашены!')
+        setTimeout(() => this.processInviteList(skype), 3000)
       }
       else {
         this.alert('error', 'Список пуст')
@@ -119,6 +99,38 @@ export default class Invite extends SkypeComponent {
     catch (ex) {
       console.error(ex)
     }
+  }
+
+  async processInviteList(skype) {
+    skype.openSettings()
+
+    const invites = await db.contact
+      .filter(c =>
+        this.state.account === c.account &&
+        Status.SELECTED === c.status && !c.authorized
+      )
+      .limit(40)
+      .toArray()
+
+    const informInvited = i => this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
+
+    informInvited(0)
+    const promises = invites.map((contact, i) => async() => {
+      await skype.invite(contact)
+      if (Status.ABSENT === contact.status) {
+        await db.contact.delete(contact.id)
+      }
+      else {
+        await db.contact.update(contact.id, {status: Status.CREATED})
+      }
+      informInvited(i)
+      return this.loadContacts()
+    })
+
+    // skype.insertSpaceInterval()
+    await seq(promises)
+    this.setBusy(false)
+    this.alert('success', 'Все преглашены!')
   }
 
   async loadContacts() {

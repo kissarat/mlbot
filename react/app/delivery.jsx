@@ -76,6 +76,7 @@ export default class Delivery extends SkypeComponent {
     e.preventDefault()
     const account = this.state.account
     const skype = await this.getSkype()
+    skype.openSettings()
 
     const contacts = await db.contact
       .filter(c =>

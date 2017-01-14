@@ -16,8 +16,7 @@ function insertText(text) {
 
 function invite(contact) {
   function invited(status) {
-    $$('[role=search]').focus()
-    insertText('')
+    $$('[role=search]').value = ''
     sky.send(extend(contact, {
       type: 'invite',
       status
@@ -29,6 +28,7 @@ function invite(contact) {
   }
   waiter('[role=search]', function (input) {
     input.focus()
+    input.value = ''
     insertText(contact.login)
     waiter('.searchDirectory', function (button) {
       button.click()
@@ -36,15 +36,15 @@ function invite(contact) {
         '.people li[data-title]': () => invited(Status.DOUBLE),
         '.directory [data-bind="text: emptyListText"]': () => invited(Status.ABSENT),
 
-        '.directory li:nth-child(2)': function (li) {
+        '.directory li:nth-child(2)' (li) {
           li.click()
           waiter.fork({
-            '.contactRequestSend': function (contactRequestSend) {
+            '.contactRequestSend' (contactRequestSend) {
               contactRequestSend.click()
               invited(Status.INVITED)
             },
 
-            '.contactRequestOutgoingMessage ~ .buttonRow button': function (button) {
+            '.contactRequestOutgoingMessage ~ .buttonRow button' (button) {
               button.click()
               invited(Status.INVITED)
             },
@@ -56,6 +56,27 @@ function invite(contact) {
       })
     })
   })
+}
+
+function insertSpaceInterval() {
+  if (!insertSpaceInterval.timer) {
+    insertSpaceInterval.timer = setInterval(function () {
+        const input = $$('[role=search]')
+        let text = input.value.trim()
+        if (text) {
+          input.focus()
+          input.value = ''
+          if (Math.random() > 0.5) {
+            text += ' '
+          }
+          else {
+            text = ' ' + text
+          }
+          insertText(text)
+        }
+      },
+      2000)
+  }
 }
 
 function sendMessage(message) {
@@ -128,6 +149,10 @@ function clearData() {
   })
 }
 
+function openSettings() {
+  $$('#menuItem-userSettings').click()
+}
+
 addEventListener('load', function () {
   sky.send({type: 'load'})
 })
@@ -138,7 +163,9 @@ export {
   invite,
   sendMessage,
   clearData,
-  insertText
+  insertText,
+  openSettings,
+  insertSpaceInterval
 }
 
 extend(window, exports)

@@ -24,6 +24,14 @@ extend(Skype.prototype, {
     })
   },
 
+  openSettings() {
+    this.invoke('openSettings')
+  },
+
+  insertSpaceInterval() {
+    this.invoke('insertSpaceInterval')
+  },
+
   setProfile(profile) {
     try {
       this.profile = profile

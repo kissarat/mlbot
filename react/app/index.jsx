@@ -39,14 +39,15 @@ export default class App extends Component {
   }
 
   render() {
-    const devMode = config.dev ?
-      <Menu.Item>
-        <Checkbox
-          label="Режим разработчика"
-          value={isDevMode ? 'dev' : ''}
-          onChange={(e, d) => this.developerMode(d.checked)}/>
-      </Menu.Item>
-    : ''
+    // const devMode = config.dev ?
+    //   {/*<Menu.Item>*/}
+    //     {/*<Checkbox*/}
+          // label="Режим разработчика"
+          // value={isDevMode ? 'dev' : ''}
+          // onChange={(e, d) => this.developerMode(d.checked)}/>
+      // </Menu.Item>
+    // : ''
+    const devMode = ''
     return <div className="layout app">
       <Menu attached="top">
         <Menu.Item name="Аккаунты" {...itemUrl('/accounts')}/>

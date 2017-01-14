@@ -54,7 +54,7 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
   },
 
   invoke(fn, args) {
-    const formatted = []
+    let formatted = []
     if (args instanceof Array) {
       args.forEach(function (a) {
         if ('string' === typeof a) {
@@ -66,6 +66,7 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
         formatted.push(a)
       })
     }
+    formatted = formatted.join(',')
     this.executeJavaScript(`${fn}(${formatted})`)
   },
 

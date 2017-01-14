@@ -55,6 +55,8 @@ function waiter(selectors, cb) {
   setTimeout(loop, 0)
 }
 
+waiter.DELAY = DELAY
+
 waiter.interval = function (selector, cb) {
   const timer = setInterval(function () {
     const element = $$(selector)
