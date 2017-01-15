@@ -1,9 +1,10 @@
 import db from '../database.jsx'
 import Skype from './static.jsx'
-import {clear} from '../util/index.jsx'
+import {clear, wait} from '../util/index.jsx'
 import {EventEmitter} from 'events'
 import {extend, toArray, each} from 'lodash'
-import {Status} from '../../app/config'
+import {Status, start} from '../../app/config'
+import request from 'request-promise'
 
 extend(Skype.prototype, {
   async getProfile() {
@@ -79,6 +80,34 @@ extend(Skype.prototype, {
     await db.contact.bulkDelete(absent)
     await db.contact.bulkPut(profile.contacts)
     return this
+  },
+
+  reloadProfile() {
+    if (this.profile) {
+      this.profile = null
+      this.reload()
+      return this.getProfile()
+        // .then(function () {
+        //   return new Promise(function (resolve) {
+        //     setTimeout(resolve, 10000)
+        //   })
+        // })
+    }
+  },
+
+  accept(username) {
+    return request({
+      method: 'PUT',
+      // url: `https://client-s.gateway.messenger.live.com/v1/users/ME/contacts/` + username,
+      url: `https://contacts.skype.com/contacts/v2/users/${this.profile.username}/invites/${username}/accept`,
+      header: {
+        'X-Skypetoken': this.profile.token,
+        RegistrationToken: this.profile.RegistrationToken
+      }
+    })
+      .then(function (body) {
+        console.log(body)
+      })
   }
 })
 

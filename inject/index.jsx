@@ -14,14 +14,27 @@ function insertText(text) {
   document.execCommand('insertText', true, text)
 }
 
+function pause(value = true) {
+  pause.value = value
+}
+
+function checkPause(name) {
+  if (pause.value) {
+    pause.value = false
+    const object = {type: 'pause'}
+    if (name) {
+      object.name = name
+    }
+    sky.send(object)
+  }
+}
+
 function invite(contact) {
-  let directoryTimer
-  let contactRequestTimer
+  const search = $$('[role=search]')
 
   function invited(status) {
-    $$('[role=search]').value = ''
-    clearInterval(directoryTimer)
-    clearInterval(contactRequestTimer)
+    search.focus()
+    search.value = ''
     sky.send(extend(contact, {
       type: 'invite',
       status
@@ -31,40 +44,36 @@ function invite(contact) {
   if ('string' === typeof contact) {
     contact = {login: contact}
   }
-  waiter('[role=search]', function (input) {
-    input.focus()
-    input.value = ''
-    insertText(contact.login)
+  search.focus()
+  search.value = ''
+  insertText(contact.login)
+  waiter.fork({
+    '.people li[data-title]': () => invited(Status.DOUBLE),
+    '.searchDirectory' (searchDirectory) {
+      searchDirectory.click()
+      checkPause('searchDirectoryButton')
+      waiter.fork({
+        '.directory [data-bind*="emptyListText"]': () => invited(Status.ABSENT),
+        '.directory li:nth-child(2)' (li) {
+          li.click()
+          checkPause('directory')
+          waiter.fork({
+            '.contactRequestSend' (contactRequestSend) {
+              contactRequestSend.click()
+              invited(Status.INVITED)
+            },
 
-    waiter('.searchDirectory', function (button) {
-      button.click()
-      let found
-      directoryTimer = setInterval(function () {
-          if ($$('.directory [data-bind*="emptyListText"]')) {
-            invited(Status.ABSENT)
-          }
-          else if ($$('.people li[data-title]')) {
-            invited(Status.DOUBLE)
-          }
-          else if (found = $$('.directory li:nth-child(2)')) {
-            found.click()
-            contactRequestTimer = setInterval(function () {
-                if (found = $$('.contactRequestSend') || $$('.contactRequestOutgoingMessage ~ .buttonRow button')) {
-                  found.click()
-                  invited(Status.INVITED)
-                }
-                else if ($$('.contactRequestResendMessage') || $$('.contactRequestOutgoingMessage')) {
-                  invited(Status.DOUBLE)
-                }
-                else {
-                  console.log('Nothing found')
-                }
-              },
-              waiter.DELAY)
-          }
-        } ,
-        waiter.DELAY)
-    })
+            '.contactRequestOutgoingMessage ~ .buttonRow button' (button) {
+              button.click()
+              invited(Status.INVITED)
+            },
+
+            '.contactRequestResendMessage': () => invited(Status.DOUBLE),
+            '.contactRequestOutgoingMessage': () => invited(Status.DOUBLE)
+          })
+        },
+      })
+    }
   })
 }
 
@@ -175,7 +184,9 @@ export {
   clearData,
   insertText,
   openSettings,
-  insertSpaceInterval
+  insertSpaceInterval,
+  checkPause,
+
 }
 
 extend(window, exports)

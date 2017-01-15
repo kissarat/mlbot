@@ -71,3 +71,7 @@ export function filterSkypeUsernames(value) {
 export function setImmediate(fn) {
   return setTimeout(fn, 0)
 }
+
+export function wait(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}

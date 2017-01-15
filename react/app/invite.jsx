@@ -3,12 +3,12 @@ import db from '../database.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
 import {Form, Segment, Button, Input, Loader, Checkbox, Header, Message, Dimmer} from 'semantic-ui-react'
-import {seq} from '../util/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import {filterSkypeUsernames, setImmediate} from '../util/index.jsx'
+import {filterSkypeUsernames, setImmediate, wait} from '../util/index.jsx'
 import SkypeComponent from './skype-component.jsx'
+import config from '../../app/config'
 
 export default class Invite extends SkypeComponent {
   componentWillReceiveProps(props) {
@@ -86,14 +86,14 @@ export default class Invite extends SkypeComponent {
         }))
         await db.contact.bulkAdd(invites)
       }
-      await this.loadContacts()
-      if (this.state.invites) {
+      const invites = await this.loadContacts()
+      if (this.state.invites.length > 0) {
         this.setBusy('Вход в скайп')
         const skype = await this.getSkype()
-        setTimeout(() => this.processInviteList(skype), 3000)
+        setTimeout(() => this.processInviteList(skype, invites.length), config.start.delay)
       }
       else {
-        this.alert('error', 'Список пуст')
+        this.alert('error', 'Все контакты уже добавлены')
       }
     }
     catch (ex) {
@@ -101,35 +101,63 @@ export default class Invite extends SkypeComponent {
     }
   }
 
-  async processInviteList(skype) {
+  async processInviteList(skype, invitesCount) {
+    let last = Date.now()
+    const timer = setInterval(function () {
+        const time = Date.now()
+        const delta = time - last
+        if (delta > config.invite.timeout) {
+          const promise = skype.reloadProfile()
+          if (promise) {
+            promise
+              .then(function () {
+                pull()
+              })
+              .catch(function (err) {
+                console.error(err)
+              })
+          }
+          last = time
+        }
+      },
+      config.invite.interval)
     skype.openSettings()
+    const query = c => this.state.account === c.account && Status.SELECTED === c.status && !c.authorized
 
-    const invites = await db.contact
-      .filter(c =>
-        this.state.account === c.account &&
-        Status.SELECTED === c.status && !c.authorized
-      )
-      .limit(40)
-      .toArray()
+    if (invitesCount > 40) {
+      invitesCount = 40
+    }
 
-    const informInvited = i => this.setBusy(`Приглашено ${i} контактов из ${invites.length}`)
+    const informInvited = i => this.setBusy(`Приглашено ${i} контактов из ${invitesCount}`)
 
-    informInvited(0)
-    const promises = invites.map((contact, i) => async() => {
+    let i = 0
+    const pull = async() => {
+      const contact = await db.contact
+        .filter(query)
+        .first()
+      last = Date.now()
       const answer = await skype.invite(contact)
-      console.log(contact)
+      // console.log(answer)
+      last = Date.now()
       if (Status.ABSENT === answer.status) {
         await db.contact.delete(contact.id)
       }
       else {
         await db.contact.update(contact.id, {status: Status.CREATED})
       }
-      informInvited(i)
-      return this.loadContacts()
-    })
+      informInvited(++i)
+      await this.loadContacts()
+      if (i < invitesCount) {
+        await pull()
+      }
+      else {
+        clearInterval(timer)
+      }
+    }
 
-    // skype.insertSpaceInterval()
-    await seq(promises)
+    informInvited(0)
+    await pull()
+    clearInterval(timer)
     this.setBusy(false)
     this.alert('success', 'Все преглашены!')
   }
@@ -199,7 +227,7 @@ export default class Invite extends SkypeComponent {
         <Header as='h2'>Очередь приглашений</Header>
         <ContactList
           items={this.state.invites}
-        select={this.remove}/>
+          select={this.remove}/>
       </Segment>
     </Segment.Group>
   }
