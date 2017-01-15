@@ -17,10 +17,10 @@ extend(Skype.prototype, {
     })
   },
 
-  invite(login) {
+  invite(contact) {
     return new Promise((resolve, reject) => {
+      this.invoke('invite', [contact])
       this.once('invite', resolve)
-      this.invoke('invite', [login])
     })
   },
 

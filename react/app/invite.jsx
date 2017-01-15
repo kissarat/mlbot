@@ -116,8 +116,9 @@ export default class Invite extends SkypeComponent {
 
     informInvited(0)
     const promises = invites.map((contact, i) => async() => {
-      await skype.invite(contact)
-      if (Status.ABSENT === contact.status) {
+      const answer = await skype.invite(contact)
+      console.log(contact)
+      if (Status.ABSENT === answer.status) {
         await db.contact.delete(contact.id)
       }
       else {

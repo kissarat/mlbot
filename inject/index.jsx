@@ -15,8 +15,13 @@ function insertText(text) {
 }
 
 function invite(contact) {
+  let directoryTimer
+  let contactRequestTimer
+
   function invited(status) {
     $$('[role=search]').value = ''
+    clearInterval(directoryTimer)
+    clearInterval(contactRequestTimer)
     sky.send(extend(contact, {
       type: 'invite',
       status
@@ -30,30 +35,35 @@ function invite(contact) {
     input.focus()
     input.value = ''
     insertText(contact.login)
+
     waiter('.searchDirectory', function (button) {
       button.click()
-      waiter.fork({
-        '.people li[data-title]': () => invited(Status.DOUBLE),
-        '.directory [data-bind="text: emptyListText"]': () => invited(Status.ABSENT),
-
-        '.directory li:nth-child(2)' (li) {
-          li.click()
-          waiter.fork({
-            '.contactRequestSend' (contactRequestSend) {
-              contactRequestSend.click()
-              invited(Status.INVITED)
-            },
-
-            '.contactRequestOutgoingMessage ~ .buttonRow button' (button) {
-              button.click()
-              invited(Status.INVITED)
-            },
-
-            '.contactRequestResendMessage': () => invited(Status.DOUBLE),
-            '.contactRequestOutgoingMessage': () => invited(Status.DOUBLE)
-          })
-        },
-      })
+      let found
+      directoryTimer = setInterval(function () {
+          if ($$('.directory [data-bind*="emptyListText"]')) {
+            invited(Status.ABSENT)
+          }
+          else if ($$('.people li[data-title]')) {
+            invited(Status.DOUBLE)
+          }
+          else if (found = $$('.directory li:nth-child(2)')) {
+            found.click()
+            contactRequestTimer = setInterval(function () {
+                if (found = $$('.contactRequestSend') || $$('.contactRequestOutgoingMessage ~ .buttonRow button')) {
+                  found.click()
+                  invited(Status.INVITED)
+                }
+                else if ($$('.contactRequestResendMessage') || $$('.contactRequestOutgoingMessage')) {
+                  invited(Status.DOUBLE)
+                }
+                else {
+                  console.log('Nothing found')
+                }
+              },
+              waiter.DELAY)
+          }
+        } ,
+        waiter.DELAY)
     })
   })
 }
