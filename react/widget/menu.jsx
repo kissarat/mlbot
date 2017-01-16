@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router'
+import React, {Component} from 'react'
+import {Link} from 'react-router'
 
 export default class Menu extends Component {
   static normalize(items, external = false) {
     return items.map(item => item instanceof Array
-      ? { name: item[0], url: item[1], external } : item)
+      ? {name: item[0], url: item[1], external} : item)
   }
 
   render() {
@@ -12,7 +12,7 @@ export default class Menu extends Component {
     const items = this.props.items.map(function ({name, url, icon, external}) {
       const content = []
       if (icon) {
-        content.push(<i key="icon" className={icon} />)
+        content.push(<i key="icon" className={icon}/>)
       }
       content.push(<span key="name">{name}</span>)
       let anchor

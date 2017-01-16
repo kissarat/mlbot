@@ -10,11 +10,12 @@ Object.defineProperties(window, {
   }
 })
 
-import React, {Component} from 'react'
-import {Menu, Segment, Checkbox} from 'semantic-ui-react'
-import {hashHistory} from 'react-router'
 import config from '../../app/config'
+import Footer from '../widget/footer.jsx'
+import React, {Component} from 'react'
 import {each} from 'lodash'
+import {hashHistory} from 'react-router'
+import {Menu, Segment, Checkbox, Image} from 'semantic-ui-react'
 
 function itemUrl(url) {
   return {
@@ -39,23 +40,18 @@ export default class App extends Component {
   }
 
   render() {
-    // const devMode = config.dev ?
-    //   {/*<Menu.Item>*/}
-    //     {/*<Checkbox*/}
-          // label="Режим разработчика"
-          // value={isDevMode ? 'dev' : ''}
-          // onChange={(e, d) => this.developerMode(d.checked)}/>
-      // </Menu.Item>
-    // : ''
     const devMode = ''
     return <div className="layout app">
       <Menu attached="top">
+        <Menu.Item>
+          <Image src="images/menu-logo.png"/>
+        </Menu.Item>
         <Menu.Item name="Аккаунты" {...itemUrl('/accounts')}/>
         <Menu.Item name="Рассылка" {...itemUrl('/delivery')}/>
         <Menu.Item name="Приглашения" {...itemUrl('/invite')}/>
-        {devMode}
       </Menu>
       <Segment attached="bottom" className="content">{this.props.children}</Segment>
+      <Footer/>
     </div>
   }
 }

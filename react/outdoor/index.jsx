@@ -1,8 +1,12 @@
 import React, {Component} from 'react'
+import Footer from '../widget/footer.jsx'
 
 export default class Outdoor extends Component {
   render() {
-    return <div className="layout outdoor">{this.props.children}</div>
+    return <div className="layout outdoor">
+      <div className="content">{this.props.children}</div>
+      <Footer/>
+    </div>
   }
 }
 
