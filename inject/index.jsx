@@ -29,54 +29,6 @@ function checkPause(name) {
   }
 }
 
-function invite(contact) {
-  const search = $$('[role=search]')
-
-  function invited(status) {
-    search.focus()
-    search.value = ''
-    sky.send(extend(contact, {
-      type: 'invite',
-      status
-    }))
-  }
-
-  if ('string' === typeof contact) {
-    contact = {login: contact}
-  }
-  search.focus()
-  search.value = ''
-  insertText(contact.login)
-  waiter.fork({
-    '.people li[data-title]': () => invited(Status.DOUBLE),
-    '.searchDirectory' (searchDirectory) {
-      searchDirectory.click()
-      checkPause('searchDirectoryButton')
-      waiter.fork({
-        '.directory [data-bind*="emptyListText"]': () => invited(Status.ABSENT),
-        '.directory li:nth-child(2)' (li) {
-          li.click()
-          checkPause('directory')
-          waiter.fork({
-            '.contactRequestSend' (contactRequestSend) {
-              contactRequestSend.click()
-              invited(Status.INVITED)
-            },
-
-            '.contactRequestOutgoingMessage ~ .buttonRow button' (button) {
-              button.click()
-              invited(Status.INVITED)
-            },
-
-            '.contactRequestResendMessage': () => invited(Status.DOUBLE),
-            '.contactRequestOutgoingMessage': () => invited(Status.DOUBLE)
-          })
-        },
-      })
-    }
-  })
-}
-
 function insertSpaceInterval() {
   if (!insertSpaceInterval.timer) {
     insertSpaceInterval.timer = setInterval(function () {
@@ -179,14 +131,12 @@ addEventListener('load', function () {
 export {
   login,
   logout,
-  invite,
   sendMessage,
   clearData,
   insertText,
   openSettings,
   insertSpaceInterval,
-  checkPause,
-
+  checkPause
 }
 
 extend(window, exports)

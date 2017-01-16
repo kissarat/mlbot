@@ -8,7 +8,7 @@ catch (ex) {
 }
 
 const config = {
-  dev: true,
+  dev: false,
   reset: false,
   origin: 'http://mlbot.inbisoft.ga',
   window: {

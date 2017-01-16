@@ -1,5 +1,6 @@
 import {sky} from './sky.jsx'
-import {defaultsDeep, extend} from 'lodash'
+import {defaultsDeep, merge, extend} from 'lodash'
+import {Status} from '../app/config'
 
 const XHROpen = XMLHttpRequest.prototype.open
 
@@ -18,31 +19,30 @@ extend(sky, {
     return sky.fetch(`https://contacts.skype.com/contacts/v1/users/${username}/contacts`)
   },
 
-  accept(username) {
-    // return sky.fetch(`https://api.skype.com/users/self/contacts/auth-request/${username}/accept`)
-    // return sky.fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/contacts/' + username)
-    // return sky.fetch(`https://contacts.skype.com/contacts/v2/users/${sky.profile.username}/invites/${username}/accept`, {
-    //   method: 'PUT'
-    // })
-    return sky.fetch(`https://contacts.skype.com/contacts/v2/users/${this.profile.username}/contacts`, {
+  invite(username, greeting = '') {
+    return fetch(`https://contacts.skype.com/contacts/v2/users/${this.profile.username}/contacts`, {
       method: 'POST',
-      headers: {
+      headers: merge(sky.fetchOptions.headers, {
         'content-type': 'application/json'
-      },
+      }),
       body: JSON.stringify({
         mri: '8:' + username,
-        greeting: 'Hello'
+        greeting
       })
     })
   }
 })
 
 extend(window, {
-  accept(username) {
-    sky.accept(username)
-      .then(function (json) {
-        json.type = 'accept'
-        console.log(json)
+  invite(username) {
+    sky.invite(username)
+      .then(function ({status}) {
+        status = 404 === status ? Status.ABSENT : Status.INVITED
+        sky.send({
+          type: 'invite',
+          username,
+          status
+        })
       })
   }
 })

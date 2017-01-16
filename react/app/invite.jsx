@@ -102,25 +102,6 @@ export default class Invite extends SkypeComponent {
   }
 
   async processInviteList(skype, invitesCount) {
-    let last = Date.now()
-    const timer = setInterval(function () {
-        const time = Date.now()
-        const delta = time - last
-        if (delta > config.invite.timeout) {
-          const promise = skype.reloadProfile()
-          if (promise) {
-            promise
-              .then(function () {
-                pull()
-              })
-              .catch(function (err) {
-                console.error(err)
-              })
-          }
-          last = time
-        }
-      },
-      config.invite.interval)
     skype.openSettings()
     const query = c => this.state.account === c.account && Status.SELECTED === c.status && !c.authorized
 
@@ -135,10 +116,8 @@ export default class Invite extends SkypeComponent {
       const contact = await db.contact
         .filter(query)
         .first()
-      last = Date.now()
-      const answer = await skype.invite(contact)
-      // console.log(answer)
-      last = Date.now()
+      const answer = await skype.invite(contact.login)
+      console.log(answer)
       if (Status.ABSENT === answer.status) {
         await db.contact.delete(contact.id)
       }
@@ -150,14 +129,10 @@ export default class Invite extends SkypeComponent {
       if (i < invitesCount) {
         await pull()
       }
-      else {
-        clearInterval(timer)
-      }
     }
 
     informInvited(0)
     await pull()
-    clearInterval(timer)
     this.setBusy(false)
     this.alert('success', 'Все преглашены!')
   }
