@@ -1,4 +1,3 @@
-/*
 @font-face {
     font-family: 'Panton';
     src: url(images/Panton-Black.otf) format("opentype");
@@ -52,7 +51,11 @@
     src: url(images/Panton-Thin.otf) format("opentype");
     font-weight: 100;
 }
-*/
+
+* {
+	font-size: Panton, sans-serif;
+	font-weight: 400;
+}
 
 body {
 }
@@ -143,4 +146,68 @@ nav li {
     width: 60px;
     text-align: right;
     font-family: 'Panton', Ubuntu, sans-serif;
+}
+
+#app > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100vh;
+    padding: 15px 15px;
+}
+
+#app > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100vh;
+    padding: 15px 15px;
+}
+
+.content .one.column.row > .column {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+}
+
+footer .two.column.row > .column:first-child {
+    flex-direction: row;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+}
+
+footer {
+    position: relative;
+	padding: 15px;
+}
+
+footer .control > * {
+    cursor: pointer;
+}
+
+footer.expanded .chevron {
+    display: none;
+}
+
+footer.expanded .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+footer.collapsed .close, footer.collapsed .advertise {
+    display: none;
+}
+
+footer .control i:hover {
+	cursor: pointer;
+}
+
+footer img {
+	max-width: 45% !important;
+	display: inline-block !important;
+	height: auto;
 }

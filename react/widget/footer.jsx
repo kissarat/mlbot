@@ -18,14 +18,6 @@ export default class Footer extends Component {
   render() {
     const className = (this.state.collapsed ? 'collapsed' : 'expanded') + ' widget footer'
     return <footer className={className}>
-      <div className="control">
-        <Icon name="chevron up"
-              size="large"
-              onClick={() => this.setCollapsed(false)}/>
-        <Icon name="close"
-              size="large"
-              onClick={() => this.setCollapsed(true)}/>
-      </div>
       <Grid className="advertise">
         <Grid.Row columns={2}>
           <Grid.Column>
@@ -46,6 +38,14 @@ export default class Footer extends Component {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <div className="control">
+        <Icon name="chevron up"
+              size="large"
+              onClick={() => this.setCollapsed(false)}/>
+        <Icon name="close"
+              size="large"
+              onClick={() => this.setCollapsed(true)}/>
+      </div>
     </footer>
   }
 }

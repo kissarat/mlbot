@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {shell} from 'electron'
 
 export default class BrowserLink extends Component {
   openUrl = e => {

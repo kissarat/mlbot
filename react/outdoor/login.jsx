@@ -2,7 +2,6 @@ import api from '../connect/api.jsx'
 import React, {Component} from 'react'
 import {Button, Form, Grid, Image, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
-import {shell} from 'electron'
 import BrowserLink from '../widget/browser-link.jsx'
 
 export default class Login extends Component {
