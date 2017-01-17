@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router'
-import {List, Loader, Icon} from 'semantic-ui-react'
+import {List, Loader, Icon, Message} from 'semantic-ui-react'
 import Skype from '../skype/index.jsx'
 import api from '../connect/api.jsx'
 // import {debounce} from 'lodash'
@@ -44,8 +44,15 @@ export default class AccountList extends Component {
     else {
       accounts = <Loader active size="large">Загрузка списка аккаунтов</Loader>
     }
+
+    const addSkype = this.state.accounts && this.state.accounts.length > 5
+      ? <Message warning>
+      <Message.Header>Печалька</Message.Header>
+      <p>К сожалению в данной версии приложения вы не можете добавить больше 5-ти скайпов</p>
+    </Message>
+      : <Link to="/accounts/login">Добавить Skype</Link>
     return <div className="page account-list">
-      <Link to="/accounts/login">Добавить Skype</Link>
+      {addSkype}
       {accounts}
     </div>
   }

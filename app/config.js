@@ -10,7 +10,7 @@ catch (ex) {
 const config = {
   dev: false,
   reset: false,
-  origin: 'http://mlbot.inbisoft.ga',
+  origin: 'http://service.inbisoft.com',
   window: {
     minWidth: 640,
     minHeight: 480,

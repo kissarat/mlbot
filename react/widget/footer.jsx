@@ -10,7 +10,6 @@ export default class Footer extends Component {
   }
 
   setCollapsed(collapsed) {
-    console.log(collapsed)
     localStorage.setItem('footer', collapsed ? '0' : '1')
     this.setState({collapsed})
   }
@@ -35,6 +34,10 @@ export default class Footer extends Component {
               <BrowserLink href="https://club-leader.com/">«CLUB LEADER»</BrowserLink>
               &nbsp;от компании «BEST CHOICE»
             </p>
+            <BrowserLink href="https://join.skype.com/bcrFbzFEnVzI" target="_blank">
+              <Icon name="skype" size="big"/>
+              Чат Skype-поддержки
+            </BrowserLink>
           </Grid.Column>
         </Grid.Row>
       </Grid>

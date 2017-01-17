@@ -23,11 +23,13 @@ export default class SelectAccount extends Component {
       text: account.login,
     }))
     return <Select
-      placeholder="Выберети аккаунт"
-      options={options}
+      className="widget"
+      id="select-skype"
       name="account"
-      value={this.props.value}
       onChange={this.onChange}
+      options={options}
+      placeholder="Выберети Skype"
+      value={this.props.value}
     />
   }
 }

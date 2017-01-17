@@ -10,12 +10,11 @@ Object.defineProperties(window, {
   }
 })
 
-import config from '../../app/config'
 import Footer from '../widget/footer.jsx'
 import React, {Component} from 'react'
 import {each} from 'lodash'
 import {hashHistory} from 'react-router'
-import {Menu, Segment, Checkbox, Image} from 'semantic-ui-react'
+import {Menu, Segment, Image} from 'semantic-ui-react'
 
 function itemUrl(url) {
   return {
@@ -40,13 +39,12 @@ export default class App extends Component {
   }
 
   render() {
-    const devMode = ''
     return <div className="layout app">
       <Menu attached="top">
         <Menu.Item>
           <Image src="images/menu-logo.png"/>
         </Menu.Item>
-        <Menu.Item name="Аккаунты" {...itemUrl('/accounts')}/>
+        <Menu.Item name="Аккаунт" {...itemUrl('/accounts')}/>
         <Menu.Item name="Рассылка" {...itemUrl('/delivery')}/>
         <Menu.Item name="Приглашения" {...itemUrl('/invite')}/>
       </Menu>
