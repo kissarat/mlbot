@@ -15,6 +15,7 @@ import React, {Component} from 'react'
 import {each} from 'lodash'
 import {hashHistory} from 'react-router'
 import {Menu, Segment, Image} from 'semantic-ui-react'
+import api from '../connect/api.jsx'
 
 function itemUrl(url) {
   return {
@@ -38,6 +39,11 @@ export default class App extends Component {
     window.isDevMode = value
   }
 
+  async logout() {
+    await api.logout()
+    hashHistory.push('/login')
+  }
+
   render() {
     return <div className="layout app">
       <Menu attached="top">
@@ -46,7 +52,10 @@ export default class App extends Component {
         </Menu.Item>
         <Menu.Item name="Аккаунт" {...itemUrl('/accounts')}/>
         <Menu.Item name="Рассылка" {...itemUrl('/delivery')}/>
-        <Menu.Item name="Приглашения" {...itemUrl('/invite')}/>
+        <Menu.Item {...itemUrl('/invite')}>
+          Добавить друзей
+        </Menu.Item>
+        <Menu.Item name="Выход" onClick={this.logout}/>
       </Menu>
       <Segment attached="bottom" className="content">{this.props.children}</Segment>
       <Footer/>

@@ -22,6 +22,8 @@ export default class SelectAccount extends Component {
       value: account.login,
       text: account.login,
     }))
+    const value = this.state.accounts.find(a => a.login === this.props.value)
+      ? this.props.value : ''
     return <Select
       className="widget"
       id="select-skype"
@@ -29,7 +31,7 @@ export default class SelectAccount extends Component {
       onChange={this.onChange}
       options={options}
       placeholder="Выберети Skype"
-      value={this.props.value}
+      value={value}
     />
   }
 }

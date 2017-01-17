@@ -1,14 +1,15 @@
+import config from '../../app/config'
 import ContactList from './contact-list.jsx'
 import db from '../database.jsx'
+import Help from '../widget/help.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
-import {Form, Segment, Button, Input, Loader, Checkbox, Header, Message, Dimmer, Label} from 'semantic-ui-react'
+import SkypeComponent from './skype-component.jsx'
 import stateStorage from '../util/state-storage.jsx'
+import {filterSkypeUsernames, setImmediate, wait} from '../util/index.jsx'
+import {Form, Segment, Button, Input, Loader, Checkbox, Header, Message, Dimmer} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import {filterSkypeUsernames, setImmediate, wait} from '../util/index.jsx'
-import SkypeComponent from './skype-component.jsx'
-import config from '../../app/config'
 
 export default class Invite extends SkypeComponent {
   componentWillReceiveProps(props) {
@@ -232,7 +233,9 @@ export default class Invite extends SkypeComponent {
         </Form>
       </Segment>
       <Segment className="contact-list-segment" disabled={this.state.invites.length <= 0}>
-        <Header as='h2'>Очередь приглашений</Header>
+        <Help text="Список контактов, которые будут приглашатся, когда вы нажмете на кнопку Добавить">
+          <Header as='h2'>Очередь приглашений</Header>
+        </Help>
         <div className="control">
           <Button className="remove-all" type="button">Удалить всех</Button>
         </div>

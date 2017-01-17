@@ -54,6 +54,10 @@ export default class AccountList extends Component {
     return <div className="page account-list">
       {addSkype}
       {accounts}
+      <Message>
+        Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
+        и вести рекламную деятельность в интернете
+      </Message>
     </div>
   }
 }
