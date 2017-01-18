@@ -6,6 +6,14 @@ import {extend, toArray, each} from 'lodash'
 import {Status, start} from '../../app/config'
 
 extend(Skype.prototype, {
+  login(username, password) {
+    this.invoke('login', [username, password])
+  },
+
+  logout() {
+    this.invoke('logout')
+  },
+
   async getProfile() {
     return this.profile || await new Promise(resolve => this.on('contacts', profile => resolve(profile)))
   },
@@ -32,9 +40,8 @@ extend(Skype.prototype, {
     this.invoke('insertSpaceInterval')
   },
 
-  setProfile(profile) {
+  async setProfile(profile) {
     try {
-      this.profile = profile
       profile.contacts = profile.contacts
         .filter(c => 'skype' === c.type && !c.blocked && 'echo123' != c.id)
       const exclude = ['avatar_url', 'display_name_source', 'name',
@@ -45,7 +52,8 @@ extend(Skype.prototype, {
         })
       })
       clear(profile)
-      return this.sendProfile(profile)
+      await this.sendProfile(profile)
+      this.profile = profile
     }
     catch (ex) {
       console.error(ex)

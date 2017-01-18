@@ -1,15 +1,16 @@
-import {each} from 'lodash'
+import {each, defaults} from 'lodash'
 
 const globalProperties = {
   isDevMode: 'dev',
   listLimit: 'limit_list',
+  skypeTimeout: 'skype_timeout',
   openSkypeAfterChoose: 'open_skype_after_choose'
 }
 
 each(globalProperties, function (localStorageKey, key) {
   globalProperties[key] = {
     get() {
-      return !!+localStorage.getItem(localStorageKey)
+      return +localStorage.getItem(localStorageKey)
     },
 
     set(value) {
@@ -25,6 +26,10 @@ each(globalProperties, function (localStorageKey, key) {
 })
 
 Object.defineProperties(window, globalProperties)
+
+if (!window.skypeTimeout) {
+  window.skypeTimeout = 60 * 1000
+}
 
 import Footer from '../widget/footer.jsx'
 import React, {Component} from 'react'

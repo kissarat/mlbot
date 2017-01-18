@@ -75,3 +75,14 @@ export function setImmediate(fn) {
 export function wait(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
+
+export function operationTimeout(cb) {
+  if (skypeTimeout) {
+    const timeoutSeconds = Math.round(skypeTimeout / 1000)
+    return setTimeout(cb, skypeTimeout, {
+      timeout: skypeTimeout,
+      timeoutSeconds,
+      message: `Прошло ${timeoutSeconds} секунд`
+    })
+  }
+}

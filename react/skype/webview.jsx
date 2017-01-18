@@ -69,14 +69,6 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
     formatted = formatted.join(',')
     this.executeJavaScript(`${fn}(${formatted})`)
   },
-
-  login(username, password) {
-    this.invoke('login', [username, password])
-  },
-
-  logout() {
-    this.invoke('logout')
-  },
 })
 
 WebView.create = function (partition) {

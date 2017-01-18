@@ -1,5 +1,6 @@
 import {extend, each} from 'lodash'
 import Skype from './webview.jsx'
+import {operationTimeout} from '../util/index.jsx'
 
 function all(array) {
   return new Proxy(array, {
@@ -28,17 +29,29 @@ extend(Skype, {
     return new Promise(function (resolve, reject) {
       const skype = Skype.create(data.login)
       const start = Date.now()
+      const timer = operationTimeout(function (err) {
+        err.message += ' со времени начала входа в скайп ' + data.login
+        err.login = data.login
+        reject(data)
+      },
+      skypeTimeout)
       skype.once('load', function () {
         skype.login(data.login, data.password)
         skype.once('load', function () {
           skype.login(data.login, data.password)
           skype.once('contacts', function (profile) {
-            const spend = (Date.now() - start)
+            const loaded = Date.now()
+            const spend = loaded - start
+            console.log(data.login + ` loaded ${profile.contacts.length} contacts after ${spend / 1000} seconds`)
             profile.login = data.login
             profile.password = data.password
             profile.spend = spend
-            console.log(profile.login + ` loaded ${profile.contacts.length} contacts after ${spend / 1000} seconds`)
-            skype.setProfile(profile).then(resolve, reject)
+            skype.setProfile(profile)
+              .then(function () {
+                // console.log(profile.login + ` updated contacts after ${(Date.now() - loaded) / 1000} seconds`)
+                clearTimeout(timer)
+                resolve(skype)
+              })
           })
         })
       })
