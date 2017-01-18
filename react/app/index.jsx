@@ -1,20 +1,35 @@
-Object.defineProperties(window, {
-  isDevMode: {
+import {each} from 'lodash'
+
+const globalProperties = {
+  isDevMode: 'dev',
+  listLimit: 'limit_list',
+  openSkypeAfterChoose: 'open_skype_after_choose'
+}
+
+each(globalProperties, function (localStorageKey, key) {
+  globalProperties[key] = {
     get() {
-      return !!+localStorage.getItem('dev')
+      return !!+localStorage.getItem(localStorageKey)
     },
 
     set(value) {
-      localStorage.setItem('dev', value ? 1 : 0)
+      if (!value) {
+        value = 0
+      }
+      if ('boolean' === typeof value) {
+        value = value ? 1 : 0
+      }
+      localStorage.setItem(localStorageKey, value)
     }
   }
 })
 
+Object.defineProperties(window, globalProperties)
+
 import Footer from '../widget/footer.jsx'
 import React, {Component} from 'react'
-import {each} from 'lodash'
 import {hashHistory} from 'react-router'
-import {Menu, Segment, Image} from 'semantic-ui-react'
+import {Menu, Segment, Image, Dimmer, Loader} from 'semantic-ui-react'
 import api from '../connect/api.jsx'
 
 function itemUrl(url) {
@@ -27,6 +42,28 @@ function itemUrl(url) {
 }
 
 export default class App extends Component {
+  static instance = null
+  state = {
+    busy: false
+  }
+
+  static setState(state) {
+    if (App.instance) {
+      App.instance.setState(state)
+    }
+    else {
+      console.error('Application has no instance when setting state', state)
+    }
+  }
+
+  componentWillMount() {
+    App.instance = this
+  }
+
+  componentWillUnmount() {
+    App.instance = null
+  }
+
   developerMode(value) {
     each(document.querySelectorAll('webview'), function (webview) {
       if (value) {
@@ -46,6 +83,11 @@ export default class App extends Component {
 
   render() {
     return <div className="layout app">
+      <Dimmer active={!!this.state.busy} inverted>
+        <Loader
+          size="medium"
+          content={'string' === typeof this.state.busy ? this.state.busy : ''}/>
+      </Dimmer>
       <Menu attached="top">
         <Menu.Item>
           <Image src="images/menu-logo.png"/>

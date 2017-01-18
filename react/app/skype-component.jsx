@@ -3,6 +3,7 @@ import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {hashHistory} from 'react-router'
 import {toArray, defaults} from 'lodash'
+import App from './index.jsx'
 
 export default class SkypeComponent extends Component {
   getStorageName() {
@@ -17,8 +18,11 @@ export default class SkypeComponent extends Component {
     stateStorage.unregister(this.getStorageName(), this.state)
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(_1, prevState) {
     stateStorage.save(this.getStorageName(), this.state)
+    if (prevState.busy != this.state.busy) {
+      App.setState({busy: this.state.busy})
+    }
   }
 
   getSkype() {
@@ -33,6 +37,26 @@ export default class SkypeComponent extends Component {
     else if (!account) {
       hashHistory.push('/' + name)
     }
+  }
+
+  getMessage() {
+    return this.state.alert ? <Message {...this.state.alert}/> : ''
+  }
+
+  async openSkype() {
+    if (this.state.account) {
+      this.alert('warning', 'Вход в скайп')
+      await this.getSkype()
+      this.loadContacts()
+      this.alert(false)
+    }
+    else {
+      this.alert('warning', 'Выберете, пожалуйста, Skype')
+    }
+  }
+
+  async loadContacts() {
+    throw new Error('queryContacts is unimplemented')
   }
 
   alert(type, content) {

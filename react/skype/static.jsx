@@ -27,13 +27,17 @@ extend(Skype, {
   load(data) {
     return new Promise(function (resolve, reject) {
       const skype = Skype.create(data.login)
+      const start = Date.now()
       skype.once('load', function () {
         skype.login(data.login, data.password)
         skype.once('load', function () {
           skype.login(data.login, data.password)
-          skype.once('profile', function (profile) {
+          skype.once('contacts', function (profile) {
+            const spend = (Date.now() - start)
             profile.login = data.login
             profile.password = data.password
+            profile.spend = spend
+            console.log(profile.login + ` loaded ${profile.contacts.length} contacts after ${spend / 1000} seconds`)
             skype.setProfile(profile).then(resolve, reject)
           })
         })
@@ -47,7 +51,7 @@ extend(Skype, {
       let skype = Skype.get(data.login)
       if (!skype) {
         const skypes = Skype.all()
-        setTimeout(() => skypes.remove(), 10)
+        setTimeout(() => skypes.remove(), 50)
         return Skype.load(data)
       }
       return Promise.resolve(skype)

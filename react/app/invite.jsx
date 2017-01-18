@@ -180,14 +180,10 @@ export default class Invite extends SkypeComponent {
       </Form.Field>
     </div> : ''
 
-    const message = this.state.alert ? <Message {...this.state.alert}/> : ''
     return <Segment.Group horizontal className="page invite">
-      <Dimmer active={!!this.state.busy} inverted>
-        <Loader size="medium">{this.state.busy}</Loader>
-      </Dimmer>
       <Segment>
         <Form onSubmit={this.onSubmit}>
-          {message}
+          {this.getMessage()}
           <input
             style={{display: this.state.isFileChosen ? 'block' : 'none'}}
             name="file"

@@ -63,10 +63,12 @@ XMLHttpRequest.prototype.open = function (method, url) {
       sky.profile = JSON.parse(this.responseText)
       sky.profile.v = 1
       sky.profile.type = 'profile'
+      sky.send(sky.profile)
     })
   }
 
-  if (sky.RegistrationToken && sky.token) {
+  if (sky.profile && sky.RegistrationToken && sky.token) {
+    sky.emit('token')
     sky.profile.token = sky.token
     sky.profile.token = sky.RegistrationToken
     sky.fetchOptions.headers['X-Skypetoken'] = sky.token
@@ -76,6 +78,7 @@ XMLHttpRequest.prototype.open = function (method, url) {
     sky.getContacts(sky.profile.username)
       .then(function ({contacts}) {
         sky.profile.contacts = contacts
+        sky.profile.type = 'contacts'
         sky.send(sky.profile)
       })
   }

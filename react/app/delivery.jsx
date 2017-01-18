@@ -29,10 +29,9 @@ export default class Delivery extends SkypeComponent {
   initialize = async() => {
     try {
       this.loadContacts()
-      const skype = await this.getSkype()
-      await skype.getProfile()
-      await this.setState({busySkype: false})
-      this.loadContacts()
+      if (openSkypeAfterChoose) {
+        await this.openSkype()
+      }
     }
     catch (ex) {
       console.error(ex)
@@ -52,9 +51,10 @@ export default class Delivery extends SkypeComponent {
   }
 
   async loadContacts() {
-    const find = status => this.queryContacts(status)
-      .limit(100)
-      .toArray()
+    const find = status => {
+      const q = this.queryContacts(status)
+      return (listLimit ? q.limit(listLimit) : q).toArray()
+    }
     const contacts = await find(Status.CREATED)
     const selections = await find(Status.SELECTED)
     this.setState({
@@ -103,8 +103,8 @@ export default class Delivery extends SkypeComponent {
   }
 
   render() {
+    const text = this.state.text ? this.state.text.trim() : ''
     return <Segment.Group horizontal className="page delivery">
-      <Loader active={this.state.busy} size="medium"/>
       <Segment>
         <Form onSubmit={this.onSubmit}>
           <SelectAccount
@@ -122,12 +122,13 @@ export default class Delivery extends SkypeComponent {
             label="Введите сообщение"
             placeholder=" Плайсхолдер Пишите текст здесь и он
             отправиться всем Вашим друзьям после нажатия кнопки разослать"
-            value={this.state.text}
+            value={text}
             onChange={this.onChange}/>
-          <Button type="submit" disabled={!!this.state.busySkype}>Послать</Button>
+          <Button type="submit" disabled={!text || this.state.busy}>Послать</Button>
           {isDevMode ? <Button floated="right" type="button" onClick={this.reset}>Очистить</Button> : ''}
         </Form>
       </Segment>
+
       <Segment className="contact-list-segment" disabled={this.state.busy}>
         <Help text="Нажмите, чтобы включить контакт в рассылку">
           <Header textAlign="center" as="h2">Ваши контакты</Header>
