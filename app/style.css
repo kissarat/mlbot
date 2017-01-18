@@ -52,7 +52,7 @@
     font-weight: 100;
 }
 
-p, h1, h2, h3, h4, h5, h6, input {
+p, h1, h2, h3, h4, h5, h6, input, body {
     font-family: Panton, sans-serif !important;
 }
 
@@ -129,10 +129,6 @@ nav li {
 
 .page.invite {
     height: calc(100% - 14px);
-}
-
-.page.account-list .item:hover {
-    background: rgba(0, 0, 0, 0.1);
 }
 
 .page.invite .limit .ui.input {
@@ -277,8 +273,12 @@ input {
     justify-content: space-between;
 }
 
-.invite .ui.segment form .field > .field {
-    max-width: 40%;
+.invite .ui.segment .form .text-fields > .field {
+    width: 48%;
+}
+
+.invite .form .button {
+
 }
 
 textarea {
@@ -297,4 +297,118 @@ textarea {
 
 .contact-list-segment {
     min-width: 200px
+}
+
+.ui.horizontal.page.delivery.segments > * {
+	max-width: 33%;
+	min-width: 250px;
+}
+
+.ui.horizontal.page.delivery.segments #select-skype {
+	width: 100%;
+    margin-bottom: 10px;
+}
+
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .control {
+	height: 61px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 14px;
+    align-items: center;
+}
+
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .control strong {
+	font-weight: 400;
+	font-family: Panton, sans-serif;
+}
+
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field, 
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;	
+    font-weight: 400;
+	font-family: Panton, sans-serif;
+}
+
+.help-question {
+	text-align: center;
+    
+}
+
+.help-question i {
+	color: #3498db;
+    cursor: pointer;
+}
+
+.help-text .content p {
+font-size: 12px;
+    padding: 0 !important;
+    margin: 0 !important;
+
+}
+
+.help-text {
+    margin: 6px 0 0;
+}
+
+.page.account-list {
+	    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;	
+}
+
+.page.account-list .remove.icon {
+	cursor: pointer;
+    font-size: 21px;
+}
+
+.page.account-list .remove.icon:hover {
+	color: red;
+}
+
+.page.account-list .ui.list {
+	max-width: 300px;
+}
+
+.page.account-list .ui.list .item {
+
+}
+
+.page.account-list > a {
+	    padding: 15px 25px 15px;
+    background: #3498db;
+    border-radius: 43px;
+    color: white;
+    margin: 40px 0;
+    display: block;
+    text-align: center;
+    width: 250px;
+    font-size: 17px;
+    font-family: Panton,sans-serif;
+}
+
+.page.account-list > a:hover {
+	opacity: 0.9;
+}
+
+.ui.horizontal.page.delivery.segments .loader {
+	height: 280px;
+    margin: -5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ui.button.open-file {
+	margin: 0 auto 10px;
+}
+
+.ui.segment .ui.message .content p {
+    margin: 0 !important;
+    font-size: 12px;
+    text-align: center;
 }
