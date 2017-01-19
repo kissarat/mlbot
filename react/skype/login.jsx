@@ -1,20 +1,33 @@
 import React, {Component} from 'react'
 import Skype from './index.jsx'
-import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
+import {Button, Form, Segment, Header, Icon, Message} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {Link} from 'react-router'
+import App from '../app/index.jsx'
 
 export default class SkypeLogin extends Component {
   state = {loading: false}
 
   onSubmit = (e, {formData}) => {
     e.preventDefault()
-    this.setState({loading: true})
-    Skype
-      .open(formData)
+    Skype.open(formData, true)
       .then(() => {
-        this.setState({loading: false})
+        App.setBusy(false)
+        this.setState({
+          error: false
+        })
         hashHistory.push('/accounts')
+      })
+      .catch(err => {
+        console.error(err)
+        App.setBusy(false)
+        if ('username' === err.kind || 'password' === err.kind) {
+          this.setState({error: 'Неверный логин или пароль'})
+        }
+        else {
+          this.setState({error: 'Неизвестная ошибка'})
+        }
+        Skype.all().remove()
       })
   }
 
@@ -27,7 +40,8 @@ export default class SkypeLogin extends Component {
           Вернуться к списку аккаунтов
         </Link>
       </div>
-      <Form onSubmit={this.onSubmit} loading={this.state.loading}>
+      <Form onSubmit={this.onSubmit} error={!!this.state.error}>
+        {this.state.error ? <Message content={this.state.error}/> : ''}
         <Form.Field name="login" placeholder="Введите логин Skype" control="input" type="text"/>
         <Form.Field name="password" placeholder="Введите пароль Skype" control="input" type="password"/>
         <Button type="submit">Добавить</Button>

@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events'
-import {extend, isObject, sample, shuffle} from 'lodash'
+import {extend, isObject, sample, shuffle, toArray} from 'lodash'
 window.isObject = function (obj) {
   console.error('Global isObject')
   return isObject(obj)
@@ -69,6 +69,18 @@ WebView.prototype = extend({
     formatted = formatted.join(',')
     this.executeJavaScript(`${fn}(${formatted})`)
   },
+
+  onMany(number, event, cb) {
+    const handle = () => {
+      const args = toArray(arguments)
+      if (--number < 0) {
+        this.removeEventListener(event, handle)
+      }
+      args.unshift(number)
+      cb.apply(this, args)
+    }
+    this.on(event, handle)
+  }
 },
 EventEmitter.prototype)
 

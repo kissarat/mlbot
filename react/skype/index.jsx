@@ -10,6 +10,20 @@ extend(Skype.prototype, {
     this.invoke('login', [username, password])
   },
 
+  loginPassword(username, password) {
+    return new Promise((resolve, reject) => {
+      this.invoke('login', [username, password])
+      this.on('login.error', reject)
+    })
+  },
+
+  waitSelector(selector) {
+    return new Promise(resolve => {
+      this.once('selector', resolve)
+      this.invoke('waitSelector', [selector])
+    })
+  },
+
   logout() {
     this.invoke('logout')
   },

@@ -29,6 +29,17 @@ extend(Skype, {
   load(data, busy) {
     return new Promise(function (resolve, reject) {
       const skype = Skype.create(data.login)
+      skype.once('login.error', reject)
+      skype.onMany(3, 'load', function (number) {
+        if (0 === number) {
+          setTimeout(function () {
+              if (0 === skype.src.indexOf('https://login.live.com/ppsecure/')) {
+                reject({kind: 'password'})
+              }
+            },
+            2000)
+        }
+      })
 
       function emitStage(stage) {
         try {
@@ -76,6 +87,13 @@ extend(Skype, {
         skype.login(data.login, data.password)
         skype.once('load', function () {
           emitStage('password')
+          // skype.once('load', function () {
+          //   skype.waitSelector('[type=password]', function () {
+          //     reject({
+          //       kind: 'password'
+          //     })
+          //   })
+          // });
           skype.login(data.login, data.password)
           skype.once('profile', () => emitStage('profile'))
           skype.once('contacts', function (profile) {

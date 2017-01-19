@@ -101,13 +101,38 @@ function login(nick, password) {
     username.value = nick
     document.forms[0].submit()
   }
-  waiter('[type=password]', function (passwordInput) {
-    passwordInput.value = password
-    const checkbox = document.querySelector('[type=checkbox]')
-    if (checkbox) {
-      checkbox.checked = true
+  waiter.fork({
+    '[type=password]' (passwordInput) {
+      passwordInput.value = password
+      const checkbox = document.querySelector('[type=checkbox]')
+      if (checkbox) {
+        checkbox.checked = true
+      }
+      document.forms[0].submit()
+    },
+
+    '#usernameError' () {
+      sky.send({
+        type: 'login.error',
+        kind: 'username'
+      })
+    },
+
+    '#passwordError' () {
+      sky.send({
+        type: 'login.error',
+        kind: 'password'
+      })
     }
-    document.forms[0].submit()
+  })
+}
+
+function waitSelector(selector) {
+  waiter(selector, function () {
+    sky.send({
+      type: 'selector',
+      selector
+    })
   })
 }
 
@@ -147,6 +172,7 @@ export {
   logout,
   openSettings,
   sendMessage,
+  waitSelector,
 }
 
 extend(window, exports)
