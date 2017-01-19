@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
+import {errorMessage} from '../util/index.jsx'
 import {hashHistory} from 'react-router'
 import {toArray, defaults} from 'lodash'
 import App from './index.jsx'
@@ -25,8 +26,9 @@ export default class SkypeComponent extends Component {
     }
   }
 
-  getSkype() {
-    return Skype.open(this.state.account)
+  getSkype(busy) {
+    return Skype.open(this.state.account, busy)
+      // .catch(err => this.alert('error', errorMessage(err)))
   }
 
   changeAccount(account) {

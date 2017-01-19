@@ -61,6 +61,10 @@ export default class App extends Component {
     }
   }
 
+  static setBusy(busy) {
+    this.setState({busy})
+  }
+
   componentWillMount() {
     App.instance = this
   }

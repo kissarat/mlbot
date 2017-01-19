@@ -1,6 +1,7 @@
 import {extend, each} from 'lodash'
 import Skype from './webview.jsx'
 import {operationTimeout} from '../util/index.jsx'
+import App from '../app/index.jsx'
 
 function all(array) {
   return new Proxy(array, {
@@ -25,21 +26,60 @@ extend(Skype, {
     return proxy ? all(items) : items
   },
 
-  load(data) {
+  load(data, busy) {
     return new Promise(function (resolve, reject) {
       const skype = Skype.create(data.login)
+
+      function emitStage(stage) {
+        try {
+          skype.emit('login', {stage})
+        }
+        catch (ex) {
+          console.error(ex)
+        }
+      }
+
+      function informAppLoginStage({stage}) {
+        const stages = {
+          username: 'ввод логина',
+          password: 'ввод пароля',
+          profile: 'профиль получен',
+          contacts: 'обновления контактов',
+          finishing: 'завершение',
+          finish: 'завершено',
+        }
+        if ('finish' === stage) {
+          skype.removeEventListener('login', informAppLoginStage)
+        }
+        stage = stages[stage] || 'неизвестное состояние'
+        App.setBusy('Вход в Skype: ' + stage)
+      }
+
+      if (busy) {
+        App.setBusy('Вход в Skype: загрука')
+        skype.on('login', informAppLoginStage)
+      }
+
       const start = Date.now()
       const timer = operationTimeout(function (err) {
-        err.message += ' со времени начала входа в скайп ' + data.login
-        err.login = data.login
-        reject(data)
-      },
-      skypeTimeout)
+          err.message += ' со времени начала входа в скайп ' + data.login
+          err.login = data.login
+          if (busy) {
+            App.setBusy(false)
+          }
+          reject(err)
+        },
+        skypeTimeout)
+      skype.once('profile', () => emitStage('profile'))
       skype.once('load', function () {
+        emitStage('username')
         skype.login(data.login, data.password)
         skype.once('load', function () {
+          emitStage('password')
           skype.login(data.login, data.password)
+          skype.once('profile', () => emitStage('profile'))
           skype.once('contacts', function (profile) {
+            emitStage('contacts')
             const loaded = Date.now()
             const spend = loaded - start
             console.log(data.login + ` loaded ${profile.contacts.length} contacts after ${spend / 1000} seconds`)
@@ -48,9 +88,11 @@ extend(Skype, {
             profile.spend = spend
             skype.setProfile(profile)
               .then(function () {
+                emitStage('finishing')
                 // console.log(profile.login + ` updated contacts after ${(Date.now() - loaded) / 1000} seconds`)
                 clearTimeout(timer)
                 resolve(skype)
+                emitStage('finish')
               })
           })
         })
@@ -59,13 +101,13 @@ extend(Skype, {
     })
   },
 
-  open(data) {
+  open(data, busy) {
     function _open(data) {
       let skype = Skype.get(data.login)
       if (!skype) {
         const skypes = Skype.all()
         setTimeout(() => skypes.remove(), 50)
-        return Skype.load(data)
+        return Skype.load(data, busy)
       }
       return Promise.resolve(skype)
     }
@@ -85,6 +127,7 @@ extend(Skype, {
         return accounts
       })
     }
+
     return load || !Skype.accounts
       ? loadAccountList()
       : Skype.accounts
@@ -94,8 +137,9 @@ extend(Skype, {
     function find() {
       return Skype.accounts.find(account => login === account.login)
     }
+
     if (!this.accounts) {
-     await Skype.getAccountList(false)
+      await Skype.getAccountList(false)
     }
     return find()
   },

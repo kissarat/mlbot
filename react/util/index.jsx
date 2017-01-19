@@ -86,3 +86,7 @@ export function operationTimeout(cb) {
     })
   }
 }
+
+export function errorMessage(err) {
+  return 'function' === typeof err.getMessage ? err.getMessage() : err.message
+}

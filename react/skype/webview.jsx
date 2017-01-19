@@ -34,7 +34,7 @@ const userAgents = shuffle([
   "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0",
 ])
 
-WebView.prototype = extend(Object.create(EventEmitter.prototype), {
+WebView.prototype = extend({
   sendData(data) {
     const string = JSON.stringify(data)
     this.executeJavaScript(`sky.receive(${string})`)
@@ -69,7 +69,8 @@ WebView.prototype = extend(Object.create(EventEmitter.prototype), {
     formatted = formatted.join(',')
     this.executeJavaScript(`${fn}(${formatted})`)
   },
-})
+},
+EventEmitter.prototype)
 
 WebView.create = function (partition) {
   const webview = document.createElement('webview')
