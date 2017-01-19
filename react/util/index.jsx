@@ -1,5 +1,7 @@
 import {isObject} from 'lodash'
 
+export const start = Date.now()
+
 export function clear(data) {
   for(const key in data) {
     const value = data[key]

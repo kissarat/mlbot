@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-let local
+var local
 try {
   local = require('../local')
 }

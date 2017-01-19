@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
+import Footer from '../widget/footer.jsx'
 
 export default class Unavailable extends Component {
   render() {
-    return <div className="error">
+    return <div className="page error">
       <header>
         <img src="images/logo-leader.png"/>
         <p>ML Skype AutoBot ™ </p>
@@ -21,9 +22,7 @@ export default class Unavailable extends Component {
       </div>
       <div className="background"></div>
 
-      <footer>
-        <p>© ML Skype Autobot beta v0.1 www.mlautobot.com</p>
-      </footer>
+      <Footer/>
     </div>
   }
 }
