@@ -144,8 +144,8 @@ export default class Delivery extends SkypeComponent {
   }
 
   render() {
-    const text = this.state.text ? this.state.text : ''
-    const canSend = text.trim() && !this.state.busy && this.state.selections.length > 0
+    const text = this.state.text || ''
+    const canSend = !!text.trim() && this.state.selections.length > 0
     return <Segment.Group horizontal className="page delivery">
       <Segment>
         {this.getMessage()}

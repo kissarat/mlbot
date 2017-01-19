@@ -1,6 +1,6 @@
 import {isObject} from 'lodash'
 
-export const start = Date.now()
+export const start = new Date()
 
 export function clear(data) {
   for(const key in data) {

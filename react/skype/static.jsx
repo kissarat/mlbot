@@ -74,7 +74,7 @@ extend(Skype, {
       }
 
       if (busy) {
-        App.setBusy('Вход в Skype: загрука')
+        App.setBusy('Вход в Skype: загрузка')
         skype.on('login', informAppLoginStage)
       }
 

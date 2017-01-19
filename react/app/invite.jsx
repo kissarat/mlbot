@@ -88,26 +88,23 @@ export default class Invite extends SkypeComponent {
           .toArray()
       existing = keyBy(existing, 'login')
       usernames = usernames.filter(username => !existing[username])
-      const invites = usernames.map(login => ({
+      await db.contact.bulkAdd(usernames.map(login => ({
         id: account + '~' + login,
         login,
         account,
         authorized: false,
         status: Status.SELECTED
-      }))
-      await db.contact.bulkAdd(invites)
+      })))
     }
-    const invites = await this.loadContacts()
-    this.setState({invites})
+    return await this.loadContacts()
   }
 
   async invite(usernames) {
     try {
-      await this.addToInviteList(usernames)
-      if (this.state.invites.length > 0) {
-        this.setBusy('Вход в скайп')
-        const skype = await this.getSkype()
-        setTimeout(() => this.processInviteList(skype, invites.length), config.start.delay)
+      const invites = await this.addToInviteList(usernames)
+      if (invites.length > 0) {
+        const skype = await this.getSkype(true)
+        this.processInviteList(skype, invites.length)
       }
       else {
         this.alert('error', 'Все контакты уже добавлены')
@@ -170,6 +167,13 @@ export default class Invite extends SkypeComponent {
   remove = async contact => {
     await db.contact.delete(contact.id)
     return this.loadContacts()
+  }
+
+  async removeAll() {
+    await db.contact
+      .filter(c => this.state.account === c.account && Status.SELECTED === c.status)
+      .delete()
+    await this.loadContacts()
   }
 
   render() {
@@ -246,7 +250,7 @@ export default class Invite extends SkypeComponent {
           <Header as='h2'>Очередь приглашений</Header>
         </Help>
         <div className="control">
-          <Button className="remove-all" type="button">Удалить всех</Button>
+          <Button type="button" className="remove-all" onClick={() => this.removeAll()}>Удалить всех</Button>
         </div>
         <ContactList
           items={this.state.invites}
