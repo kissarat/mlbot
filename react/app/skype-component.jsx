@@ -84,6 +84,7 @@ export default class SkypeComponent extends Component {
     if (busy) {
       alert.type = 'info'
     }
+    // console.log(alert)
     this.setState({
       alert,
       busy

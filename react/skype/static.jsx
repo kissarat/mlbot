@@ -36,6 +36,13 @@ extend(Skype, {
               if (0 === skype.src.indexOf('https://login.live.com/ppsecure/')) {
                 reject({kind: 'password'})
               }
+              else {
+                skype.confirmIdentity()
+                  .then(() => reject({kind: 'confirm'}))
+              }
+              // else if (skype.src.indexOf('https://account.live.com/identity/confirm')) {
+              //   reject({kind: 'confirm'})
+              // }
             },
             2000)
         }
@@ -87,13 +94,6 @@ extend(Skype, {
         skype.login(data.login, data.password)
         skype.once('load', function () {
           emitStage('password')
-          // skype.once('load', function () {
-          //   skype.waitSelector('[type=password]', function () {
-          //     reject({
-          //       kind: 'password'
-          //     })
-          //   })
-          // });
           skype.login(data.login, data.password)
           skype.once('profile', () => emitStage('profile'))
           skype.once('contacts', function (profile) {

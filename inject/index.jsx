@@ -129,10 +129,13 @@ function login(nick, password) {
 
 function waitSelector(selector) {
   waiter(selector, function () {
-    sky.send({
-      type: 'selector',
-      selector
-    })
+    sky.send({type: selector})
+  })
+}
+
+function confirmIdentity() {
+  waiter('.confirmIdentity', function () {
+    sky.send({type: 'confirm'})
   })
 }
 
@@ -173,6 +176,7 @@ export {
   openSettings,
   sendMessage,
   waitSelector,
+  confirmIdentity,
 }
 
 extend(window, exports)

@@ -24,6 +24,10 @@ export default class SkypeLogin extends Component {
         if ('username' === err.kind || 'password' === err.kind) {
           this.setState({error: 'Неверный логин или пароль'})
         }
+        else if ('confirm' === err.kind) {
+          this.setState({error: `Ваш Skype-аккаунт нуждается в проверке.
+          Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`})
+        }
         else {
           this.setState({error: 'Неизвестная ошибка'})
         }

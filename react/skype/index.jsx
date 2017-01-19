@@ -19,8 +19,15 @@ extend(Skype.prototype, {
 
   waitSelector(selector) {
     return new Promise(resolve => {
-      this.once('selector', resolve)
+      this.once(selector, resolve)
       this.invoke('waitSelector', [selector])
+    })
+  },
+
+  confirmIdentity() {
+    return new Promise(resolve => {
+      this.once('confirm', resolve)
+      this.invoke('confirmIdentity')
     })
   },
 
