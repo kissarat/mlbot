@@ -141,7 +141,6 @@ export default class Invite extends SkypeComponent {
 
     informInvited(0)
     await pull()
-    this.setBusy(false)
     this.alert('success', 'Все преглашены!')
   }
 

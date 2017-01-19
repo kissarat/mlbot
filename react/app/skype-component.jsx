@@ -3,8 +3,10 @@ import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {errorMessage} from '../util/index.jsx'
 import {hashHistory} from 'react-router'
+import {Message} from 'semantic-ui-react'
 import {toArray, defaults} from 'lodash'
 import App from './index.jsx'
+import Timeout from '../util/timeout.jsx'
 
 export default class SkypeComponent extends Component {
   getStorageName() {
@@ -12,6 +14,7 @@ export default class SkypeComponent extends Component {
   }
 
   componentWillMount() {
+    this.timeout = new Timeout(skypeTimeout)
     this.componentWillReceiveProps(this.props)
   }
 

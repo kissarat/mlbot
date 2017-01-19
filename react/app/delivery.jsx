@@ -71,31 +71,47 @@ export default class Delivery extends SkypeComponent {
     return this.loadContacts()
   }
 
-  onSubmit = async(e, {formData: {text}}) => {
+  onSubmit = (e, {formData: {text}}) => {
     e.preventDefault()
+    this.send(text)
+  }
+
+  async send(text) {
     const account = this.state.account
     try {
+      const query = c =>
+      account === c.account &&
+      Status.SELECTED === c.status &&
+      c.authorized
+      const contactsCount = await db.contact
+        .filter(query)
+        .count()
 
-      const contacts = await db.contact
-        .filter(c =>
-          account === c.account &&
-          Status.SELECTED === c.status &&
-          c.authorized
-        )
-        .toArray()
-
-      if (contacts.length > 0) {
+      if (contactsCount > 0) {
         const skype = await this.getSkype(true)
         this.setBusy('Получение списка рассылки')
+        this.timeout.setCallback(() => {
+          this.alert('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
+          skype.remove()
+        })
         skype.openSettings()
 
-        const promises = contacts.map(({id, login}) => async() => {
-          await skype.sendMessage({text, login})
-          await db.contact.update(id, {status: Status.CREATED})
-          return this.loadContacts()
-        })
+        const informInvited = i => this.setBusy(`Отправлено ${i} контактам из ${contactsCount}`)
 
-        await seq(promises)
+        let i = 0
+        const pull = async() => {
+          const {id} = await db.contact
+            .filter(query)
+            .first()
+          const anwser = await skype.sendMessage({id, text})
+          await db.contact.update(id, {status: Status.CREATED})
+          informInvited(++i)
+          return this.loadContacts()
+        }
+
+        informInvited(0)
+        await pull()
+        this.timeout.clearCallback()
         this.alert('success', 'Рассылка завершена')
       }
       else {
@@ -119,6 +135,7 @@ export default class Delivery extends SkypeComponent {
     const canSend = text && !this.state.busy && this.state.selections.length > 0
     return <Segment.Group horizontal className="page delivery">
       <Segment>
+        {this.getMessage()}
         <Form onSubmit={this.onSubmit}>
           <SelectAccount
             value={this.state.account}
