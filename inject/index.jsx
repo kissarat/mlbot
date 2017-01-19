@@ -14,6 +14,15 @@ function insertText(text) {
   document.execCommand('insertText', true, text)
 }
 
+function insertTextIntoInput(input, text) {
+  if ('string' === typeof input) {
+    input = $$(input)
+  }
+  input.focus()
+  input.value = ''
+  insertText(text)
+}
+
 function pause(value = true) {
   pause.value = value
 }
@@ -129,14 +138,15 @@ addEventListener('load', function () {
 })
 
 export {
+  checkPause,
+  clearData,
+  insertSpaceInterval,
+  insertText,
+  insertTextIntoInput,
   login,
   logout,
-  sendMessage,
-  clearData,
-  insertText,
   openSettings,
-  insertSpaceInterval,
-  checkPause
+  sendMessage,
 }
 
 extend(window, exports)

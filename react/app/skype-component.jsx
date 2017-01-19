@@ -48,6 +48,11 @@ export default class SkypeComponent extends Component {
     return this.state.alert ? <Message {...this.state.alert}/> : ''
   }
 
+  skypeUnavailable(skype) {
+    this.alert('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
+    skype.remove()
+  }
+
   async openSkype() {
     if (this.state.account) {
       this.alert('warning', 'Вход в скайп')

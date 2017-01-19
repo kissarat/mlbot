@@ -6,7 +6,7 @@ import SelectAccount from './select-account.jsx'
 import SkypeComponent from './skype-component.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {Form, Segment, Button, Loader, Header} from 'semantic-ui-react'
-import {seq, setImmediate} from '../util/index.jsx'
+import {wait, setImmediate} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 
@@ -89,6 +89,8 @@ export default class Delivery extends SkypeComponent {
 
       if (contactsCount > 0) {
         const skype = await this.getSkype(true)
+        this.setBusy('Подождите 3 секунды')
+        await wait(3000)
         this.setBusy('Получение списка рассылки')
         this.timeout.setCallback(() => {
           this.alert('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
@@ -100,12 +102,23 @@ export default class Delivery extends SkypeComponent {
 
         let i = 0
         const pull = async() => {
-          const {id} = await db.contact
+          const contact = await db.contact
             .filter(query)
             .first()
-          const anwser = await skype.sendMessage({id, text})
-          await db.contact.update(id, {status: Status.CREATED})
+          if (!contact) {
+              return
+          }
+          const anwser = await skype.sendMessage({
+            id: contact.id,
+            login: contact.login,
+            text
+          })
+          await db.contact.update(contact.id, {status: Status.CREATED})
           informInvited(++i)
+          this.timeout.update()
+          if (i < contactsCount) {
+            await pull()
+          }
           return this.loadContacts()
         }
 
