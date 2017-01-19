@@ -7,9 +7,9 @@ import SelectAccount from './select-account.jsx'
 import SkypeComponent from './skype-component.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {filterSkypeUsernames, setImmediate, wait} from '../util/index.jsx'
-import {Form, Segment, Button, Input, Loader, Checkbox, Header, Message, Dimmer} from 'semantic-ui-react'
+import {Form, Segment, Button, Input, Checkbox, Header, Message} from 'semantic-ui-react'
 import {Status} from '../../app/config'
-import {toArray, defaults} from 'lodash'
+import {toArray, defaults, keyBy} from 'lodash'
 
 export default class Invite extends SkypeComponent {
   componentWillReceiveProps(props) {
@@ -44,7 +44,13 @@ export default class Invite extends SkypeComponent {
     this.setState({isFileChosen: !!file})
     const reader = new FileReader()
     reader.onload = e => {
-      this.setState({list: this.filterSkypeUsernames(e.target.result).join('\n')})
+      const list = this.filterSkypeUsernames(e.target.result)
+      if (isDevMode) {
+        this.setState({list: list.join('\n')})
+      }
+      else {
+        this.addToInviteList(list)
+      }
     }
     reader.readAsText(file)
   }
@@ -64,8 +70,7 @@ export default class Invite extends SkypeComponent {
     this.setState({[name]: value || checked})
     if ('sort' === name && checked) {
       setImmediate(() => {
-        const list = this.filterSkypeUsernames(this.state.list).join('\n')
-        this.setState({list})
+        this.setState({list: this.filterSkypeUsernames(this.state.list).join('\n')})
       })
     }
   }
@@ -75,27 +80,30 @@ export default class Invite extends SkypeComponent {
     this.invite(this.filterSkypeUsernames(list))
   }
 
+  async addToInviteList(usernames) {
+    const account = this.state.account
+    if (usernames.length > 0) {
+      let existing = await db.contact
+          .filter(c => account === c.account)
+          .toArray()
+      existing = keyBy(existing, 'login')
+      usernames = usernames.filter(username => !existing[username])
+      const invites = usernames.map(login => ({
+        id: account + '~' + login,
+        login,
+        account,
+        authorized: false,
+        status: Status.SELECTED
+      }))
+      await db.contact.bulkAdd(invites)
+    }
+    const invites = await this.loadContacts()
+    this.setState({invites})
+  }
+
   async invite(usernames) {
     try {
-      const account = this.state.account
-      if (usernames.length > 0) {
-        const existing = (
-          await db.contact
-            .filter(c => account === c.account)
-            .toArray()
-        )
-          .map(c => c.login)
-        usernames = usernames.filter(username => !existing.find(login => username === login))
-        const invites = usernames.map(login => ({
-          id: account + '~' + login,
-          login,
-          account,
-          authorized: false,
-          status: Status.SELECTED
-        }))
-        await db.contact.bulkAdd(invites)
-      }
-      const invites = await this.loadContacts()
+      await this.addToInviteList(usernames)
       if (this.state.invites.length > 0) {
         this.setBusy('Вход в скайп')
         const skype = await this.getSkype()
@@ -111,6 +119,10 @@ export default class Invite extends SkypeComponent {
   }
 
   async processInviteList(skype, invitesCount) {
+    this.timeout.setCallback(() => {
+      this.alert('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
+      skype.remove()
+    })
     skype.openSettings()
     const query = c => this.state.account === c.account && Status.SELECTED === c.status && !c.authorized
 
@@ -133,6 +145,7 @@ export default class Invite extends SkypeComponent {
         await db.contact.update(contact.id, {status: Status.CREATED})
       }
       informInvited(++i)
+      this.timeout.update()
       await this.loadContacts()
       if (i < invitesCount) {
         await pull()
@@ -141,6 +154,7 @@ export default class Invite extends SkypeComponent {
 
     informInvited(0)
     await pull()
+    this.timeout.clearCallback()
     this.alert('success', 'Все преглашены!')
   }
 
