@@ -163,11 +163,10 @@ export default class Delivery extends SkypeComponent {
           <Form.TextArea
             name="text"
             label="Введите сообщение"
-            placeholder=" Плайсхолдер Пишите текст здесь и он
-            отправиться всем Вашим друзьям после нажатия кнопки разослать"
+            placeholder="Введите сообщение для его рассылки по выбраным контактам"
             value={text}
             onChange={this.onChange}/>
-          <Button type="submit" disabled={!canSend}>Послать</Button>
+          <Button type="submit" disabled={!canSend}>Разослать</Button>
           {isDevMode ? <Button type="button" floated="right" onClick={this.reset}>Очистить</Button> : ''}
         </Form>
       </Segment>
@@ -180,7 +179,7 @@ export default class Delivery extends SkypeComponent {
       </Segment>
       <Segment className="contact-list-segment">
         <Help text="Нажмите, чтобы исключить контакт из рассылки">
-          <Header textAlign="center" as="h2">Избранные контакты</Header>
+          <Header textAlign="center" as="h2">Выбранные контакты</Header>
         </Help>
         <ContactList items={this.state.selections} select={c => this.select(c.id, false)}/>
       </Segment>

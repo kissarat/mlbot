@@ -7,6 +7,7 @@ export default class Timeout {
   }
 
   setCallback(callback) {
+    clearTimeout(this.timer)
     this.callback = callback
     this.update()
   }
@@ -21,3 +22,5 @@ export default class Timeout {
     this.timer = setTimeout(this.callback, this.time)
   }
 }
+
+// window.Timeout = Timeout
