@@ -1,6 +1,7 @@
 import {isEmpty, each} from 'lodash'
 import {stringify} from '../util/index.jsx'
 import config from '../../app/config'
+import {hashHistory} from 'react-router'
 
 const headers = {
   'Accept': 'application/json',
@@ -36,9 +37,17 @@ class API {
     return url
   }
 
-  get(url, params) {
+  handleResponse(res) {
+    if (401 === res.status) {
+      return void hashHistory.push('/login')
+    }
+    return res.json()
+  }
+
+  async get(url, params) {
     url = this.prefix + this.buildURL(url, params)
-    return fetch(url, {headers}).then(r => r.json())
+    const res = await fetch(url, {headers})
+    return this.handleResponse(res)
   }
 
   del(url, params) {

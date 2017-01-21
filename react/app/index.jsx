@@ -1,5 +1,3 @@
-import {each, defaults} from 'lodash'
-
 const globalProperties = {
   isDevMode: 'dev',
   listLimit: 'limit_list',
@@ -36,6 +34,8 @@ import React, {Component} from 'react'
 import {hashHistory} from 'react-router'
 import {Menu, Segment, Image, Dimmer, Loader} from 'semantic-ui-react'
 import api from '../connect/api.jsx'
+import {each, defaults} from 'lodash'
+import SingletonComponent from '../base/singleton-component.jsx'
 
 function itemUrl(url) {
   return {
@@ -46,31 +46,13 @@ function itemUrl(url) {
   }
 }
 
-export default class App extends Component {
-  static instance = null
+export default class App extends SingletonComponent {
   state = {
     busy: false
   }
 
-  static setState(state) {
-    if (App.instance) {
-      App.instance.setState(state)
-    }
-    else {
-      console.error('Application has no instance when setting state', state)
-    }
-  }
-
   static setBusy(busy) {
-    this.setState({busy})
-  }
-
-  componentWillMount() {
-    App.instance = this
-  }
-
-  componentWillUnmount() {
-    App.instance = null
+    this.set({busy})
   }
 
   developerMode(value) {

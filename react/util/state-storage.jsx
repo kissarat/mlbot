@@ -48,7 +48,7 @@ export class StateStorage {
 }
 
 const stateStorage = new StateStorage()
-window.stateStorage = stateStorage
+// window.stateStorage = stateStorage
 export default stateStorage
 
 addEventListener('beforeunload', () => stateStorage.saveAll())

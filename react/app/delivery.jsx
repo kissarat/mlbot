@@ -3,32 +3,28 @@ import db from '../database.jsx'
 import Help from '../widget/help.jsx'
 import React from 'react'
 import SelectAccount from './select-account.jsx'
-import SkypeComponent from './skype-component.jsx'
-import stateStorage from '../util/state-storage.jsx'
+import SkypeComponent from '../base/skype-component.jsx'
 import {Form, Segment, Button, Loader, Header} from 'semantic-ui-react'
-import {wait, setImmediate} from '../util/index.jsx'
+import {wait} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 
 export default class Delivery extends SkypeComponent {
-  componentWillReceiveProps(props) {
-    let state = stateStorage.register(this.getStorageName(), ['text', 'account'], {
-      contacts: [],
-      selections: [],
-      busy: false
-    })
-    state = defaults(props.params, state)
-    if (state.account) {
-      setImmediate(this.initialize)
-    }
-    this.setState(state)
+  persistentProps = ['text', 'account']
+  state = {
+    contacts: [],
+    selections: [],
+    busy: false
   }
 
-  initialize = async() => {
+  initialize() {
+    if ('string' !== typeof this.state.account) {
+      return
+    }
     try {
       this.loadContacts()
       if (openSkypeAfterChoose) {
-        await this.openSkype()
+        this.openSkype()
       }
     }
     catch (ex) {
@@ -92,7 +88,7 @@ export default class Delivery extends SkypeComponent {
         this.setBusy('Подождите 3 секунды')
         await wait(3000)
         this.setBusy('Получение списка рассылки')
-        this.timeout.setCallback(() => {
+        this.setTimeout(() => {
           this.alert('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
           skype.remove()
         })
@@ -106,7 +102,7 @@ export default class Delivery extends SkypeComponent {
             .filter(query)
             .first()
           if (!contact) {
-              return
+            return
           }
           const anwser = await skype.sendMessage({
             id: contact.id,
@@ -115,7 +111,7 @@ export default class Delivery extends SkypeComponent {
           })
           await db.contact.update(contact.id, {status: Status.CREATED})
           informInvited(++i)
-          this.timeout.update()
+          this.updateTimeout()
           if (i < contactsCount) {
             await pull()
           }
@@ -124,7 +120,7 @@ export default class Delivery extends SkypeComponent {
 
         informInvited(0)
         await pull()
-        this.timeout.clearCallback()
+        this.clearTimeout()
         this.alert('success', 'Рассылка завершена')
       }
       else {

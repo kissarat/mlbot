@@ -1,29 +1,33 @@
 import React, {Component} from 'react'
 import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
-import {errorMessage} from '../util/index.jsx'
 import {hashHistory} from 'react-router'
 import {Message} from 'semantic-ui-react'
 import {toArray, defaults} from 'lodash'
-import App from './index.jsx'
+import App from '../app/index.jsx'
 import Timeout from '../util/timeout.jsx'
+import Persistent from '../util/persistent.jsx'
+import {mix} from '../util/index.jsx'
 
 export default class SkypeComponent extends Component {
-  getStorageName() {
-    return this.constructor.name.toLocaleLowerCase()
+  constructor() {
+    super()
+    mix(this,
+      Persistent,
+      Timeout,
+    )
+  }
+
+  componentWillReceiveProps(props) {
+    this.loadState(props.params)
   }
 
   componentWillMount() {
-    this.timeout = new Timeout(skypeTimeout)
-    this.componentWillReceiveProps(this.props)
-  }
-
-  componentWillUnmount() {
-    stateStorage.unregister(this.getStorageName(), this.state)
+    this.loadState()
   }
 
   componentDidUpdate(_1, prevState) {
-    stateStorage.save(this.getStorageName(), this.state)
+    this.saveStorage()
     if (prevState.busy != this.state.busy) {
       App.setState({busy: this.state.busy})
     }
@@ -97,3 +101,5 @@ export default class SkypeComponent extends Component {
 
   reset = () => this.setState(stateStorage.reset(this.getStorageName()))
 }
+
+window.SC = SkypeComponent

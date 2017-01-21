@@ -1,4 +1,4 @@
-import {isObject} from 'lodash'
+import {isObject, omit, defaults, slice} from 'lodash'
 
 export const start = new Date()
 
@@ -86,4 +86,22 @@ export function operationTimeout(cb) {
 
 export function errorMessage(err) {
   return 'function' === typeof err.getMessage ? err.getMessage() : err.message
+}
+
+export function mixer(source) {
+  return function mix(target) {
+    target[source.constructor.name] = source
+    if (!isObject(target.mixins)) {
+      target.mixins = {}
+    }
+    target.mixins[source.constructor.name] = source
+    // console.log(`${target.constructor.name} injected ${source.constructor.name}`)
+    // window[target.constructor.name] = target
+    return defaults(target, omit(source, 'mix'))
+  }
+}
+
+export function mix(target) {
+  // target.mixins = (target.mixins || []).concat(slice(arguments, 1))
+  return defaults.apply(null, arguments)
 }

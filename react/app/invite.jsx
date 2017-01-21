@@ -1,30 +1,28 @@
-import config from '../../app/config'
 import ContactList from './contact-list.jsx'
 import db from '../database.jsx'
 import Help from '../widget/help.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
-import SkypeComponent from './skype-component.jsx'
-import stateStorage from '../util/state-storage.jsx'
-import {filterSkypeUsernames, setImmediate, wait} from '../util/index.jsx'
+import SkypeComponent from '../base/skype-component.jsx'
+import {filterSkypeUsernames, setImmediate} from '../util/index.jsx'
 import {Form, Segment, Button, Input, Checkbox, Header, Message} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults, keyBy} from 'lodash'
 
 export default class Invite extends SkypeComponent {
-  componentWillReceiveProps(props) {
-    let state = stateStorage.register(this.getStorageName(), ['list', 'greeting', 'limit', 'account'], {
-      limit: 40,
-      sort: false,
-      account: '',
-      list: '',
-      greeting: '',
-      isFileChosen: false,
-      invites: []
-    })
-    state = defaults(props.params, state)
-    this.setState(state)
-    setImmediate(() => this.loadContacts())
+  persistentProps = ['text', 'account']
+  state = {
+    limit: 40,
+    sort: false,
+    account: '',
+    list: '',
+    greeting: '',
+    isFileChosen: false,
+    invites: []
+  }
+
+  initialize() {
+    this.loadContacts()
   }
 
   filterSkypeUsernames(text) {
@@ -116,7 +114,7 @@ export default class Invite extends SkypeComponent {
   }
 
   async processInviteList(skype, invitesCount) {
-    this.timeout.setCallback(() => {
+    this.setTimeout(() => {
       this.alert('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
       skype.remove()
     })
@@ -142,7 +140,7 @@ export default class Invite extends SkypeComponent {
         await db.contact.update(contact.id, {status: Status.CREATED})
       }
       informInvited(++i)
-      this.timeout.update()
+      this.updateTimeout()
       await this.loadContacts()
       if (i < invitesCount) {
         await pull()
@@ -151,7 +149,7 @@ export default class Invite extends SkypeComponent {
 
     informInvited(0)
     await pull()
-    this.timeout.clearCallback()
+    this.clearTimeout()
     this.alert('success', 'Все преглашены!')
   }
 

@@ -1,26 +1,24 @@
-export default class Timeout {
-  constructor(time, callback) {
-    this.time = time
-    if (callback) {
-      this.setCallback(callback)
-    }
-  }
+import {defaults} from 'lodash'
 
-  setCallback(callback) {
-    clearTimeout(this.timer)
-    this.callback = callback
-    this.update()
-  }
+const Timeout = {
+  setTimeout(callback) {
+    clearTimeout(this.timeout)
+    this.timeoutCallback = callback
+    this.updateTimeout()
+  },
 
-  clearCallback() {
-    clearTimeout(this.timer)
-    this.callback = null
-  }
+  clearTimeout() {
+    clearTimeout(this.timeout)
+    this.timeoutCallback = false
+    this.timeout = false
+  },
 
-  update() {
-    clearTimeout(this.timer)
-    this.timer = setTimeout(this.callback, this.time)
+  updateTimeout() {
+    clearTimeout(this.timeout)
+    this.timeout = setTimeout(this.timeoutCallback, this.timeoutDuration)
   }
 }
+
+export default Timeout
 
 // window.Timeout = Timeout

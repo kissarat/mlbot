@@ -3,7 +3,6 @@ import {Link} from 'react-router'
 import {List, Loader, Icon, Message} from 'semantic-ui-react'
 import Skype from '../skype/index.jsx'
 import api from '../connect/api.jsx'
-// import {debounce} from 'lodash'
 
 export default class AccountList extends Component {
   state = {
