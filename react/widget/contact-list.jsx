@@ -1,8 +1,9 @@
-import React, {Component} from 'react'
-import {toArray, defaults, debounce} from 'lodash'
-import {Table, Dimmer, Loader} from 'semantic-ui-react'
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
+import React, {Component} from 'react'
+import {Status} from '../database.jsx'
+import {Table, Dimmer, Loader} from 'semantic-ui-react'
+import {toArray, defaults, debounce} from 'lodash'
 
 export default class ContactList extends Component {
   state = {
@@ -24,13 +25,11 @@ export default class ContactList extends Component {
   }
 
   componentWillUnmount() {
-    Contact.removeEventListener('update', this.loadContacts)
+    Contact.removeListener('update', this.loadContacts)
   }
 
   loadContacts = async(busy) => {
-    if (true === busy) {
-      this.setState({busy: true})
-    }
+    this.setState({busy: true})
     const {count, contacts} = await Contact.search(
       this.props.account,
       this.props.status,
@@ -40,25 +39,24 @@ export default class ContactList extends Component {
     this.setState({
       count,
       contacts,
-      busy: !busy
+      busy: false
     })
   }
 
   onSearch = e => {
     const search = e.target.value
-    console.log(search)
     this.setState({search})
     this.loadContacts()
   }
 
   rows() {
-    return this.state.contacts.map(function (c) {
+    return this.state.contacts.map(c => {
       let name = c.login
       if (c.name && name !== c.name) {
         name += ` (${c.name})`
       }
       return <Table.Row key={c.id}>
-        <Table.Cell>
+        <Table.Cell onClick={() => this.props.changeStatus(c)}>
           {name}
         </Table.Cell>
       </Table.Row>

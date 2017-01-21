@@ -52,7 +52,15 @@
     font-weight: 100;
 }
 
-p, h1, h2, h3, h4, h5, h6, input, body {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+body {
     font-family: Panton, sans-serif !important;
 }
 
@@ -64,22 +72,22 @@ body {
 }
 
 webview {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 1024px;
     height: 768px;
     overflow: scroll;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 1024px;
 }
 
 #app {
-    position: fixed;
-    top: 0;
-    right: 0;
     bottom: 0;
-    left: 0;
-    width: 100vw;
     height: 100vh;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 100vw;
 }
 
 .layout.app {
@@ -99,8 +107,8 @@ nav ul {
 
 nav li {
     display: inline-block;
-    padding: 0 2px;
     list-style: none;
+    padding: 0 2px;
 }
 
 .contact-list-segment {
@@ -132,32 +140,32 @@ nav li {
 }
 
 .page.invite .limit .ui.input {
-    all: initial;
     display: inline-block;
+    all: initial;
 }
 
 .page.invite .limit [type=number] {
-    all: initial;
-    width: 60px;
-    text-align: right;
     font-family: 'Panton', Ubuntu, sans-serif;
+    text-align: right;
+    width: 60px;
+    all: initial;
 }
 
 #app > div {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
     height: 100vh;
+    justify-content: space-between;
     padding: 15px 15px;
 }
 
 #app > div {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
     height: 100vh;
+    justify-content: space-between;
     padding: 15px 0px 0;
 }
 
@@ -168,30 +176,30 @@ nav li {
 }
 
 footer .two.column.row > .column:first-child {
+    align-items: center;
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
-    display: flex;
-    align-items: center;
 }
 
 footer {
     background: radial-gradient(at top, #FEFFFF, #e5f7f6);
-    padding: 2% 3%;
     display: flex;
     flex-direction: column;
+    padding: 2% 3%;
     position: relative;
     width: 100%;
 }
 
 footer img {
-    max-width: 45% !important;
     display: inline-block !important;
     height: auto;
+    max-width: 45% !important;
 }
 
 footer .control {
-    justify-content: center;
     display: flex;
+    justify-content: center;
 }
 
 footer .control > * {
@@ -204,11 +212,12 @@ footer.expanded .chevron {
 
 footer.expanded .close {
     position: absolute;
-    top: 0;
     right: 0;
+    top: 0;
 }
 
-footer.collapsed .close, footer.collapsed .advertise {
+footer.collapsed .close,
+footer.collapsed .advertise {
     display: none;
 }
 
@@ -221,14 +230,14 @@ div.copyright {
 }
 
 .two.column.row .column > .widget.browser-link {
-    background: white;
-    padding: 13px 13px 15px;
-    display: flex;
     align-items: center;
+    background: white;
     border-radius: 3px;
-    max-width: 220px;
+    display: flex;
     justify-content: center;
     margin-top: 10px;
+    max-width: 220px;
+    padding: 13px 13px 15px;
     transition: all 0.1s;
 }
 
@@ -237,19 +246,20 @@ div.copyright {
     transition: all 0.1s;
 }
 
-p, .copyright {
-    margin: 8px 0em 0 !important;
+p,
+.copyright {
     font-size: 16px;
     font-weight: 400;
     line-height: 18px;
+    margin: 8px 0em 0 !important;
 }
 
 input {
     border-radius: 3px !important;
     color: black !important;
-    padding: 10px !important;
     font-family: panton !important;
     letter-spacing: 1px;
+    padding: 10px !important;
 }
 
 .contact-list-segment .item {
@@ -278,7 +288,6 @@ input {
 }
 
 .invite .form .button {
-
 }
 
 textarea {
@@ -286,9 +295,9 @@ textarea {
 }
 
 .contact-list-segment .list > .item:before {
+    color: red;
     content: "– ";
     font-weight: 900;
-    color: red;
 }
 
 .contact-list-segment .list > .item:hover {
@@ -300,54 +309,56 @@ textarea {
 }
 
 .ui.horizontal.page.delivery.segments > * {
-	max-width: 33%;
-	min-width: 250px;
+    max-width: 33%;
+    min-width: 250px;
 }
 
 .ui.horizontal.page.delivery.segments #select-skype {
-	width: 100%;
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .control {
-	height: 61px;
+    align-items: center;
     display: flex;
     flex-direction: column;
+    font-size: 14px;
+    height: 61px;
     justify-content: space-between;
     margin-bottom: 20px;
-    font-size: 14px;
-    align-items: center;
 }
 
 .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .control strong {
-	font-weight: 400;
-	font-family: Panton, sans-serif;
+    font-family: Panton, sans-serif;
+    font-weight: 400;
 }
 
-.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field, 
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field,
 .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field label {
     display: flex;
     flex-direction: column;
-    font-size: 14px;	
+    font-family: Panton, sans-serif;
+    font-size: 14px;
     font-weight: 400;
-	font-family: Panton, sans-serif;
 }
 
 .help-question {
-	text-align: center;
-    
+    text-align: center;
+}
+
+.help-question > * {
+    display: inline-block;
 }
 
 .help-question i {
-	color: #3498db;
+    color: #3498db;
     cursor: pointer;
 }
 
 .help-text .content p {
-font-size: 12px;
-    padding: 0 !important;
+    font-size: 12px;
     margin: 0 !important;
-
+    padding: 0 !important;
 }
 
 .help-text {
@@ -355,60 +366,59 @@ font-size: 12px;
 }
 
 .page.account-list {
-	    display: flex;
+    align-items: center;
+    display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;	
 }
 
 .page.account-list .remove.icon {
-	cursor: pointer;
+    cursor: pointer;
     font-size: 21px;
 }
 
 .page.account-list .remove.icon:hover {
-	color: red;
+    color: red;
 }
 
 .page.account-list .ui.list {
-	max-width: 300px;
+    max-width: 300px;
 }
 
 .page.account-list .ui.list .item {
-
 }
 
 .page.account-list > a {
-	    padding: 15px 25px 15px;
     background: #3498db;
     border-radius: 43px;
     color: white;
-    margin: 40px 0;
     display: block;
+    font-family: Panton, sans-serif;
+    font-size: 17px;
+    margin: 40px 0;
+    padding: 15px 25px 15px;
     text-align: center;
     width: 250px;
-    font-size: 17px;
-    font-family: Panton,sans-serif;
 }
 
 .page.account-list > a:hover {
-	opacity: 0.9;
+    opacity: 0.9;
 }
 
 .ui.horizontal.page.delivery.segments .loader {
-	height: 280px;
-    margin: -5px;
-    display: flex;
     align-items: center;
+    display: flex;
+    height: 280px;
     justify-content: center;
+    margin: -5px;
 }
 
 .ui.button.open-file {
-	margin: 0 auto 10px;
+    margin: 0 auto 10px;
 }
 
 .ui.segment .ui.message .content p {
-    margin: 0 !important;
     font-size: 12px;
+    margin: 0 !important;
     text-align: center;
 }

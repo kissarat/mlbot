@@ -2,7 +2,7 @@ import {extend} from 'lodash'
 import {EventEmitter} from 'events'
 
 export default class Contact {
-  static async buildQuery(account, status, search) {
+  static buildQuery(account, status, search) {
     return function query(c) {
       let q = account === c.account &&
         status === c.status &&

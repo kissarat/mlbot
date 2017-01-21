@@ -114,14 +114,17 @@ export default class Delivery extends SkypeComponent {
     }
   }
 
-  async select(id, add) {
-    const status = add ? Status.SELECTED : Status.CREATED
+  async changeStatus(id, status) {
+    status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
     await db.contact.update(id, {status})
     Contact.emit('update')
   }
 
   list(status) {
-    return <ContactList status={status} account={this.state.account}/>
+    return <ContactList
+      account={this.state.account}
+      changeStatus={this.changeStatus}
+      status={status}/>
   }
 
   render() {
@@ -136,7 +139,7 @@ export default class Delivery extends SkypeComponent {
             select={account => this.changeAccount(account)}/>
           <div className="control">
             <strong>Кому отправить сообщение?</strong>
-            <div>
+            <div className="control">
               <Button type="button" onClick={() => this.selectAll(Status.SELECTED)}>Всем</Button>
               <Button type="button" onClick={() => this.selectAll(Status.CREATED)}>Никому</Button>
             </div>
