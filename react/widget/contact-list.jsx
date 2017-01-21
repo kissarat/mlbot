@@ -2,7 +2,7 @@ import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {Component} from 'react'
 import {Status} from '../database.jsx'
-import {Table, Dimmer, Loader} from 'semantic-ui-react'
+import {Table, Dimmer, Loader, Input} from 'semantic-ui-react'
 import {toArray, defaults, debounce} from 'lodash'
 
 export default class ContactList extends Component {
@@ -65,10 +65,13 @@ export default class ContactList extends Component {
 
   render() {
     return <div className="widget contact-list">
-      <input
-        type="search"
-        value={this.state.text}
+      <Input
+        icon="search"
         onChange={this.onSearch}
+        size="small"
+        type="search"
+        className="search"
+        value={this.state.text}
       />
       <div className="table-container">
         <Dimmer active={!this.state.contacts} inverted>

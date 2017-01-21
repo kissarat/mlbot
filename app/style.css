@@ -1,70 +1,11 @@
 @font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-Black.otf) format("opentype");
-    font-weight: 800;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-Bold.otf) format("opentype");
-    font-weight: 600;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-ExtraBlack.otf) format("opentype");
-    font-weight: 900;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-ExtraBold.otf) format("opentype");
-    font-weight: 700;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-ExtraLight.otf) format("opentype");
-    font-weight: 200;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-Light.otf) format("opentype");
-    font-weight: 300;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-Regular.otf) format("opentype");
-    font-weight: 400;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-SemiBold.otf) format("opentype");
-    font-weight: 500;
-}
-
-@font-face {
-    font-family: 'Panton';
-    src: url(images/Panton-Thin.otf) format("opentype");
+    font-family: Panton;
+    src: url(images/Panton-Thin.otf) format(opentype);
     font-weight: 100;
 }
 
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-input,
-body {
+p, h1, h2, h3, h4, h5, h6, input, body {
     font-family: Panton, sans-serif !important;
-}
-
-body {
 }
 
 #dark {
@@ -102,7 +43,7 @@ webview {
 }
 
 nav ul {
-    padding: 4px 2px 0 2px;
+    padding: 4px 2px 0;
 }
 
 nav li {
@@ -114,6 +55,7 @@ nav li {
 .contact-list-segment {
     display: flex;
     flex-direction: column;
+    min-width: 200px;
 }
 
 .scroll {
@@ -145,19 +87,14 @@ nav li {
 }
 
 .page.invite .limit [type=number] {
-    font-family: 'Panton', Ubuntu, sans-serif;
+    font-family: Panton, Ubuntu, sans-serif;
     text-align: right;
     width: 60px;
     all: initial;
 }
 
-#app > div {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    justify-content: space-between;
-    padding: 15px 15px;
+.widget.contact-list .search {
+    width: 100%;
 }
 
 #app > div {
@@ -166,7 +103,7 @@ nav li {
     flex-direction: column;
     height: 100vh;
     justify-content: space-between;
-    padding: 15px 0px 0;
+    padding: 15px 0 0;
 }
 
 .content .one.column.row > .column {
@@ -183,10 +120,9 @@ footer .two.column.row > .column:first-child {
 }
 
 footer {
-    background: radial-gradient(at top, #FEFFFF, #e5f7f6);
+    background: radial-gradient(attop, #FEFFFF, #e5f7f6);
     display: flex;
     flex-direction: column;
-    padding: 2% 3%;
     position: relative;
     width: 100%;
 }
@@ -200,14 +136,7 @@ footer img {
 footer .control {
     display: flex;
     justify-content: center;
-}
-
-footer .control > * {
-    cursor: pointer;
-}
-
-footer.expanded .chevron {
-    display: none;
+    padding-bottom: 1em;
 }
 
 footer.expanded .close {
@@ -216,54 +145,36 @@ footer.expanded .close {
     top: 0;
 }
 
-footer.collapsed .close,
-footer.collapsed .advertise {
-    display: none;
-}
-
-footer .control i:hover {
-    cursor: pointer;
-}
-
-div.copyright {
-    font-weight: 600;
-}
-
 .two.column.row .column > .widget.browser-link {
     align-items: center;
-    background: white;
+    background: #FFF;
     border-radius: 3px;
     display: flex;
     justify-content: center;
     margin-top: 10px;
     max-width: 220px;
+    transition: all .1s;
     padding: 13px 13px 15px;
-    transition: all 0.1s;
 }
 
 .two.column.row .column > .widget.browser-link:hover {
     background: #fdfdfd;
-    transition: all 0.1s;
+    transition: all .1s;
 }
 
-p,
-.copyright {
+p, .copyright {
     font-size: 16px;
     font-weight: 400;
     line-height: 18px;
-    margin: 8px 0em 0 !important;
+    margin: 8px 0 0 !important;
 }
 
 input {
     border-radius: 3px !important;
-    color: black !important;
+    color: #000 !important;
     font-family: panton !important;
     letter-spacing: 1px;
     padding: 10px !important;
-}
-
-.contact-list-segment .item {
-    cursor: pointer
 }
 
 .ui.horizontal.page.invite.segments {
@@ -287,9 +198,6 @@ input {
     width: 48%;
 }
 
-.invite .form .button {
-}
-
 textarea {
     height: 112px;
 }
@@ -298,14 +206,6 @@ textarea {
     color: red;
     content: "– ";
     font-weight: 900;
-}
-
-.contact-list-segment .list > .item:hover {
-    font-weight: 600;
-}
-
-.contact-list-segment {
-    min-width: 200px
 }
 
 .ui.horizontal.page.delivery.segments > * {
@@ -333,8 +233,9 @@ textarea {
     font-weight: 400;
 }
 
-.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field,
-.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field label {
+.ui.horizontal.page.delivery.segments .ui.segment
+.ui.form > .field, .ui.horizontal.page.delivery.segments
+.ui.segment .ui.form > .field label {
     display: flex;
     flex-direction: column;
     font-family: Panton, sans-serif;
@@ -343,22 +244,19 @@ textarea {
 }
 
 .help-question {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.help-question > * {
-    display: inline-block;
-}
-
-.help-question i {
+.help-question .question.circle {
     color: #3498db;
     cursor: pointer;
+    margin-left: 4px;
 }
 
 .help-text .content p {
     font-size: 12px;
-    margin: 0 !important;
-    padding: 0 !important;
 }
 
 .help-text {
@@ -385,20 +283,17 @@ textarea {
     max-width: 300px;
 }
 
-.page.account-list .ui.list .item {
-}
-
 .page.account-list > a {
     background: #3498db;
     border-radius: 43px;
-    color: white;
+    color: #FFF;
     display: block;
     font-family: Panton, sans-serif;
     font-size: 17px;
-    margin: 40px 0;
-    padding: 15px 25px 15px;
     text-align: center;
     width: 250px;
+    margin: 40px 0;
+    padding: 15px 25px;
 }
 
 .page.account-list > a:hover {
@@ -419,6 +314,18 @@ textarea {
 
 .ui.segment .ui.message .content p {
     font-size: 12px;
-    margin: 0 !important;
     text-align: center;
+    margin: 0 !important;
+}
+
+footer .control > *, footer .control i:hover, .contact-list-segment .item {
+    cursor: pointer;
+}
+
+footer.expanded .chevron, footer.collapsed .close, footer.collapsed .advertise {
+    display: none;
+}
+
+div.copyright, .contact-list-segment .list > .item:hover {
+    font-weight: 600;
 }
