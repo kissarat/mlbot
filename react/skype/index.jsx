@@ -4,6 +4,7 @@ import {clear} from '../util/index.jsx'
 import {EventEmitter} from 'events'
 import {extend, toArray, each} from 'lodash'
 import {Status, start} from '../../app/config'
+import Contact from '../entity/contact.jsx'
 
 extend(Skype.prototype, {
   login(username, password) {
@@ -107,6 +108,7 @@ extend(Skype.prototype, {
       .map(c => c.id)
     await db.contact.bulkDelete(absent)
     await db.contact.bulkPut(profile.contacts)
+    Contact.emit('update')
     return this
   },
 

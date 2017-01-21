@@ -1,4 +1,4 @@
-import ContactList from './contact-list.jsx'
+import ContactList from '../widget/contact-list.jsx'
 import db from '../database.jsx'
 import Help from '../widget/help.jsx'
 import React from 'react'
@@ -8,6 +8,7 @@ import {Form, Segment, Button, Loader, Header} from 'semantic-ui-react'
 import {wait} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
+import Contact from '../entity/contact.jsx'
 
 export default class Delivery extends SkypeComponent {
   persistentProps = ['text', 'account']
@@ -22,7 +23,6 @@ export default class Delivery extends SkypeComponent {
       return
     }
     try {
-      this.loadContacts()
       if (openSkypeAfterChoose) {
         this.openSkype()
       }
@@ -34,28 +34,9 @@ export default class Delivery extends SkypeComponent {
 
   onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
 
-  queryContacts(status) {
-    const account = this.state.account
-    return db.contact
-      .filter(c =>
-        account === c.account &&
-        status === c.status &&
-        c.authorized
-      )
-  }
-
-  async loadContacts() {
-    const find = status => {
-      const q = this.queryContacts(status)
-      return (listLimit ? q.limit(listLimit) : q).toArray()
-    }
-    const contacts = await find(Status.CREATED)
-    const selections = await find(Status.SELECTED)
-    this.setState({
-      contacts,
-      selections,
-      busy: false
-    })
+  loadContacts() {
+    console.log('loadContacts')
+    // Contact.emit('update')
   }
 
   async selectAll(status) {
@@ -64,7 +45,7 @@ export default class Delivery extends SkypeComponent {
     await db.contact
       .filter(c => c.account === account)
       .modify({status})
-    return this.loadContacts()
+    Contact.emit('update')
   }
 
   onSubmit = (e, {formData: {text}}) => {
@@ -115,7 +96,7 @@ export default class Delivery extends SkypeComponent {
           if (i < contactsCount) {
             await pull()
           }
-          return this.loadContacts()
+          Contact.emit('update')
         }
 
         informInvited(0)
@@ -136,12 +117,16 @@ export default class Delivery extends SkypeComponent {
   async select(id, add) {
     const status = add ? Status.SELECTED : Status.CREATED
     await db.contact.update(id, {status})
-    return this.loadContacts()
+    Contact.emit('update')
+  }
+
+  list(status) {
+    return <ContactList status={status} account={this.state.account}/>
   }
 
   render() {
     const text = this.state.text || ''
-    const canSend = !!text.trim() && this.state.selections.length > 0
+    const canSend = text
     return <Segment.Group horizontal className="page delivery">
       <Segment>
         {this.getMessage()}
@@ -171,13 +156,13 @@ export default class Delivery extends SkypeComponent {
         <Help text="Нажмите, чтобы включить контакт в рассылку">
           <Header textAlign="center" as="h2">Ваши контакты</Header>
         </Help>
-        <ContactList items={this.state.contacts} select={c => this.select(c.id, true)}/>
+        {this.list(Status.CREATED)}
       </Segment>
       <Segment className="contact-list-segment">
         <Help text="Нажмите, чтобы исключить контакт из рассылки">
           <Header textAlign="center" as="h2">Выбранные контакты</Header>
         </Help>
-        <ContactList items={this.state.selections} select={c => this.select(c.id, false)}/>
+        {this.list(Status.SELECTED)}
       </Segment>
     </Segment.Group>
   }
