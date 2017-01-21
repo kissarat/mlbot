@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import stateStorage from './state-storage.jsx'
-import {toArray, isObject, defaults} from 'lodash'
+import {toArray, isObject, merge} from 'lodash'
 import {setImmediate} from './index.jsx'
 
 const Persistent = {
@@ -11,7 +11,7 @@ const Persistent = {
   loadState(defaultProps) {
     let state = stateStorage.register(this.getStorageName(), this.persistentProps, this.state)
     if (isObject(defaultProps)) {
-      state = defaults(state, defaultProps)
+      state = merge(state, defaultProps)
     }
     this.setState(state)
     if (this.initialize instanceof Function) {

@@ -95,7 +95,7 @@ extend(Skype.prototype, {
         account: profile.username,
         login: c.id,
         name: c.display_name,
-        authorized: c.authorized,
+        authorized: c.authorized ? 1 : 0,
         status: found ? found.status : Status.CREATED
       }
       if (c.authorized && db.INVITED === contact.status) {

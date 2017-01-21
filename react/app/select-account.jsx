@@ -5,7 +5,8 @@ import {toArray} from 'lodash'
 
 export default class SelectAccount extends Component {
   state = {
-    accounts: []
+    accounts: [],
+    buttonLoading: false
   }
 
   componentWillMount() {
@@ -29,6 +30,12 @@ export default class SelectAccount extends Component {
       ? this.props.value : ''
   }
 
+  openSkype = async login => {
+    this.setState({buttonLoading: true})
+    await Skype.open(login)
+    this.setState({buttonLoading: false})
+  }
+
   render() {
     const value = this.value()
     return <div className="widget select-account">
@@ -41,10 +48,12 @@ export default class SelectAccount extends Component {
         value={value}
       />
       <Button
+        loading={this.state.buttonLoading}
+        className="login-skype"
         type="button"
-        onClick={() => Skype.open(value)}>
-        Вход в Skype
-      </Button>
+        onClick={this.openSkype}
+        icon="sign in"
+        content="Вход в Skype"/>
     </div>
   }
 }

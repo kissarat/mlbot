@@ -2,8 +2,8 @@ import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {Component} from 'react'
 import {Status} from '../../app/config'
-import {Table, Dimmer, Loader, Input} from 'semantic-ui-react'
-import {toArray, defaults, debounce} from 'lodash'
+import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
+import {toArray, defaults, debounce, pick} from 'lodash'
 
 export default class ContactList extends Component {
   state = {
@@ -12,7 +12,8 @@ export default class ContactList extends Component {
     count: 0,
     contacts: [],
     busy: true,
-    delay: 300
+    delay: 300,
+    limit: 10
   }
 
   componentWillReceiveProps(props) {
@@ -28,13 +29,19 @@ export default class ContactList extends Component {
     Contact.removeListener('update', this.loadContacts)
   }
 
-  loadContacts = async(busy) => {
+  changeOffset = async offset => {
+    await this.loadContacts()
+    this.setState({offset})
+  }
+
+  loadContacts = async() => {
     this.setState({busy: true})
+    let condition = pick(this.props, 'account', 'status', 'authorized')
+    condition.authorized = condition.authorized ? 1 : 0
     const {count, contacts} = await Contact.search(
-      this.props.account,
-      this.props.status,
+      condition,
       this.state.search,
-      this.state.offset,
+      pick(this.state, 'offset', 'limit'),
     )
     this.setState({
       count,
@@ -43,10 +50,15 @@ export default class ContactList extends Component {
     })
   }
 
+  debounceSearch = debounce(() => this.loadContacts(), 300)
+
   onSearch = e => {
     const search = e.target.value
-    this.setState({search})
-    this.loadContacts()
+    this.setState({
+      search,
+      offset: 0
+    })
+    this.debounceSearch()
   }
 
   rows() {
@@ -56,42 +68,48 @@ export default class ContactList extends Component {
         name += ` (${c.name})`
       }
       const isNew = Status.CREATED === c.status
-      return <Table.Row key={c.id} className={isNew ? 'add' : 'remove'}>
-        <Table.Cell
-          className="move"
-          onClick={() => this.props.changeStatus(c)}>
+      return <Table.Row
+        key={c.id} className={isNew ? 'add' : 'remove'}
+        onClick={() => this.props.changeStatus(c)}>
+        <Table.Cell className="move">
           {name}
         </Table.Cell>
       </Table.Row>
     })
   }
 
+  footer() {
+    return <Table.Footer className={this.state.offset > this.state.limit ? 'nothing' : 'hidden'}>
+      <Table.Row>
+        <Table.HeaderCell>
+          <Paginator
+            changeOffset={this.changeOffset}
+            {...this.state}/>
+        </Table.HeaderCell>
+      </Table.Row>
+    </Table.Footer>
+  }
+
   render() {
     return <div className="widget contact-list">
-      <Input
-        icon="search"
-        onChange={this.onSearch}
-        size="small"
-        type="search"
-        className="search"
-        value={this.state.text}
-      />
+      <div className="control">
+        <Input
+          icon="search"
+          onChange={this.onSearch}
+          size="small"
+          type="search"
+          className="search"
+          value={this.state.search}
+        />
+        {this.props.children}
+      </div>
       <div className="table-container">
-        <Dimmer active={!this.state.contacts} inverted>
+        <Dimmer active={this.state.busy || this.props.busy} inverted>
           <Loader/>
         </Dimmer>
-        <Table selectable>
+        <Table selectable className={this.state.offset > 0 ? 'nothing' : 'hidden'}>
           <Table.Body>{this.rows()}</Table.Body>
-
-          <Table.Footer>
-            <Table.Row>
-              <Table.HeaderCell>
-                <Paginator
-                  openPage={offset => this.setState({offset})}
-                  {...this.state}/>
-              </Table.HeaderCell>
-            </Table.Row>
-          </Table.Footer>
+          {this.footer()}
         </Table>
       </div>
     </div>

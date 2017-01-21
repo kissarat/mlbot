@@ -1,13 +1,16 @@
+import Alert from '../widget/alert.jsx'
+import App from '../app/index.jsx'
+import Contact from '../entity/contact.jsx'
+import ContactList from '../widget/contact-list.jsx'
+import Persistent from '../util/persistent.jsx'
 import React, {Component} from 'react'
 import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
-import {hashHistory} from 'react-router'
-import Alert from '../widget/alert.jsx'
-import {toArray, defaults} from 'lodash'
-import App from '../app/index.jsx'
 import Timeout from '../util/timeout.jsx'
-import Persistent from '../util/persistent.jsx'
+import {hashHistory} from 'react-router'
 import {mix} from '../util/index.jsx'
+import {toArray, defaults} from 'lodash'
+import {Status} from '../../app/config'
 
 export default class SkypeComponent extends Component {
   constructor() {
@@ -23,7 +26,7 @@ export default class SkypeComponent extends Component {
   }
 
   componentWillMount() {
-    this.loadState()
+    this.loadState(this.props.params)
   }
 
   componentDidUpdate(_1, prevState) {
@@ -40,12 +43,17 @@ export default class SkypeComponent extends Component {
 
   changeAccount(account) {
     const name = this.getStorageName().toLowerCase()
+    let url
     if (account && account.login !== this.state.account) {
-      hashHistory.push(`/${name}/` + account.login)
+      url = `/${name}/` + account.login
     }
     else if (!account) {
-      hashHistory.push('/' + name)
+      url = '/' + name
     }
+    if (url) {
+      hashHistory.push(url)
+    }
+    // console.log(url)
   }
 
   getMessage() {
@@ -100,4 +108,23 @@ export default class SkypeComponent extends Component {
   }
 
   reset = () => this.setState(stateStorage.reset(this.getStorageName()))
+
+  async changeStatus({id, status}) {
+    status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
+    await db.contact.update(id, {status})
+    Contact.emit('update')
+  }
+
+  list(condition) {
+    if (this.state.account) {
+      condition.account = this.state.account
+      return <ContactList
+        {...condition}
+        changeStatus={this.changeStatus}
+      />
+    }
+    else {
+      return ''
+    }
+  }
 }

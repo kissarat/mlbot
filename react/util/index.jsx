@@ -1,4 +1,4 @@
-import {isObject, omit, defaults, slice} from 'lodash'
+import {isObject, omit, defaults, slice, uniq} from 'lodash'
 
 export const start = new Date()
 
@@ -62,7 +62,7 @@ export function filterSkypeUsernames(value) {
       accounts.push(string)
     }
   })
-  return accounts
+  return uniq(accounts)
 }
 
 export function setImmediate(fn) {

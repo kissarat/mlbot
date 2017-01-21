@@ -114,22 +114,29 @@ export default class Delivery extends SkypeComponent {
     }
   }
 
-  async changeStatus(id, status) {
-    status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
-    await db.contact.update(id, {status})
-    Contact.emit('update')
+  receiversButton(status, content) {
+    return <Button
+      type="button"
+      onClick={() => this.selectAll(status)}
+      content={content}
+      title="Кому отправить сообщение?"
+    />
   }
 
   list(status) {
-    return <ContactList
-      account={this.state.account}
-      changeStatus={this.changeStatus}
-      status={status}/>
+    return super.list({
+      status,
+      authorized: true,
+      children: this.receiversButton(status, Status.CREATED === status
+        ? 'Разослать всем'
+        : 'Никому'
+      )
+    })
   }
 
   render() {
     const text = this.state.text || ''
-    const canSend = text
+    const canSend = !!text
     return <Segment.Group horizontal className="page delivery">
       <Segment>
         {this.getMessage()}
@@ -137,20 +144,21 @@ export default class Delivery extends SkypeComponent {
           <SelectAccount
             value={this.state.account}
             select={account => this.changeAccount(account)}/>
-          <div className="control">
-            <strong>Кому отправить сообщение?</strong>
-            <div className="control">
-              <Button type="button" onClick={() => this.selectAll(Status.SELECTED)}>Всем</Button>
-              <Button type="button" onClick={() => this.selectAll(Status.CREATED)}>Никому</Button>
-            </div>
-          </div>
+
           <Form.TextArea
+            className="text"
             name="text"
             label="Введите сообщение"
             placeholder="Введите сообщение для его рассылки по выбраным контактам"
             value={text}
             onChange={this.onChange}/>
-          <Button type="submit" disabled={!canSend}>Разослать</Button>
+
+          <Button
+            type="submit"
+            disabled={!canSend}
+            content="Разослать"
+            icon="send"
+          />
           {isDevMode ? <Button type="button" floated="right" onClick={this.reset}>Очистить</Button> : ''}
         </Form>
       </Segment>

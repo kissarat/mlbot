@@ -1,14 +1,14 @@
 import Alert from '../widget/alert.jsx'
-import ContactList from './contact-list.jsx'
 import db from '../database.jsx'
 import Help from '../widget/help.jsx'
 import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
 import SkypeComponent from '../base/skype-component.jsx'
 import {filterSkypeUsernames, setImmediate} from '../util/index.jsx'
-import {Form, Segment, Button, Input, Checkbox, Header} from 'semantic-ui-react'
+import {Form, Segment, Button, Input, Checkbox, Header, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults, keyBy} from 'lodash'
+import Contact from '../entity/contact.jsx'
 
 export default class Invite extends SkypeComponent {
   persistentProps = ['list', 'account', 'greeting']
@@ -19,11 +19,7 @@ export default class Invite extends SkypeComponent {
     list: '',
     greeting: '',
     isFileChosen: false,
-    invites: []
-  }
-
-  initialize() {
-    this.loadContacts()
+    listBusy: false
   }
 
   filterSkypeUsernames(text) {
@@ -40,7 +36,10 @@ export default class Invite extends SkypeComponent {
   }
 
   loadFromFile(file) {
-    this.setState({isFileChosen: !!file})
+    this.setState({
+      isFileChosen: !!file,
+      listBusy: true
+    })
     const reader = new FileReader()
     reader.onload = e => {
       const list = this.filterSkypeUsernames(e.target.result)
@@ -83,27 +82,31 @@ export default class Invite extends SkypeComponent {
     const account = this.state.account
     if (usernames.length > 0) {
       let existing = await db.contact
-          .filter(c => account === c.account)
-          .toArray()
+        .filter(c => account === c.account)
+        .toArray()
       existing = keyBy(existing, 'login')
       usernames = usernames.filter(username => !existing[username])
+      console.log(usernames.length)
       await db.contact.bulkAdd(usernames.map(login => ({
         id: account + '~' + login,
         login,
         account,
-        authorized: false,
+        authorized: 0,
         status: Status.SELECTED
       })))
     }
-    return await this.loadContacts()
+    Contact.emit('upload')
   }
+
+  selectedUnauthorizedQuery = c => this.state.account === c.account && Status.SELECTED === c.status && !c.authorized
 
   async invite(usernames) {
     try {
-      const invites = await this.addToInviteList(usernames)
-      if (invites.length > 0) {
+      await this.addToInviteList(usernames)
+      const count = await db.contact.filter(this.selectedUnauthorizedQuery).count()
+      if (count > 0) {
         const skype = await this.getSkype(true)
-        this.processInviteList(skype, invites.length)
+        this.processInviteList(skype, count)
       }
       else {
         this.alert('error', 'Все контакты уже добавлены')
@@ -120,7 +123,6 @@ export default class Invite extends SkypeComponent {
       skype.remove()
     })
     skype.openSettings()
-    const query = c => this.state.account === c.account && Status.SELECTED === c.status && !c.authorized
 
     if (invitesCount > 40) {
       invitesCount = 40
@@ -131,7 +133,7 @@ export default class Invite extends SkypeComponent {
     let i = 0
     const pull = async() => {
       const contact = await db.contact
-        .filter(query)
+        .filter(this.selectedUnauthorizedQuery)
         .first()
       const answer = await skype.invite(contact.login, this.state.greeting.trim() || '')
       if (Status.ABSENT === answer.status) {
@@ -142,7 +144,7 @@ export default class Invite extends SkypeComponent {
       }
       informInvited(++i)
       this.updateTimeout()
-      await this.loadContacts()
+      Contact.emit('upload')
       if (i < invitesCount) {
         await pull()
       }
@@ -165,18 +167,37 @@ export default class Invite extends SkypeComponent {
 
   remove = async contact => {
     await db.contact.delete(contact.id)
-    return this.loadContacts()
+    Contact.emit('update')
   }
 
   async removeAll() {
+    this.setState({listBusy: true})
     await db.contact
-      .filter(c => this.state.account === c.account && Status.SELECTED === c.status)
+      .where({account: this.state.account, status: Status.SELECTED})
       .delete()
-    await this.loadContacts()
+    Contact.emit('update')
   }
 
-  render() {
-    const limit = isDevMode ? <div className="limit" style={{display: this.state.list ? 'block' : 'none'}}>
+  removeAllButton() {
+    return <Button
+      type="button"
+      className="remove-all"
+      onClick={() => this.removeAll()}
+      icon="trash"
+      content="Удалить всех"/>
+  }
+
+  list() {
+    return super.list({
+      status: Status.SELECTED,
+      authorized: false,
+      busy: this.state.listBusy,
+      children: this.removeAllButton()
+    })
+  }
+
+  limitListControls() {
+    return isDevMode ? <div className="limit" style={{display: this.state.list ? 'block' : 'none'}}>
       <Form.Field>
         <Checkbox
           name="sort"
@@ -195,25 +216,42 @@ export default class Invite extends SkypeComponent {
         контактов
       </Form.Field>
     </div> : ''
+  }
 
+  fileLoadButton() {
+    return <div className="load-file">
+      <input
+        style={{display: this.state.isFileChosen ? 'block' : 'none'}}
+        name="file"
+        type="file"
+        ref="file"
+        onChange={e => this.loadFromFile(e.target.files[0])}/>
+      <Button
+        style={{display: this.state.isFileChosen ? 'none' : 'block'}}
+        type="button"
+        className="open-file"
+        onClick={this.onClickOpenFile}
+        content="Выберите файл для загрузки контактов"
+        icon="file text outline"/>
+    </div>
+  }
+
+  formHeader() {
+    return <div className="form-header">
+      {this.fileLoadButton()}
+      <SelectAccount
+        value={this.state.account}
+        select={account => this.changeAccount(account)}/>
+    </div>
+  }
+
+  render() {
     return <Segment.Group horizontal className="page invite">
       <Segment>
         <Form onSubmit={this.onSubmit}>
           {this.getMessage()}
-          <input
-            style={{display: this.state.isFileChosen ? 'block' : 'none'}}
-            name="file"
-            type="file"
-            ref="file"
-            onChange={e => this.loadFromFile(e.target.files[0])}/>
-          <Button
-            style={{display: this.state.isFileChosen ? 'none' : 'block'}}
-            type="button"
-            className="open-file"
-            onClick={this.onClickOpenFile}>
-            Выберите файл для загрузки контактов
-          </Button>
-          {limit}
+          {this.formHeader()}
+          {this.limitListControls()}
           <div className="text-fields">
             <Form.TextArea
               name="list"
@@ -228,11 +266,11 @@ export default class Invite extends SkypeComponent {
               value={this.state.greeting}
               onChange={this.onChange}/>
             <div>
-              <label htmlFor="select-skype">Выберете Skype</label>
-              <SelectAccount
-                value={this.state.account}
-                select={account => this.changeAccount(account)}/>
-              <Button type="submit" disabled={!this.state.account}>Добавить</Button>
+              <Button
+                type="submit"
+                disabled={!this.state.account}
+                content="Добавить"
+                icon="add circle"/>
               {isDevMode ? <Button floated="right" type="button" onClick={this.reset}>Очистить</Button> : ''}
             </div>
           </div>
@@ -244,16 +282,11 @@ export default class Invite extends SkypeComponent {
           </Alert>
         </Form>
       </Segment>
-      <Segment className="contact-list-segment" disabled={this.state.invites.length <= 0}>
+      <Segment className="contact-list-segment">
         <Help text="Список контактов, которые будут приглашатся, когда вы нажмете на кнопку Добавить">
           <Header as='h2'>Очередь приглашений</Header>
         </Help>
-        <div className="control">
-          <Button type="button" className="remove-all" onClick={() => this.removeAll()}>Удалить всех</Button>
-        </div>
-        <ContactList
-          items={this.state.invites}
-          select={this.remove}/>
+        {this.list()}
       </Segment>
     </Segment.Group>
   }

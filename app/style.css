@@ -93,14 +93,6 @@ nav li {
     all: initial;
 }
 
-.widget.contact-list .search {
-    width: 100%;
-}
-
-.widget.contact-list td {
-    padding: 4px 8px;
-}
-
 #app > div {
     align-items: center;
     display: flex;
@@ -206,6 +198,14 @@ textarea {
     height: 112px;
 }
 
+.widget.contact-list .search {
+    width: 100%;
+}
+
+.widget.contact-list td {
+    padding: 4px 7px;
+}
+
 .widget.contact-list tr {
     background-color: transparent;
 }
@@ -230,7 +230,6 @@ textarea {
 }
 
 .ui.horizontal.page.delivery.segments #select-skype {
-    margin-bottom: 10px;
     width: 100%;
 }
 
@@ -287,6 +286,11 @@ textarea {
     justify-content: center;
 }
 
+.widget.contact-list .table-container {
+    /* for Dimmer */
+    position: relative;
+}
+
 .page.account-list .remove.icon {
     cursor: pointer;
     font-size: 21px;
@@ -325,14 +329,14 @@ textarea {
     margin: -5px;
 }
 
-.ui.button.open-file {
-    margin: 0 auto 10px;
-}
-
 .ui.segment .ui.message .content p {
     font-size: 12px;
     text-align: center;
     margin: 0 !important;
+}
+
+.paginator a {
+    max-width: 50px;
 }
 
 footer .control > *, footer .control i:hover, .contact-list-segment .item {
@@ -345,4 +349,47 @@ footer.expanded .chevron, footer.collapsed .close, footer.collapsed .advertise {
 
 div.copyright {
     font-weight: 600;
+}
+
+.hidden {
+    display: none;
+}
+
+.nothing {
+
+}
+
+.contact-list .control, .page.delivery .select-account {
+    display: flex;
+}
+
+.contact-list [type=button], .page.delivery .select-account button {
+    min-width: 160px;
+    margin-left: 6px;
+}
+
+.page.delivery .field.text {
+    margin-top: 16px;
+}
+
+.page.invite .form-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.page.invite .form-header > * {
+    flex: 1;
+}
+
+.page.invite .form-header .load-file {
+    text-align: left;
+}
+
+.page.invite .form-header .select-account {
+    text-align: right;
+}
+
+.page.invite .form-header .select-account [type=button] {
+    margin-left: 6px;
 }
