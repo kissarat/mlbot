@@ -5,12 +5,13 @@ import React, {Component} from 'react'
 import SelectAccount from './select-account.jsx'
 import SkypeComponent from '../base/skype-component.jsx'
 import {filterSkypeUsernames, setImmediate} from '../util/index.jsx'
-import {Form, Segment, Button, Input, Checkbox, Header, Message} from 'semantic-ui-react'
+import Alert from '../widget/alert.jsx'
+import {Form, Segment, Button, Input, Checkbox, Header} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults, keyBy} from 'lodash'
 
 export default class Invite extends SkypeComponent {
-  persistentProps = ['text', 'account']
+  persistentProps = ['list', 'account', 'greeting']
   state = {
     limit: 40,
     sort: false,
@@ -235,12 +236,12 @@ export default class Invite extends SkypeComponent {
               {isDevMode ? <Button floated="right" type="button" onClick={this.reset}>Очистить</Button> : ''}
             </div>
           </div>
-          <Message>
+          <Alert persist="inviteLimitWarning">
             Добавляйте в сутки на один Skype-аккаунт не более 40 контактов, потому
             что Microsoft морозит и блокирует Skype. Примерно после 40-ка заявок —
             они перестают доходить к адресатам и висят в воздухе, портя «карму» Вашему Skype.
             Рекомендуем завести 5 скайпов и добавлять в каждый по 40 новых контактов.
-          </Message>
+          </Alert>
         </Form>
       </Segment>
       <Segment className="contact-list-segment" disabled={this.state.invites.length <= 0}>

@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router'
-import {List, Loader, Icon, Message} from 'semantic-ui-react'
+import {List, Loader, Icon} from 'semantic-ui-react'
 import Skype from '../skype/index.jsx'
 import api from '../connect/api.jsx'
+import Alert from '../widget/alert.jsx'
 
 export default class AccountList extends Component {
   state = {
@@ -45,18 +46,17 @@ export default class AccountList extends Component {
     }
 
     const addSkype = this.state.accounts && this.state.accounts.length > 5
-      ? <Message warning>
-      <Message.Header>Печалька</Message.Header>
+      ? <Alert warning>
       <p>К сожалению в данной версии приложения вы не можете добавить больше 5-ти скайпов</p>
-    </Message>
+    </Alert>
       : <Link to="/accounts/login">Добавить Skype</Link>
     return <div className="page account-list">
       {addSkype}
       {accounts}
-      <Message>
+      <Alert persist="addSkypeHelp">
         Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
         и вести рекламную деятельность в интернете
-      </Message>
+      </Alert>
     </div>
   }
 }

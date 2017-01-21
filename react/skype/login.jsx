@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 import Skype from './index.jsx'
-import {Button, Form, Segment, Header, Icon, Message} from 'semantic-ui-react'
+import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {Link} from 'react-router'
 import App from '../app/index.jsx'
+import Alert from '../widget/alert.jsx'
 
 export default class SkypeLogin extends Component {
   state = {loading: false}
@@ -45,7 +46,7 @@ export default class SkypeLogin extends Component {
         </Link>
       </div>
       <Form onSubmit={this.onSubmit} error={!!this.state.error}>
-        {this.state.error ? <Message content={this.state.error}/> : ''}
+        {this.state.error ? <Alert>{this.state.error}</Alert> : ''}
         <Form.Field name="login" placeholder="Введите логин Skype" control="input" type="text"/>
         <Form.Field name="password" placeholder="Введите пароль Skype" control="input" type="password"/>
         <Button type="submit">Добавить</Button>

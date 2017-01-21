@@ -1,21 +1,11 @@
 import React, {Component} from 'react'
 import BrowserLink from '../widget/browser-link.jsx'
 import {Grid, Image, Icon} from 'semantic-ui-react'
+import HidableComponent from '../base/hidable-component.jsx'
 
-export default class Footer extends Component {
-  state = {
-    collapsed: localStorage.getItem('footer') ?
-      !+localStorage.getItem('footer')
-      : false
-  }
-
-  setCollapsed(collapsed) {
-    localStorage.setItem('footer', collapsed ? '0' : '1')
-    this.setState({collapsed})
-  }
-
+export default class Footer extends HidableComponent {
   render() {
-    const className = (this.state.collapsed ? 'collapsed' : 'expanded') + ' widget footer'
+    const className = (this.state.visible ? 'expanded' : 'collapsed') + ' widget footer'
     return <footer className={className}>
       <Grid className="advertise">
         <Grid.Row columns={2}>
@@ -44,10 +34,10 @@ export default class Footer extends Component {
       <div className="control">
         <Icon name="chevron up"
               size="large"
-              onClick={() => this.setCollapsed(false)}/>
+              onClick={() => this.setState({visible: true})}/>
         <Icon name="close"
               size="large"
-              onClick={() => this.setCollapsed(true)}/>
+              onClick={() => this.setState({visible: false})}/>
       </div>
     </footer>
   }

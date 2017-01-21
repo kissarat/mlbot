@@ -3,9 +3,22 @@ import React, {Component} from 'react'
 import {Button, Form, Grid, Image, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import BrowserLink from '../widget/browser-link.jsx'
+import Persistent from '../util/persistent.jsx'
+import {mix} from '../util/index.jsx'
 
 export default class Login extends Component {
-  state = {loading: false}
+  persistentProps = ['email']
+  state = {
+    loading: false,
+    email: ''
+  }
+
+  constructor() {
+    super()
+    mix(this,
+      Persistent,
+    )
+  }
 
   onSubmit = (e, {formData}) => {
     e.preventDefault()
@@ -31,7 +44,12 @@ export default class Login extends Component {
         <Grid.Column>
           <Header as="h2">Вход</Header>
           <Form onSubmit={this.onSubmit} loading={this.state.loading}>
-            <Form.Field name="email" placeholder="Введите Email" control="input" type="text"/>
+            <Form.Field name="email"
+                        placeholder="Введите Email"
+                        control="input"
+                        type="text"
+                        value={this.state.email}
+                        onChange={e => this.setState({email: e.target.value})}/>
             <Form.Field name="password" placeholder="Введите Пароль" control="input" type="password"/>
             <Button type="submit">Вход</Button>
           </Form>

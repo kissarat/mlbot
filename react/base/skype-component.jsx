@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
 import {hashHistory} from 'react-router'
-import {Message} from 'semantic-ui-react'
+import Alert from '../widget/alert.jsx'
 import {toArray, defaults} from 'lodash'
 import App from '../app/index.jsx'
 import Timeout from '../util/timeout.jsx'
@@ -29,7 +29,7 @@ export default class SkypeComponent extends Component {
   componentDidUpdate(_1, prevState) {
     this.saveStorage()
     if (prevState.busy != this.state.busy) {
-      App.setState({busy: this.state.busy})
+      App.setBusy(this.state.busy)
     }
   }
 
@@ -39,7 +39,7 @@ export default class SkypeComponent extends Component {
   }
 
   changeAccount(account) {
-    const name = this.getStorageName()
+    const name = this.getStorageName().toLowerCase()
     if (account && account.login !== this.state.account) {
       hashHistory.push(`/${name}/` + account.login)
     }
@@ -49,7 +49,7 @@ export default class SkypeComponent extends Component {
   }
 
   getMessage() {
-    return this.state.alert ? <Message {...this.state.alert}/> : ''
+    return this.state.alert ? <Alert {...this.state.alert}/> : ''
   }
 
   skypeUnavailable(skype) {
@@ -101,5 +101,3 @@ export default class SkypeComponent extends Component {
 
   reset = () => this.setState(stateStorage.reset(this.getStorageName()))
 }
-
-window.SC = SkypeComponent

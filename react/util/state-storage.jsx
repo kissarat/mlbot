@@ -35,8 +35,10 @@ export class StateStorage {
   }
 
   unregister(name, state) {
-    this.save(name, state)
-    delete this.stores[name]
+    if (this.stores[name]) {
+      this.save(name, state)
+      delete this.stores[name]
+    }
   }
 
   reset(name) {
