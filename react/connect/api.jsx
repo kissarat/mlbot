@@ -50,12 +50,7 @@ class API {
     return this.handleResponse(res)
   }
 
-  del(url, params) {
-    url = this.prefix + this.buildURL(url, params)
-    return fetch(url, {method: 'DELETE', headers}).then(r => r.json())
-  }
-
-  send(url, params, data) {
+  async send(url, params, data) {
     if (!data) {
       data = params
       params = null
@@ -68,8 +63,14 @@ class API {
     if (!isEmpty(data) && true !== data) {
       options.body = JSON.stringify(data)
     }
-    return fetch(this.prefix + url, options)
-      .then(a => a.json())
+    const res = await fetch(this.prefix + url, options)
+    return this.handleResponse(res)
+  }
+
+  async del(url, params) {
+    url = this.prefix + this.buildURL(url, params)
+    const res = await fetch(url, {method: 'DELETE', headers})
+    return this.handleResponse(res)
   }
 
   get entities() {

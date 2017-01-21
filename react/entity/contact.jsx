@@ -2,8 +2,8 @@ import {extend} from 'lodash'
 import {EventEmitter} from 'events'
 
 export default class Contact {
-  static async search(account, status, search, offset) {
-    function query(c) {
+  static async buildQuery(account, status, search) {
+    return function query(c) {
       let q = account === c.account &&
         status === c.status &&
         c.authorized
@@ -15,7 +15,10 @@ export default class Contact {
       })
       return q
     }
+  }
 
+  static async search(account, status, search, offset) {
+    const query = Contact.buildQuery(account, status, search)
     const count = await db.contact.filter(query).count()
     const contacts = await db.contact
       .filter(query)
@@ -23,6 +26,14 @@ export default class Contact {
       .limit(15)
       .toArray()
     return {count, contacts}
+  }
+
+  static countAll() {
+    return db.contact.count()
+  }
+
+  static clearAll() {
+    return db.contact.delete()
   }
 }
 

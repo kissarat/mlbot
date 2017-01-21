@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 import {Menu, Icon} from 'semantic-ui-react'
+import {range} from 'lodash'
 
-export class Paginator extends Component {
+export default class Paginator extends Component {
   componentWillReceiveProps({offset, limit, count}) {
     const tail = Math.floor((count - offset) / limit)
     const page = Math.floor(offset / limit) + 1

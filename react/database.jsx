@@ -1,7 +1,7 @@
 import Dexie from 'dexie'
 import package_json from '../app/package.json'
 import {debounce, each, find, keyBy, toArray, extend} from 'lodash'
-import {pick, isObject} from 'lodash'
+import {pick, isObject, merge} from 'lodash'
 
 function getVersion(time) {
   return Math.round(new Date(time).getTime() / (1000 * 3600))
@@ -25,15 +25,27 @@ application.database = {
 }
 
 let db = new Dexie(application.database.name)
-application.database.migrations.forEach(function ({version, schema, upgrade}) {
-  let _db = db.version(version)
-  if (isObject(schema)) {
-    _db = _db.stores(schema)
-  }
-  if (upgrade instanceof Function) {
-    _db.upgrade(upgrade)
+
+merge(db, {
+  migrate() {
+    application.database.migrations.forEach(function ({version, schema, upgrade}) {
+      let _db = db.version(version)
+      if (isObject(schema)) {
+        _db = _db.stores(schema)
+      }
+      if (upgrade instanceof Function) {
+        _db.upgrade(upgrade)
+      }
+    })
+  },
+
+  async reset() {
+    await db.delete()
+    this.migrate()
   }
 })
+
+db.migrate()
 
 window.db = db
 export default db

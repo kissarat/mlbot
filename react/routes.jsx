@@ -10,6 +10,7 @@ import React, {Component} from 'react'
 import SkypeLogin from './skype/login.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
+import Settings from './app/settings.jsx'
 
 window.go = function () {
   hashHistory.push.apply(hashHistory, arguments)
@@ -31,6 +32,7 @@ export const routes = <Route path='/'>
     <Route path='delivery' component={Delivery}/>
     <Route path='invite/:account' component={Invite}/>
     <Route path='invite' component={Invite}/>
+    <Route path='settings' component={Settings}/>
     <Route path='hello' component={Hello}/>
   </Route>
 </Route>

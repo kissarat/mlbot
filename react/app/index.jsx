@@ -85,9 +85,8 @@ export default class App extends SingletonComponent {
         </Menu.Item>
         <Menu.Item name="Аккаунт" {...itemUrl('/accounts')}/>
         <Menu.Item name="Рассылка" {...itemUrl('/delivery')}/>
-        <Menu.Item {...itemUrl('/invite')}>
-          Добавить друзей
-        </Menu.Item>
+        <Menu.Item name="Добавить друзей" {...itemUrl('/invite')}/>
+        <Menu.Item name="Настройки" {...itemUrl('/settings')}/>
         <Menu.Item name="Выход" onClick={this.logout}/>
       </Menu>
       <Segment attached="bottom" className="content">{this.props.children}</Segment>

@@ -1,10 +1,6 @@
 import React, {Component} from 'react'
-import Skype from '../skype/index.jsx'
-import stateStorage from '../util/state-storage.jsx'
-import {hashHistory} from 'react-router'
-import Alert from '../widget/alert.jsx'
-import {toArray, defaults, range, debounce} from 'lodash'
-import {Table, Input, Menu, Icon, Dimmer, Loader} from 'semantic-ui-react'
+import {toArray, defaults, debounce} from 'lodash'
+import {Table, Dimmer, Loader} from 'semantic-ui-react'
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 
@@ -48,17 +44,6 @@ export default class ContactList extends Component {
     })
   }
 
-  // debounce(cb) {
-  //   const fn = debounce(cb, this.state.delay)
-    // if (this[cb.name] === cb) {
-    //   this[cb.name] = fn
-    // }
-  // }
-
-  // loadContactsDebounced = () => {
-  //   this.loadContactsDebounced = this.debounce(() => this.loadContacts(false))
-  // }
-
   onSearch = e => {
     const search = e.target.value
     console.log(search)
@@ -87,22 +72,24 @@ export default class ContactList extends Component {
         value={this.state.text}
         onChange={this.onSearch}
       />
-      <Table>
+      <div className="table-container">
         <Dimmer active={!this.state.contacts} inverted>
           <Loader/>
         </Dimmer>
-        <Table.Body>{this.rows()}</Table.Body>
+        <Table>
+          <Table.Body>{this.rows()}</Table.Body>
 
-        <Table.Footer>
-          <Table.Row>
-            <Table.HeaderCell>
-              <Paginator
-                openPage={offset => this.setState({offset})}
-                {...this.state}/>
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
-      </Table>
+          <Table.Footer>
+            <Table.Row>
+              <Table.HeaderCell>
+                <Paginator
+                  openPage={offset => this.setState({offset})}
+                  {...this.state}/>
+              </Table.HeaderCell>
+            </Table.Row>
+          </Table.Footer>
+        </Table>
+      </div>
     </div>
   }
 }
