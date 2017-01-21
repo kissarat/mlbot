@@ -97,6 +97,10 @@ nav li {
     width: 100%;
 }
 
+.widget.contact-list td {
+    padding: 4px 8px;
+}
+
 #app > div {
     align-items: center;
     display: flex;
@@ -202,7 +206,13 @@ textarea {
     height: 112px;
 }
 
-.contact-list-segment .list > .item:before {
+.widget.contact-list tr .add:before {
+    color: green;
+    content: "+ ";
+    font-weight: 900;
+}
+
+.widget.contact-list tr .remove:before {
     color: red;
     content: "– ";
     font-weight: 900;
@@ -247,6 +257,7 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 6px;
 }
 
 .help-question .question.circle {

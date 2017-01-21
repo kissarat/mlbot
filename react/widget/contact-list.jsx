@@ -1,7 +1,7 @@
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {Component} from 'react'
-import {Status} from '../database.jsx'
+import {Status} from '../../app/config'
 import {Table, Dimmer, Loader, Input} from 'semantic-ui-react'
 import {toArray, defaults, debounce} from 'lodash'
 
@@ -55,8 +55,11 @@ export default class ContactList extends Component {
       if (c.name && name !== c.name) {
         name += ` (${c.name})`
       }
+      const className = Status.CREATED === c.status ? 'add' : 'remove'
       return <Table.Row key={c.id}>
-        <Table.Cell onClick={() => this.props.changeStatus(c)}>
+        <Table.Cell
+          className={className}
+          onClick={() => this.props.changeStatus(c)}>
           {name}
         </Table.Cell>
       </Table.Row>
