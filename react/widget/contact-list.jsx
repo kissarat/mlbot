@@ -55,10 +55,10 @@ export default class ContactList extends Component {
       if (c.name && name !== c.name) {
         name += ` (${c.name})`
       }
-      const className = Status.CREATED === c.status ? 'add' : 'remove'
-      return <Table.Row key={c.id}>
+      const isNew = Status.CREATED === c.status
+      return <Table.Row key={c.id} className={isNew ? 'add' : 'remove'}>
         <Table.Cell
-          className={className}
+          className="move"
           onClick={() => this.props.changeStatus(c)}>
           {name}
         </Table.Cell>
@@ -80,7 +80,7 @@ export default class ContactList extends Component {
         <Dimmer active={!this.state.contacts} inverted>
           <Loader/>
         </Dimmer>
-        <Table>
+        <Table selectable>
           <Table.Body>{this.rows()}</Table.Body>
 
           <Table.Footer>

@@ -206,16 +206,22 @@ textarea {
     height: 112px;
 }
 
-.widget.contact-list tr .add:before {
-    color: green;
-    content: "+ ";
-    font-weight: 900;
+.widget.contact-list tr {
+    background-color: transparent;
 }
 
-.widget.contact-list tr .remove:before {
+.widget.contact-list .move {
+    cursor: pointer;
+}
+
+.widget.contact-list tr.add .move:before {
+    color: green;
+    content: "+ ";
+}
+
+.widget.contact-list tr.remove .move:before {
     color: red;
     content: "– ";
-    font-weight: 900;
 }
 
 .ui.horizontal.page.delivery.segments > * {
@@ -337,6 +343,6 @@ footer.expanded .chevron, footer.collapsed .close, footer.collapsed .advertise {
     display: none;
 }
 
-div.copyright, .contact-list-segment .list > .item:hover {
+div.copyright {
     font-weight: 600;
 }
