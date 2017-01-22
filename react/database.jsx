@@ -15,6 +15,7 @@ merge(db, {
   async reset() {
     await db.delete()
     await this.create()
+    await db.open()
   }
 })
 

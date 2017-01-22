@@ -44,6 +44,7 @@ export default class Settings extends Component {
   clearContacts = async() => {
     this.setState({clearContacts: true})
     await db.reset()
+    await this.countContacts()
     this.setState({clearContacts: false})
   }
 
@@ -113,6 +114,7 @@ export default class Settings extends Component {
           }
         })
         await db.contact.bulkPut(contacts)
+        await this.countContacts()
         this.setState({fileImport: false})
       }
     })
