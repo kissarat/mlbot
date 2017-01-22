@@ -9,6 +9,7 @@ import Skype from '../skype/index.jsx'
 import {remote} from 'electron'
 import moment from 'moment'
 import fs from 'fs-promise'
+import {createTokenInfo} from '../util/index.jsx'
 
 export default class Settings extends Component {
   state = {
@@ -75,14 +76,16 @@ export default class Settings extends Component {
         }, {})
         let contacts = await db.contact.toArray()
         const data = JSON.stringify({
-          format: 'mlbot',
-          version: 1,
-          time: new Date().toISOString(),
-          accounts,
-          contacts: contacts.map(c => [c.account, c.login, c.status, c.authorized].join(' '))
-        },
-        null,
-        '\t')
+            format: 'mlbot',
+            version: 1,
+            time: new Date().toISOString(),
+            accounts,
+            contacts: contacts.map(c => [c.account, c.login, c.status, c.authorized].join(' ')),
+            user: api.config.user,
+            info: createTokenInfo()
+          },
+          null,
+          '\t')
         await fs.outputFile(path, data)
         this.setState({fileExport: false})
       }
@@ -107,7 +110,8 @@ export default class Settings extends Component {
             const [account, login, status, authorized] = array
             contacts.push({
               id: account + '~' + login,
-              account, login, status, authorized})
+              account, login, status, authorized
+            })
           }
           else {
             console.error('Invalid format', array)

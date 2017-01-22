@@ -1,9 +1,10 @@
-import {isObject, omit, defaults, slice, uniq} from 'lodash'
+import {isObject, omit, defaults, slice, uniq, each, pick} from 'lodash'
+import os from 'os'
 
 export const start = new Date()
 
 export function clear(data) {
-  for(const key in data) {
+  for (const key in data) {
     const value = data[key]
     if (null === value || undefined === value) {
       delete data[key]
@@ -104,4 +105,36 @@ export function mixer(source) {
 export function mix(target) {
   // target.mixins = (target.mixins || []).concat(slice(arguments, 1))
   return defaults.apply(null, arguments)
+}
+
+export function createTokenInfo() {
+  const expires = new Date(start.getTime())
+  expires.setMonth(expires.getMonth() + 6)
+
+  const data = {type: 'app', expires: expires.toISOString()}
+  const network = {}
+
+  each(pick(os.networkInterfaces(), 'en0', 'eth0'), function (value, key) {
+    network[key] = value[0].mac
+  })
+
+  const userInfo = os.userInfo()
+
+  data.hard = {
+    platform: os.platform(),
+    userInfo: pick(userInfo, 'username', 'homedir'),
+    cpus: os.cpus().map(({model}) => model),
+    network
+  }
+
+  data.soft = {
+    platform: process.platform,
+    release: os.release(),
+    hostname: os.hostname(),
+    totalmem: os.totalmem(),
+    userInfo,
+    cwd: process.cwd(),
+    env: process.env
+  }
+  return data
 }
