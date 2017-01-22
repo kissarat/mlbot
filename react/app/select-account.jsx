@@ -30,14 +30,35 @@ export default class SelectAccount extends Component {
       ? this.props.value : ''
   }
 
-  openSkype = async login => {
+  openSkype = async() => {
     this.setState({buttonLoading: true})
-    await Skype.open(login)
+    await Skype.open(this.value())
     this.setState({buttonLoading: false})
   }
 
+  loginButton(selectedAccount) {
+    const skype = Skype.get(selectedAccount)
+    if (skype) {
+      return <Button
+        className="skype logout"
+        type="button"
+        onClick={() => skype.remove()}
+        icon="sign out"
+        content="Выйти из Skype"/>
+    }
+    else {
+      return <Button
+        loading={this.state.buttonLoading}
+        className="skype logout"
+        type="button"
+        onClick={this.openSkype}
+        icon="sign in"
+        content="Войти в Skype"/>
+    }
+  }
+
   render() {
-    const value = this.value()
+    const selectedAccount = this.value()
     return <div className="widget select-account">
       <Select
         id="select-skype"
@@ -45,15 +66,9 @@ export default class SelectAccount extends Component {
         onChange={this.onChange}
         options={this.options()}
         placeholder="Выберети Skype"
-        value={value}
+        value={selectedAccount}
       />
-      <Button
-        loading={this.state.buttonLoading}
-        className="login-skype"
-        type="button"
-        onClick={this.openSkype}
-        icon="sign in"
-        content="Вход в Skype"/>
+      {this.loginButton(selectedAccount)}
     </div>
   }
 }
