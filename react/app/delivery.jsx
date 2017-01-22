@@ -40,7 +40,6 @@ export default class Delivery extends SkypeComponent {
   }
 
   async selectAll(status) {
-    this.setBusy('Подождите...')
     const account = this.state.account
     await db.contact
       .filter(c => c.account === account)

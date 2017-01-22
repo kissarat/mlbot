@@ -48,6 +48,9 @@ export default class Invite extends SkypeComponent {
       }
       else {
         this.addToInviteList(list)
+          .then(function () {
+            Contact.emit('upload')
+          })
       }
     }
     reader.readAsText(file)
@@ -95,7 +98,6 @@ export default class Invite extends SkypeComponent {
         status: Status.SELECTED
       })))
     }
-    Contact.emit('upload')
   }
 
   selectedUnauthorizedQuery = c => this.state.account === c.account && Status.SELECTED === c.status && !c.authorized
@@ -103,6 +105,7 @@ export default class Invite extends SkypeComponent {
   async invite(usernames) {
     try {
       await this.addToInviteList(usernames)
+      Contact.emit('upload')
       const count = await db.contact.filter(this.selectedUnauthorizedQuery).count()
       if (count > 0) {
         const skype = await this.getSkype(true)
@@ -173,7 +176,11 @@ export default class Invite extends SkypeComponent {
   async removeAll() {
     this.setState({listBusy: true})
     await db.contact
-      .where({account: this.state.account, status: Status.SELECTED})
+      .where({
+        account: this.state.account,
+        status: Status.SELECTED,
+        authorized: 0
+      })
       .delete()
     Contact.emit('update')
   }

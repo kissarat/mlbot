@@ -286,11 +286,6 @@ textarea {
     justify-content: center;
 }
 
-.widget.contact-list .table-container {
-    /* for Dimmer */
-    position: relative;
-}
-
 .page.account-list .remove.icon {
     cursor: pointer;
     font-size: 21px;
@@ -359,8 +354,37 @@ div.copyright {
 
 }
 
-.contact-list .control, .page.delivery .select-account {
+.contact-list {
     display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.widget.contact-list .table-container {
+    /* for Dimmer */
+    position: relative;
+    flex: 1 0 auto;
+}
+
+.contact-list td {
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+@media (min-width: 1200px) {
+    .contact-list .control, .page.delivery .select-account {
+        display: flex;
+        min-height: 36px;
+    }
+}
+
+.contact-list table {
+    display: inline-block;
+}
+
+.contact-list table tbody {
+    display: inline-block;
+    overflow-x: hidden;
 }
 
 .contact-list [type=button] {

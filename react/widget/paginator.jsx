@@ -4,14 +4,14 @@ import {range} from 'lodash'
 
 export default class Paginator extends Component {
   componentWillReceiveProps({offset, limit, count}) {
-    const tail = Math.floor((count - offset) / limit)
-    const page = Math.floor(offset / limit) + 1
-    const left = Math.max(page - 2, 1)
-    const numbers = range(left, left + (tail > 5 ? 5 : tail))
+    const totalPages = Math.ceil(count / limit)
+    const page = Math.ceil(offset / limit)
+    const numbers = range(Math.max(page - 2, 1), Math.min(page + 3, totalPages))
+    // const numbers = range(page - 2, page + 3)
     this.setState({
       page,
       numbers,
-      tail
+      totalPages
     })
   }
 
@@ -20,7 +20,7 @@ export default class Paginator extends Component {
   }
 
   open(n) {
-    this.props.changeOffset((n - 1) * this.props.limit)
+    this.props.changeOffset(n * this.props.limit)
   }
 
   items() {
@@ -34,6 +34,7 @@ export default class Paginator extends Component {
   }
 
   render() {
+    // console.log(this.state, this.props)
     return <Menu className="widget paginator">
       <Menu.Item as='a' icon>
         <Icon
@@ -45,8 +46,8 @@ export default class Paginator extends Component {
       <Menu.Item as='a' icon>
         <Icon
           name='right chevron'
-          onClick={() => this.open(1500)}
-          disabled={this.state.tail >= 3}/>
+          onClick={() => this.open(this.state.totalPages - 2)}
+          disabled={this.state.totalPages < 5}/>
       </Menu.Item>
     </Menu>
   }

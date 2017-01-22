@@ -10,32 +10,54 @@ export default class ContactList extends Component {
     search: '',
     offset: 0,
     count: 0,
-    contacts: [],
+    contacts: false,
     busy: true,
     delay: 300,
     limit: 10
   }
 
   componentWillReceiveProps(props) {
-    this.loadContacts()
+    this.setState({busy: props.busy})
+    this.loadContacts(true)
   }
 
   componentWillMount() {
     this.componentWillReceiveProps(this.props)
     Contact.on('update', this.loadContacts)
+    addEventListener('resize', this.resize)
   }
 
   componentWillUnmount() {
+    removeEventListener('resize', this.resize)
     Contact.removeListener('update', this.loadContacts)
   }
 
   changeOffset = async offset => {
-    await this.loadContacts()
+    await this.loadContacts(true)
     this.setState({offset})
   }
 
-  loadContacts = async() => {
-    this.setState({busy: true})
+  resize = debounce(() => {
+      const container = document.querySelector('.contact-list-segment')
+      const table = document.querySelector('.contact-list .table-container table')
+      const td = document.querySelector('.contact-list .table-container td')
+      if (container && table && td) {
+        const unit = td.getBoundingClientRect()
+        const target = table.getBoundingClientRect()
+        const box = container.getBoundingClientRect()
+        const delta = Math.floor((box.height - target.height - 100) / unit.height)
+        if (delta) {
+          this.setState({limit: this.state.limit + delta})
+          setImmediate(() => this.loadContacts(false))
+        }
+      }
+    },
+    300)
+
+  loadContacts = async(busy = false) => {
+    if (busy) {
+      this.setState({busy})
+    }
     let condition = pick(this.props, 'account', 'status', 'authorized')
     condition.authorized = condition.authorized ? 1 : 0
     const {count, contacts} = await Contact.search(
@@ -43,6 +65,11 @@ export default class ContactList extends Component {
       this.state.search,
       pick(this.state, 'offset', 'limit'),
     )
+
+    if (false === this.state.contacts) {
+        setImmediate(this.resize)
+    }
+
     this.setState({
       count,
       contacts,
@@ -79,7 +106,7 @@ export default class ContactList extends Component {
   }
 
   footer() {
-    return <Table.Footer className={this.state.offset > this.state.limit ? 'nothing' : 'hidden'}>
+    return <Table.Footer className={this.state.count > this.state.limit ? 'nothing' : 'hidden'}>
       <Table.Row>
         <Table.HeaderCell>
           <Paginator
@@ -104,11 +131,11 @@ export default class ContactList extends Component {
         {this.props.children}
       </div>
       <div className="table-container">
-        <Dimmer active={this.state.busy || this.props.busy} inverted>
+        <Dimmer active={this.state.busy} inverted>
           <Loader/>
         </Dimmer>
-        <Table selectable className={this.state.offset > 0 ? 'nothing' : 'hidden'}>
-          <Table.Body>{this.rows()}</Table.Body>
+        <Table selectable className={this.state.count > 0 ? 'nothing' : 'hidden'}>
+          <Table.Body>{this.state.contacts ? this.rows() : ''}</Table.Body>
           {this.footer()}
         </Table>
       </div>
