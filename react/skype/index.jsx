@@ -5,6 +5,7 @@ import {EventEmitter} from 'events'
 import {extend, toArray, each} from 'lodash'
 import {Status, start} from '../../app/config'
 import Contact from '../entity/contact.jsx'
+import {millisecondsId} from '../util/index.jsx'
 
 extend(Skype.prototype, {
   login(username, password) {
@@ -87,6 +88,7 @@ extend(Skype.prototype, {
     const existing = await db.contact
       .filter(c => profile.login === c.account)
       .toArray()
+    const g = millisecondsId()
     profile.contacts = profile.contacts.map(function (c) {
       const id = profile.username + '~' + c.id
       const found = existing.find(x => id === x.id)
@@ -96,7 +98,8 @@ extend(Skype.prototype, {
         login: c.id,
         name: c.display_name,
         authorized: c.authorized ? 1 : 0,
-        status: found ? found.status : Status.CREATED
+        status: found ? found.status : Status.CREATED,
+        time: found ? found.time : g.next().value
       }
       if (c.authorized && db.INVITED === contact.status) {
         contact.status = Status.CREATED

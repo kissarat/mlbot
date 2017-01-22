@@ -138,3 +138,11 @@ export function createTokenInfo() {
   }
   return data
 }
+
+export function* millisecondsId(max = 1000000) {
+  const now = Date.now()
+  let i = 0
+  while (i < max) {
+    yield now + i++
+  }
+}

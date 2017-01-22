@@ -91,13 +91,12 @@ export default class Invite extends SkypeComponent {
       existing = keyBy(existing, 'login')
       usernames = usernames.filter(username => !existing[username])
       console.log(usernames.length)
-      await db.contact.bulkAdd(usernames.map(login => ({
-        id: account + '~' + login,
+      const contacts = Contact.setupMany(usernames.map(login => ({
         login,
         account,
-        authorized: 0,
         status: Status.SELECTED
       })))
+      await db.contact.bulkAdd(contacts)
     }
   }
 

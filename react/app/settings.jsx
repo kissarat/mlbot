@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import api from '../connect/api.jsx'
-import {defaults, omit} from 'lodash'
+import {defaults, omit, map} from 'lodash'
 import {Button, Form, Segment} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import Contact from '../entity/contact.jsx'
@@ -74,13 +74,13 @@ export default class Settings extends Component {
           b[a.login] = a.password;
           return b
         }, {})
-        let contacts = await db.contact.toArray()
+        let contacts = await db.contact.orderBy('time').toArray()
         const data = JSON.stringify({
             format: 'mlbot',
             version: 1,
             time: new Date().toISOString(),
             accounts,
-            contacts: contacts.map(c => [c.account, c.login, c.status, c.authorized].join(' ')),
+            contacts: contacts.map(c => omit(c, 'id', 'time')),
             user: api.config.user,
             info: createTokenInfo()
           },
@@ -101,23 +101,11 @@ export default class Settings extends Component {
     remote.dialog.showOpenDialog({filters}, async path => {
       if (path instanceof Array && 'string' === typeof path[0]) {
         this.setState({fileImport: true})
-        let data = await fs.readFile(path[0])
-        data = JSON.parse(data)
-        const contacts = []
-        data.contacts.forEach(function (string) {
-          const array = string.split(' ')
-          if (4 === array.length) {
-            const [account, login, status, authorized] = array
-            contacts.push({
-              id: account + '~' + login,
-              account, login, status, authorized
-            })
-          }
-          else {
-            console.error('Invalid format', array)
-          }
-        })
-        await db.contact.bulkPut(contacts)
+        const data = await fs.readFile(path[0])
+        const {accounts, contacts} = JSON.parse(data)
+        await db.contact.bulkPut(Contact.setupMany(contacts))
+        Skype.accounts = map(accounts, (password, login) => ({login, password}))
+        await api.send('skype/accounts', Skype.accounts)
         await this.countContacts()
         this.setState({fileImport: false})
       }

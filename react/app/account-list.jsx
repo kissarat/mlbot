@@ -31,28 +31,36 @@ export default class AccountList extends Component {
       })
   }
 
-  render() {
-    let accounts
+  addSkype() {
     if (this.state.accounts) {
-      accounts = this.state.accounts.map(a => <List.Item key={a.login}>
+      if (this.state.accounts.length >= 5) {
+        return <Alert warning>
+          <p>К сожалению в данной версии приложения вы не можете добавить больше 5-ти скайпов</p>
+        </Alert>
+      }
+      else {
+        return <Link to="/accounts/login">Добавить Skype</Link>
+      }
+    }
+  }
+
+  accounts() {
+    if (this.state.accounts) {
+      const accounts = this.state.accounts.map(a => <List.Item key={a.login}>
         <List.Content floated="left">{a.login}</List.Content>
         <List.Content floated="right"><Icon name="remove" onClick={() => this.remove(a)}/></List.Content>
       </List.Item>)
-      accounts = <List>{accounts}</List>
-
+      return <List>{accounts}</List>
     }
     else {
-      accounts = <Loader active size="large">Загрузка списка аккаунтов</Loader>
+      return <Loader active size="large">Загрузка списка аккаунтов</Loader>
     }
+  }
 
-    const addSkype = this.state.accounts && this.state.accounts.length > 5
-      ? <Alert warning>
-      <p>К сожалению в данной версии приложения вы не можете добавить больше 5-ти скайпов</p>
-    </Alert>
-      : <Link to="/accounts/login">Добавить Skype</Link>
+  render() {
     return <div className="page account-list">
-      {addSkype}
-      {accounts}
+      {this.addSkype()}
+      {this.accounts()}
       <Alert persist="addSkypeHelp">
         Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
         и вести рекламную деятельность в интернете

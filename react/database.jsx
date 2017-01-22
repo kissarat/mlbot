@@ -8,7 +8,7 @@ merge(db, {
   create() {
     return db.version(1)
       .stores({
-        contact: '&id, [account+status], [account+status+authorized], login, name'
+        contact: '&id, [account+status], [account+status+authorized], login, name, &time'
       })
   },
 
