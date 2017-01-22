@@ -1,11 +1,14 @@
 import React, {Component} from 'react'
 import api from '../connect/api.jsx'
-import {defaults} from 'lodash'
-import {Button, Form, Segment, SegmentGroup} from 'semantic-ui-react'
+import {defaults, omit} from 'lodash'
+import {Button, Form, Segment} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import Contact from '../entity/contact.jsx'
 import db from '../database.jsx'
 import Skype from '../skype/index.jsx'
+import {remote} from 'electron'
+import moment from 'moment'
+import fs from 'fs-promise'
 
 export default class Settings extends Component {
   state = {
@@ -38,8 +41,10 @@ export default class Settings extends Component {
     // hashHistory.push('/login')
   }
 
-  clearContacts = () => {
-    return db.reset()
+  clearContacts = async() => {
+    this.setState({clearContacts: true})
+    await db.reset()
+    this.setState({clearContacts: false})
   }
 
   clearAccounts = async() => {
@@ -53,17 +58,64 @@ export default class Settings extends Component {
     this.clearSettings()
   }
 
-  dev() {
-    return <div className="dev">
-      <div className="import">
-        <label htmlFor="import">Импорт</label>
-        <input id="import" type="file"/>
-      </div>
-      <div className="export">
-        <label htmlFor="export">Экспорт</label>
-        <input id="export" type="file"/>
-      </div>
-    </div>
+  fileExport = () => {
+    // const date = moment.format('YYYY-MM-DD')
+    // const defaultPath = `mlbot-${date}.json`
+    const filters = [
+      {name: 'JSON', extensions: ['json']}
+    ]
+    remote.dialog.showSaveDialog({filters}, async path => {
+      if (path) {
+        this.setState({fileExport: true})
+        let accounts = await Skype.getAccountList(true)
+        accounts = accounts.reduce((b, a) => {
+          b[a.login] = a.password;
+          return b
+        }, {})
+        let contacts = await db.contact.toArray()
+        const data = JSON.stringify({
+          format: 'mlbot',
+          version: 1,
+          time: new Date().toISOString(),
+          accounts,
+          contacts: contacts.map(c => [c.account, c.login, c.status, c.authorized].join(' '))
+        },
+        null,
+        '\t')
+        await fs.outputFile(path, data)
+        this.setState({fileExport: false})
+      }
+    })
+  }
+
+  fileImport = () => {
+    // const date = moment.format('YYYY-MM-DD')
+    // const defaultPath = `mlbot-${date}.json`
+    const filters = [
+      {name: 'JSON', extensions: ['json']}
+    ]
+    remote.dialog.showOpenDialog({filters}, async path => {
+      if (path instanceof Array && 'string' === typeof path[0]) {
+        this.setState({fileImport: true})
+        let data = await fs.readFile(path[0])
+        data = JSON.parse(data)
+        const contacts = []
+        data.contacts.forEach(function (string) {
+          const array = string.split(' ')
+          if (4 === array.length) {
+            const [account, login, status, authorized] = array
+            contacts.push({
+              id: account + '~' + login,
+              account, login, status, authorized})
+          }
+          else {
+            console.error('Invalid format', array)
+          }
+        })
+        await db.contact.bulkPut(contacts)
+        this.setState({fileImport: false})
+      }
+    })
   }
 
   labelWithCount(label, name) {
@@ -77,17 +129,38 @@ export default class Settings extends Component {
   clearAccountsLabel = () => this.labelWithCount('Очистить логины и пароли скайпов', 'accountsCount')
 
   render() {
-    return <SegmentGroup className="page settings">
+    return <Segment.Group horizontal className="page settings">
       <Segment className="reset">
         <h2>Сброс данных</h2>
         <div className="control">
           <Button onClick={this.clearSettings} type="button">Очистить настройки</Button>
-          <Button onClick={this.clearContacts} type="button">{this.clearContactsLabel()}</Button>
+          <Button
+            type="button"
+            onClick={this.clearContacts}
+            loading={this.state.clearContacts}
+            content={this.clearContactsLabel()}/>
           <Button onClick={this.clearAccounts} type="button">{this.clearAccountsLabel()}</Button>
           <Button onClick={this.clearAll} type="button">Очистить все</Button>
         </div>
       </Segment>
-      {isDevMode ? this.dev() : ''}
-    </SegmentGroup>
+
+      <Segment>
+        <h2>Резервное копирования</h2>
+        <Button
+          loading={this.state.fileExport}
+          type="button"
+          icon="download"
+          content="Экспорт"
+          onClick={this.fileExport}
+        />
+        <Button
+          loading={this.state.fileImport}
+          type="button"
+          icon="download"
+          content="Импорт"
+          onClick={this.fileImport}
+        />
+      </Segment>
+    </Segment.Group>
   }
 }

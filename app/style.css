@@ -411,7 +411,7 @@ div.copyright {
     margin-left: 6px;
 }
 
-.page.settings {
+.page.settings .segment {
     max-width: 400px;
 }
 

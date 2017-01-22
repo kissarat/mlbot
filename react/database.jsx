@@ -1,49 +1,24 @@
 import Dexie from 'dexie'
-import package_json from '../app/package.json'
 import {debounce, each, find, keyBy, toArray, extend} from 'lodash'
 import {pick, isObject, merge} from 'lodash'
 
-function getVersion(time) {
-  return Math.round(new Date(time).getTime() / (1000 * 3600))
-}
-
-window.application = pick(package_json,
-  'name', 'version', 'author', 'description', 'repository', 'bugs', 'homepage')
-application.database = {
-  name: 'mlbot',
-  version: getVersion('2017-01-12'),
-  migrations: [
-    {
-      version: getVersion('2017-01-12'),
-      schema: {
-        contact: '&id, [account+status], [account+status+authorized], login, name'
-      }
-    }
-  ]
-}
-
-let db = new Dexie(application.database.name)
+const db = new Dexie('mlbot')
 
 merge(db, {
-  migrate() {
-    application.database.migrations.forEach(function ({version, schema, upgrade}) {
-      let _db = db.version(version)
-      if (isObject(schema)) {
-        _db = _db.stores(schema)
-      }
-      if (upgrade instanceof Function) {
-        _db.upgrade(upgrade)
-      }
-    })
+  create() {
+    return db.version(1)
+      .stores({
+        contact: '&id, [account+status], [account+status+authorized], login, name'
+      })
   },
 
   async reset() {
     await db.delete()
-    this.migrate()
+    await this.create()
   }
 })
 
-db.migrate()
+db.create()
 
 window.db = db
 export default db

@@ -49,8 +49,13 @@ export default class Login extends Component {
                         control="input"
                         type="text"
                         value={this.state.email}
+                        required
                         onChange={e => this.setState({email: e.target.value})}/>
-            <Form.Field name="password" placeholder="Введите Пароль" control="input" type="password"/>
+            <Form.Field name="password"
+                        placeholder="Введите Пароль"
+                        control="input"
+                        required
+                        type="password"/>
             <Button type="submit">Вход</Button>
           </Form>
         </Grid.Column>
