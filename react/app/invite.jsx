@@ -43,16 +43,10 @@ export default class Invite extends SkypeComponent {
     const reader = new FileReader()
     reader.onload = e => {
       const list = this.filterSkypeUsernames(e.target.result)
-      if (isDevMode) {
-        this.setState({list: list.join('\n')})
-      }
-      else {
-        this.addToInviteList(list)
-          .then(() => {
-            this.setState({listBusy: false})
-            Contact.emit('upload')
-          })
-      }
+      this.setState({
+        list: list.join('\n'),
+        listBusy: false
+      })
     }
     reader.readAsText(file)
   }
@@ -256,17 +250,17 @@ export default class Invite extends SkypeComponent {
         className="open-file"
         onClick={this.onClickOpenFile}
         content="Загрузите файл c контактами"
-        icon="file text outline"
-        disabled={!this.state.account}/>
+        icon="file text outline"/>
     </div>
   }
 
   render() {
     return <Segment.Group horizontal className="page invite">
-      {this.getMessage()}
       <Segment compact className="form-segment">
         <Form onSubmit={this.onSubmit}>
+
           <Segment.Group>
+            {this.getMessage()}
             <Segment.Group horizontal>
               <Segment>
                 <h2>Добавьте контакты</h2>
@@ -279,7 +273,13 @@ export default class Invite extends SkypeComponent {
                   placeholder="Вставьте список из 40-ка Skype-контактов для добавления в друзья"
                   value={this.state.list}
                   onChange={this.onChange}/>
+                <Button
+                  type="submit"
+                  disabled={!this.state.list}
+                  content="Добавить в очередь"
+                  icon="group"/>
               </Segment>
+
               <Segment>
                 <h2>Выберите Skype</h2>
                 <SelectAccount
@@ -295,7 +295,7 @@ export default class Invite extends SkypeComponent {
                 <Button
                   type="submit"
                   disabled={!this.state.account}
-                  content="Добавить в очередь"
+                  content="Добавить в друзья"
                   icon="add circle"/>
                 {isDevMode ? <Button floated="right" type="button" onClick={this.reset}>Очистить</Button> : ''}
               </Segment>

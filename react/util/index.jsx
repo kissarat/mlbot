@@ -56,14 +56,17 @@ export function stringify(object, sep = '&', eq = '=') {
 
 export function filterSkypeUsernames(value) {
   const array = 'string' === typeof value ? value.split(/\s*\n\s*/) : value
-  const accounts = []
+  const usernames = []
   array.forEach(function (string) {
     string = string.trim()
-    if (string && /^(live:)?[a-zA-Z][a-zA-Z0-9\.,\-_]{5,31}$/.exec(string)) {
-      accounts.push(string)
+    if (string && !/^\+?\d+/.test(string) && !string.includes('facebook:')) {
+      usernames.push(string)
+    }
+    else {
+      // console.warn(string)
     }
   })
-  return uniq(accounts)
+  return usernames
 }
 
 export function setImmediate(fn) {

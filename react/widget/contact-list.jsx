@@ -39,7 +39,7 @@ export default class ContactList extends Component {
   }
 
   loadContacts = async(busy = false) => {
-    console.log(this.props.condition)
+    // console.log(this.props.condition)
     if (busy) {
       this.setState({busy})
     }
