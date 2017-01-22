@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import api from '../connect/api.jsx'
 import {defaults} from 'lodash'
-import {Button, Form} from 'semantic-ui-react'
+import {Button, Form, Segment, SegmentGroup} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import Contact from '../entity/contact.jsx'
 import db from '../database.jsx'
@@ -75,14 +75,15 @@ export default class Settings extends Component {
   clearAccountsLabel = () => this.labelWithCount('Очистить логины и пароли скайпов', 'accountsCount')
 
   render() {
-    return <Form className="page settings">
-      <div className="control">
+    return <SegmentGroup className="page settings">
+      <Segment className="control">
+        <h2>Сброс данных</h2>
         <Button onClick={this.clearSettings} type="button">Очистить настройки</Button>
         <Button onClick={this.clearContacts} type="button">{this.clearContactsLabel()}</Button>
         <Button onClick={this.clearAccounts} type="button">{this.clearAccountsLabel()}</Button>
         <Button onClick={this.clearAll} type="button">Очистить все</Button>
-      </div>
+      </Segment>
       {isDevMode ? this.dev() : ''}
-    </Form>
+    </SegmentGroup>
   }
 }

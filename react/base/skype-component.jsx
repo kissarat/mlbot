@@ -19,6 +19,7 @@ export default class SkypeComponent extends Component {
       Persistent,
       Timeout,
     )
+    this.timeoutDuration = skypeTimeout
   }
 
   componentWillReceiveProps(props) {

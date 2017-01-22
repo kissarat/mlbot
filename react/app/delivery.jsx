@@ -4,7 +4,7 @@ import Help from '../widget/help.jsx'
 import React from 'react'
 import SelectAccount from './select-account.jsx'
 import SkypeComponent from '../base/skype-component.jsx'
-import {Form, Segment, Button, Loader, Header} from 'semantic-ui-react'
+import {Form, Segment, Button, Header} from 'semantic-ui-react'
 import {wait} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
@@ -34,11 +34,6 @@ export default class Delivery extends SkypeComponent {
 
   onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
 
-  loadContacts() {
-    console.log('loadContacts')
-    // Contact.emit('update')
-  }
-
   async selectAll(status) {
     const account = this.state.account
     await db.contact
@@ -55,13 +50,15 @@ export default class Delivery extends SkypeComponent {
   async send(text) {
     const account = this.state.account
     try {
-      const query = c =>
-      account === c.account &&
-      Status.SELECTED === c.status &&
-      c.authorized
+      const query = {
+        account,
+        authorized: 1,
+        status: Status.SELECTED,
+      }
       const contactsCount = await db.contact
-        .filter(query)
+        .where(query)
         .count()
+      console.log(contactsCount)
 
       if (contactsCount > 0) {
         const skype = await this.getSkype(true)
@@ -79,8 +76,9 @@ export default class Delivery extends SkypeComponent {
         let i = 0
         const pull = async() => {
           const contact = await db.contact
-            .filter(query)
+            .where(query)
             .first()
+          console.log(contact)
           if (!contact) {
             return
           }
@@ -114,6 +112,7 @@ export default class Delivery extends SkypeComponent {
   }
 
   receiversButton(status, content) {
+    status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
     return <Button
       type="button"
       onClick={() => this.selectAll(status)}

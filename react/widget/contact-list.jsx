@@ -13,18 +13,17 @@ export default class ContactList extends Component {
     contacts: false,
     busy: true,
     delay: 300,
-    limit: 10
+    limit: 12
   }
 
   componentWillReceiveProps(props) {
-    this.setState({busy: props.busy})
-    this.loadContacts(true)
   }
 
   componentWillMount() {
     this.componentWillReceiveProps(this.props)
     Contact.on('update', this.loadContacts)
     addEventListener('resize', this.resize)
+    this.loadContacts(true)
   }
 
   componentWillUnmount() {
@@ -32,10 +31,35 @@ export default class ContactList extends Component {
     Contact.removeListener('update', this.loadContacts)
   }
 
-  changeOffset = async offset => {
-    await this.loadContacts(true)
+  changeOffset = offset => {
     this.setState({offset})
+    setImmediate(() => this.loadContacts(true))
   }
+
+  loadContacts = async(busy = false) => {
+    if (busy) {
+      this.setState({busy})
+    }
+    let condition = pick(this.props, 'account', 'status', 'authorized')
+    condition.authorized = condition.authorized ? 1 : 0
+    const {count, contacts} = await Contact.search(
+      condition,
+      this.state.search,
+      pick(this.state, 'offset', 'limit'),
+    )
+
+    if (false === this.state.contacts) {
+      setImmediate(this.resize)
+    }
+
+    this.setState({
+      count,
+      contacts,
+      busy: false
+    })
+  }
+
+  debounceSearch = debounce(() => this.loadContacts(), 300)
 
   resize = debounce(() => {
       const container = document.querySelector('.contact-list-segment')
@@ -53,31 +77,6 @@ export default class ContactList extends Component {
       }
     },
     300)
-
-  loadContacts = async(busy = false) => {
-    if (busy) {
-      this.setState({busy})
-    }
-    let condition = pick(this.props, 'account', 'status', 'authorized')
-    condition.authorized = condition.authorized ? 1 : 0
-    const {count, contacts} = await Contact.search(
-      condition,
-      this.state.search,
-      pick(this.state, 'offset', 'limit'),
-    )
-
-    if (false === this.state.contacts) {
-        setImmediate(this.resize)
-    }
-
-    this.setState({
-      count,
-      contacts,
-      busy: false
-    })
-  }
-
-  debounceSearch = debounce(() => this.loadContacts(), 300)
 
   onSearch = e => {
     const search = e.target.value

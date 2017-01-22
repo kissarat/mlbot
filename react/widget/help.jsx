@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Message, Icon} from 'semantic-ui-react'
 
-export default class Footer extends Component {
+export default class Help extends Component {
   state = {
     isOpen: false
   }

@@ -37,7 +37,7 @@ export default class Invite extends SkypeComponent {
 
   loadFromFile(file) {
     this.setState({
-      isFileChosen: !!file,
+      isFileChosen: false,
       listBusy: true
     })
     const reader = new FileReader()
@@ -48,7 +48,8 @@ export default class Invite extends SkypeComponent {
       }
       else {
         this.addToInviteList(list)
-          .then(function () {
+          .then(() => {
+            this.setState({listBusy: false})
             Contact.emit('upload')
           })
       }
@@ -235,6 +236,7 @@ export default class Invite extends SkypeComponent {
         onChange={e => this.loadFromFile(e.target.files[0])}/>
       <Button
         style={{display: this.state.isFileChosen ? 'none' : 'block'}}
+        loading={this.state.listBusy}
         type="button"
         className="open-file"
         onClick={this.onClickOpenFile}

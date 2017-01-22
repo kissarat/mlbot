@@ -3,30 +3,23 @@ import {EventEmitter} from 'events'
 import db from '../database.jsx'
 
 export default class Contact {
-  static buildQuery(condition, search) {
-    const predicate = matches(condition)
-    if (search) {
-      return predicate
-    }
-    return function query(c) {
-      let r = predicate(c)
-      search.split(/\s+/).forEach(function (word) {
-        if (word) {
-          r &= c.login.indexOf(word) >= 0
-            || (c.name && c.name.indexOf(word) >= 0)
-        }
-      })
-      return r
-    }
-  }
-
   static async search(condition, search, {offset, limit = 15}) {
-    // console.log(condition, search, offset, limit)
-    // const query = Contact.buildQuery(condition, search)
-    // const query = Contact.buildQuery(condition, search)
     const count = await db.contact.where(condition).count()
-    const contacts = await db.contact
+    let q = db.contact
       .where(condition)
+    if (search && (search = search.trim())) {
+        q = q.filter(function (c) {
+          let r = false
+          search.split(/\s+/).forEach(function (word) {
+            if (word) {
+              r |= c.login.indexOf(word) >= 0
+                || (c.name && c.name.indexOf(word) >= 0)
+            }
+          })
+          return r
+        })
+    }
+    const contacts = await q
       .offset(offset)
       .limit(limit)
       .toArray()
