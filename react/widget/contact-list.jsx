@@ -93,6 +93,9 @@ export default class ContactList extends Component {
       if (c.name && name !== c.name) {
         name += ` (${c.name})`
       }
+      if (name.length > 45) {
+        name = name.slice(0, 48) + '…'
+      }
       const isNew = Status.CREATED === c.status
       return <Table.Row
         key={c.id} className={isNew ? 'add' : 'remove'}

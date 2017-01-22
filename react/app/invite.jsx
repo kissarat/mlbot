@@ -139,7 +139,12 @@ export default class Invite extends SkypeComponent {
       const contact = await db.contact
         .filter(this.selectedUnauthorizedQuery)
         .first()
-      const answer = await skype.invite(contact.login, this.state.greeting.trim() || '')
+      if ('string' === typeof this.state.greeting) {
+        skype.invite(contact.login, this.state.greeting.trim())
+      }
+      else {
+        skype.invite(contact.login)
+      }
       if (Status.ABSENT === answer.status) {
         await db.contact.delete(contact.id)
       }
@@ -192,7 +197,7 @@ export default class Invite extends SkypeComponent {
       className="remove-all"
       onClick={() => this.removeAll()}
       icon="trash"
-      content="Удалить всех"/>
+      content="Очистить"/>
   }
 
   list() {
@@ -240,55 +245,59 @@ export default class Invite extends SkypeComponent {
         type="button"
         className="open-file"
         onClick={this.onClickOpenFile}
-        content="Выберите файл для загрузки контактов"
-        icon="file text outline"/>
-    </div>
-  }
-
-  formHeader() {
-    return <div className="form-header">
-      {this.fileLoadButton()}
-      <SelectAccount
-        value={this.state.account}
-        select={account => this.changeAccount(account)}/>
+        content="Загрузите файл c контактами"
+        icon="file text outline"
+        disabled={!this.state.account}/>
     </div>
   }
 
   render() {
     return <Segment.Group horizontal className="page invite">
-      <Segment>
+      {this.getMessage()}
+      <Segment compact className="form-segment">
         <Form onSubmit={this.onSubmit}>
-          {this.getMessage()}
-          {this.formHeader()}
-          {this.limitListControls()}
-          <div className="text-fields">
-            <Form.TextArea
-              name="list"
-              label="Вставьте контакты"
-              placeholder="Вставьте список из 40-ка Skype-контактов для добавления в друзья"
-              value={this.state.list}
-              onChange={this.onChange}/>
-            <Form.TextArea
-              name="greeting"
-              label="Сообщение-приветствие"
-              placeholder="Введите текст, который получит каждый контакт при добавлении в друзья"
-              value={this.state.greeting}
-              onChange={this.onChange}/>
-            <div>
-              <Button
-                type="submit"
-                disabled={!this.state.account}
-                content="Добавить"
-                icon="add circle"/>
-              {isDevMode ? <Button floated="right" type="button" onClick={this.reset}>Очистить</Button> : ''}
-            </div>
-          </div>
-          <Alert persist="inviteLimitWarning">
-            Добавляйте в сутки на один Skype-аккаунт не более 40 контактов, потому
-            что Microsoft морозит и блокирует Skype. Примерно после 40-ка заявок —
-            они перестают доходить к адресатам и висят в воздухе, портя «карму» Вашему Skype.
-            Рекомендуем завести 5 скайпов и добавлять в каждый по 40 новых контактов.
-          </Alert>
+          <Segment.Group>
+            <Segment.Group horizontal>
+              <Segment>
+                <h2>Добавьте контакты</h2>
+                {this.fileLoadButton()}
+                <small>или</small>
+                <Form.TextArea
+                  className="contacts"
+                  name="list"
+                  label="Вставьте контакты"
+                  placeholder="Вставьте список из 40-ка Skype-контактов для добавления в друзья"
+                  value={this.state.list}
+                  onChange={this.onChange}/>
+              </Segment>
+              <Segment>
+                <h2>Выберите Skype</h2>
+                <SelectAccount
+                  value={this.state.account}
+                  select={account => this.changeAccount(account)}/>
+                <Form.TextArea
+                  name="greeting"
+                  className="greeting"
+                  label="Сообщение-приветствие"
+                  placeholder="Введите текст, который получит каждый контакт при добавлении в друзья"
+                  value={this.state.greeting}
+                  onChange={this.onChange}/>
+                <Button
+                  type="submit"
+                  disabled={!this.state.account}
+                  content="Добавить в очередь"
+                  icon="add circle"/>
+                {isDevMode ? <Button floated="right" type="button" onClick={this.reset}>Очистить</Button> : ''}
+              </Segment>
+            </Segment.Group>
+
+            <Alert warning persist="inviteLimitWarning" attached="bottom">
+              Добавляйте в сутки на один Skype-аккаунт не более 40 контактов, потому
+              что Microsoft морозит и блокирует Skype. Примерно после 40-ка заявок —
+              они перестают доходить к адресатам и висят в воздухе, портя «карму» Вашему Skype.
+              Рекомендуем завести 5 скайпов и добавлять в каждый по 40 новых контактов.
+            </Alert>
+          </Segment.Group>
         </Form>
       </Segment>
       <Segment className="contact-list-segment">

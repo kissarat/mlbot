@@ -20,7 +20,6 @@ export default class Paginator extends Component {
   }
 
   open(n) {
-    console.log(n * this.props.limit)
     this.props.changeOffset(n * this.props.limit)
   }
 
@@ -35,8 +34,6 @@ export default class Paginator extends Component {
   }
 
   render() {
-    // console.log(this.state.page, this.state.totalPages, this.props.count, this.props.offset)
-    // console.log(this.state, this.props)
     return <Menu className="widget paginator">
       <Menu.Item as='a' icon>
         <Icon

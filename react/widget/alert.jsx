@@ -27,10 +27,13 @@ export default class Alert extends HidableComponent {
     )
     const content = this.props.content || this.props.children
     props.className = props.className ? props.className + ' alert visible' : 'alert visible'
+    if (this.props.persist) {
+      props['data-persist'] = this.props.persist
+    }
     return this.state.visible
       ? <Message {...props}>
       <div className="alert-content">{content}</div>
-      <Icon name="close" onClick={() => this.setState({visible: false})}/>
+      <Icon name="close" size="large" onClick={() => this.setState({visible: false})}/>
     </Message>
       : <div className="alert hidden"></div>
   }

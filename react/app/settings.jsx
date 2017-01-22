@@ -32,8 +32,10 @@ export default class Settings extends Component {
   }
 
   clearSettings = () => {
+    const token = localStorage.getItem('sam')
     localStorage.clear()
-    hashHistory.push('/login')
+    localStorage.setItem('sam', token)
+    // hashHistory.push('/login')
   }
 
   clearContacts = () => {
@@ -76,12 +78,14 @@ export default class Settings extends Component {
 
   render() {
     return <SegmentGroup className="page settings">
-      <Segment className="control">
+      <Segment className="reset">
         <h2>Сброс данных</h2>
-        <Button onClick={this.clearSettings} type="button">Очистить настройки</Button>
-        <Button onClick={this.clearContacts} type="button">{this.clearContactsLabel()}</Button>
-        <Button onClick={this.clearAccounts} type="button">{this.clearAccountsLabel()}</Button>
-        <Button onClick={this.clearAll} type="button">Очистить все</Button>
+        <div className="control">
+          <Button onClick={this.clearSettings} type="button">Очистить настройки</Button>
+          <Button onClick={this.clearContacts} type="button">{this.clearContactsLabel()}</Button>
+          <Button onClick={this.clearAccounts} type="button">{this.clearAccountsLabel()}</Button>
+          <Button onClick={this.clearAll} type="button">Очистить все</Button>
+        </div>
       </Segment>
       {isDevMode ? this.dev() : ''}
     </SegmentGroup>

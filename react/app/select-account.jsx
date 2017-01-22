@@ -53,7 +53,7 @@ export default class SelectAccount extends Component {
         type="button"
         onClick={this.openSkype}
         icon="sign in"
-        content="Войти в Skype"/>
+        content="Войти"/>
     }
   }
 
@@ -65,7 +65,7 @@ export default class SelectAccount extends Component {
         name="account"
         onChange={this.onChange}
         options={this.options()}
-        placeholder="Выберети Skype"
+        placeholder="Выберите Skype"
         value={selectedAccount}
       />
       {this.loginButton(selectedAccount)}

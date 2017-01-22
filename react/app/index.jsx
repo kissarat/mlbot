@@ -32,7 +32,7 @@ if (!window.skypeTimeout) {
 import Footer from '../widget/footer.jsx'
 import React, {Component} from 'react'
 import {hashHistory} from 'react-router'
-import {Menu, Segment, Image, Dimmer, Loader} from 'semantic-ui-react'
+import {Menu, Segment, Image, Dimmer, Loader, Icon} from 'semantic-ui-react'
 import api from '../connect/api.jsx'
 import {each, defaults} from 'lodash'
 import SingletonComponent from '../base/singleton-component.jsx'
@@ -79,17 +79,20 @@ export default class App extends SingletonComponent {
           size="medium"
           content={'string' === typeof this.state.busy ? this.state.busy : ''}/>
       </Dimmer>
-      <Menu attached="top">
+      <Menu icon="labeled"  compact borderless>
         <Menu.Item>
           <Image src="images/menu-logo.png"/>
         </Menu.Item>
-        <Menu.Item name="Аккаунт" {...itemUrl('/accounts')}/>
-        <Menu.Item name="Рассылка" {...itemUrl('/delivery')}/>
-        <Menu.Item name="Добавить друзей" {...itemUrl('/invite')}/>
-        <Menu.Item name="Настройки" {...itemUrl('/settings')}/>
-        <Menu.Item name="Выход" onClick={this.logout}/>
+        <Menu.Menu position="right">
+          <Menu.Item name="Аккаунт" icon="skype" {...itemUrl('/accounts')}/>
+          <Menu.Item name="Рассылка" icon="mail" {...itemUrl('/delivery')}/>
+          <Menu.Item name="Добавить друзей" icon="group" {...itemUrl('/invite')}/>
+          <Menu.Item name="Настройки" icon="setting" {...itemUrl('/settings')}/>
+          <Menu.Item name="Выход" icon="sign out" onClick={this.logout}/>
+          <Menu.Item name="Перезапуск" icon="refresh" onClick={() => location.reload()}/>
+        </Menu.Menu>
       </Menu>
-      <Segment attached="bottom" className="content">{this.props.children}</Segment>
+      <Segment className="content">{this.props.children}</Segment>
       <Footer/>
     </div>
   }

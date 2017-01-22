@@ -56,6 +56,7 @@ nav li {
     display: flex;
     flex-direction: column;
     min-width: 200px;
+    overflow-x: hidden;
 }
 
 .scroll {
@@ -91,15 +92,6 @@ nav li {
     text-align: right;
     width: 60px;
     all: initial;
-}
-
-#app > div {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    justify-content: space-between;
-    padding: 15px 0 0;
 }
 
 .content .one.column.row > .column {
@@ -171,27 +163,6 @@ input {
     font-family: panton !important;
     letter-spacing: 1px;
     padding: 10px !important;
-}
-
-.ui.horizontal.page.invite.segments {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.ui.horizontal.page.invite.segments > * {
-    max-width: 67%;
-}
-
-.invite .text-fields {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-.invite .ui.segment .form .text-fields > .field {
-    width: 48%;
 }
 
 textarea {
@@ -371,19 +342,38 @@ div.copyright {
     white-space: nowrap;
 }
 
+.contact-list .control, .select-account {
+    display: flex;
+}
+
 @media (min-width: 1200px) {
-    .contact-list .control, .page.delivery .select-account {
-        display: flex;
+    .contact-list .control, .select-account {
         min-height: 36px;
+    }
+
+    .contact-list [type=button], .select-account button {
+        margin-left: 6px !important;
+    }
+}
+
+@media (max-width: 1199px) {
+    .contact-list .control, .page.delivery .select-account {
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 76px;
+    }
+
+    .contact-list .control button, .page.delivery .select-account button {
+        margin: 0;
     }
 }
 
 .contact-list table {
-    display: inline-block;
+    /*display: inline-block;*/
 }
 
 .contact-list table tbody {
-    display: inline-block;
+    /*display: inline-block;*/
     overflow-x: hidden;
 }
 
@@ -391,11 +381,7 @@ div.copyright {
     min-width: 160px;
 }
 
-.contact-list [type=button], .page.delivery .select-account button {
-    margin-left: 6px;
-}
-
-.page.delivery .select-account button.skype {
+.select-account button.skype {
     min-width: 180px;
 }
 
@@ -423,4 +409,44 @@ div.copyright {
 
 .page.invite .form-header .select-account [type=button] {
     margin-left: 6px;
+}
+
+.page.settings {
+    max-width: 400px;
+}
+
+.page.settings .reset .control {
+    display: flex;
+    flex-direction: column;
+}
+
+.page.settings .reset .control button {
+    margin-top: 4px;
+}
+
+.invite .text-fields {
+    display: flex;
+    justify-content: space-between;
+}
+
+.page.invite form .text-fields > * {
+    /*flex: 1;*/
+    width: calc(50% - 16px);
+}
+
+.page.invite .field.contacts {
+    margin-top: 4px;
+}
+
+.page.invite .field.greeting {
+    margin-top: 14px;
+}
+
+[data-persist="inviteLimitWarning"] {
+    max-width: 70vw;
+}
+
+.page.invite small {
+    font-size: 0.9em;
+    margin-top: 8px;
 }
