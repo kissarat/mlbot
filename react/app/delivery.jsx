@@ -122,14 +122,22 @@ export default class Delivery extends SkypeComponent {
   }
 
   list(status) {
-    return super.list({
-      status,
-      authorized: true,
-      children: this.receiversButton(status, Status.CREATED === status
-        ? 'Разослать всем'
-        : 'Никому'
-      )
-    })
+    if (this.state.account) {
+      return super.list({
+        condition: {
+          account: this.state.account,
+          status,
+          authorized: 1
+        },
+        children: this.receiversButton(status, Status.CREATED === status
+          ? 'Разослать всем'
+          : 'Никому'
+        )
+      })
+    }
+    else {
+      return ''
+    }
   }
 
   render() {

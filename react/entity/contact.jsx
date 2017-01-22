@@ -6,13 +6,17 @@ import {Status} from '../../app/config'
 
 export default class Contact {
   static async search(condition, search, {sort, offset, limit = 15}) {
-    const count = await db.contact.where(condition).count()
+    function filter(q) {
+      return 'function' === typeof condition
+        ? q.filter(condition) : q.where(condition)
+    }
+    const count = await filter(db.contact).count()
     let q = db.contact
     if (sort) {
       q = q.orderBy(sort).filter(condition)
     }
     else {
-      q = q.where(condition)
+      q = filter(q)
     }
     if (search && (search = search.trim())) {
         q = q.filter(function (c) {
@@ -48,7 +52,7 @@ export default class Contact {
   }
 
   static setup(contact) {
-    contact.id = contact.account + '~' + contact.login
+    contact.id = contact.account ? contact.account + '~' + contact.login : contact.login
     contact.authorized = contact.authorized ? 1 : 0
     if ('number' !== typeof contact.status) {
       contact.status = Status.CREATED

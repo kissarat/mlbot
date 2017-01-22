@@ -83,17 +83,15 @@ export default class Invite extends SkypeComponent {
   }
 
   async addToInviteList(usernames) {
-    const account = this.state.account
+    // const account = this.state.account
     if (usernames.length > 0) {
       let existing = await db.contact
-        .filter(c => account === c.account)
         .toArray()
       existing = keyBy(existing, 'login')
       usernames = usernames.filter(username => !existing[username])
       console.log(usernames.length)
       const contacts = Contact.setupMany(usernames.map(login => ({
         login,
-        account,
         status: Status.SELECTED
       })))
       await db.contact.bulkAdd(contacts)
@@ -199,11 +197,24 @@ export default class Invite extends SkypeComponent {
       content="Очистить"/>
   }
 
+  buildPredicate() {
+    if (this.state.account) {
+      const account = this.state.account
+      return function assigned(c) {
+        return Status.SELECTED === c.status && !c.authorized && (!c.account || account === c.account)
+      }
+    }
+    else {
+      return function notAssigned(c) {
+        return Status.SELECTED === c.status && !c.authorized && !c.account
+      }
+    }
+  }
+
   list() {
     return super.list({
-      status: Status.SELECTED,
-      authorized: false,
-      busy: this.state.listBusy,
+      condition: this.buildPredicate(),
+      sort: 'time',
       children: this.removeAllButton()
     })
   }

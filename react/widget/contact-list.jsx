@@ -13,10 +13,12 @@ export default class ContactList extends Component {
     contacts: false,
     busy: true,
     delay: 300,
-    limit: 12
+    limit: 12,
+    sort: false
   }
 
   componentWillReceiveProps(props) {
+    this.setState(pick(props, 'sort', 'offset', 'limit'))
   }
 
   componentWillMount() {
@@ -37,15 +39,14 @@ export default class ContactList extends Component {
   }
 
   loadContacts = async(busy = false) => {
+    console.log(this.props.condition)
     if (busy) {
       this.setState({busy})
     }
-    let condition = pick(this.props, 'account', 'status', 'authorized')
-    condition.authorized = condition.authorized ? 1 : 0
     const {count, contacts} = await Contact.search(
-      condition,
+      this.props.condition,
       this.state.search,
-      pick(this.state, 'offset', 'limit'),
+      pick(this.state, 'offset', 'limit', 'sort'),
     )
 
     if (false === this.state.contacts) {

@@ -39,7 +39,7 @@ export default class SkypeComponent extends Component {
 
   getSkype(busy) {
     return Skype.open(this.state.account, busy)
-      // .catch(err => this.alert('error', errorMessage(err)))
+    // .catch(err => this.alert('error', errorMessage(err)))
   }
 
   changeAccount(account) {
@@ -117,15 +117,10 @@ export default class SkypeComponent extends Component {
   }
 
   list(condition) {
-    if (this.state.account) {
-      condition.account = this.state.account
-      return <ContactList
-        {...condition}
-        changeStatus={this.changeStatus}
-      />
-    }
-    else {
-      return ''
-    }
+    condition.account = this.state.account
+    return <ContactList
+      {...condition}
+      changeStatus={this.changeStatus}
+    />
   }
 }
