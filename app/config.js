@@ -1,4 +1,5 @@
-const _ = require('lodash')
+const {defaultsDeep} = require('lodash')
+const freeze = require('deep-freeze')
 
 var local
 try {
@@ -18,7 +19,7 @@ const config = {
     height: 960,
     x: 0
   },
-  Status: Object.freeze({
+  Status: {
     FORBIDDEN: -2,
     ABSENT: -1,
 
@@ -28,7 +29,7 @@ const config = {
     INVITED: 3,
     SENT: 4,
     DOUBLE: 5,
-  }),
+  },
   start: {
     delay: 3000
   },
@@ -38,4 +39,4 @@ const config = {
   }
 }
 
-module.exports = _.defaultsDeep(local, config)
+module.exports = freeze(defaultsDeep(local, config))

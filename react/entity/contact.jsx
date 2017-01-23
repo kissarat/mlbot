@@ -1,56 +1,41 @@
-import {extend, matches, debounce, each} from 'lodash'
+import {extend, matches, debounce, each, identity, uniq} from 'lodash'
 import {EventEmitter} from 'events'
 import db from '../database.jsx'
 import {millisecondsId} from '../util/index.jsx'
 import {Status} from '../../app/config'
 
 export function factory(object) {
- object.proxy = function proxy(target) {
+  function delegate(target, proxy, methods) {
+    (methods || Object.keys(object)).forEach(function (key) {
+      object[key] = function _delegate() {
+        return proxy(target[key].apply(this, arguments))
+      }
+    })
+  }
+
+  function decorate(target, methods, decorator) {
+    (methods || Object.keys(target)).forEach(function (method) {
+      const fn = target[method]
+      target[method] = decorator(fn)
+    })
+  }
+
+  function proxy(target) {
     return new Proxy(target, {
       has(target, key) {
         return key in target || key in object
       },
 
       get(target, key) {
-        return target[key] || object[key]
-      },
-
-      enumerate(target) {
-        return Object.keys(target).concat(Object.keys(object))
+        if ('name' === key) {
+          return target.name
+        }
+        return object[key] || target[key]
       }
     })
   }
 
-  object.delegate = function delegate(target, methods) {
-    (methods || Object.keys(target)).forEach(function (key) {
-      object[key] = function _delegate() {
-        return object.proxy(target[key].apply(target, arguments))
-      }
-    })
-  }
-
-  object.decorate = function _decorate(target, methods) {
-    methods.forEach(function (key) {
-
-    })
-  }
-}
-
-function decorate(target, methods, decorator) {
-  (methods || Object.keys(target)).forEach(function (method) {
-    const fn = target[method]
-    target[method] = decorator(fn)
-  })
-}
-
-['orderBy'].forEach(function (key) {
-  Contact[key] = function () {
-    return Query.proxy(db.contact[key].apply(db.contact, arguments))
-  }
-})
-
-export function proxyFactory(wrapper) {
-
+  return {delegate, decorate, proxy}
 }
 
 export function Query() {
@@ -59,7 +44,7 @@ export function Query() {
 Query.prototype = {
   search(text) {
     if (text && (text = text.trim())) {
-      return this.filter(c => {
+      return this.and(c => {
         let r = false
         text.split(/\s+/).forEach(word => {
           if (word) {
@@ -74,40 +59,16 @@ Query.prototype = {
   }
 }
 
-extend(Query, {
-  proxy: proxyFactory(Query.prototype)
-})
+db.Collection.prototype.search = search
 
-export function Contact() {
+extend(Query, factory(Query.prototype))
 
+export default function Contact() {
 }
 
-extend(Contact, {
-  async search(condition, search, {sort, offset, limit = 15}) {
-    function filter(q) {
-      return 'function' === typeof condition
-        ? q.filter(condition) : q.where(condition)
-    }
+Contact.prototype = {}
 
-    const count = await filter(db.contact).count()
-    if (count <= 0) {
-      return {count: 0, contacts: []}
-    }
-    let q = db.contact
-    if (sort) {
-      q = q.orderBy(sort).filter(condition)
-    }
-    else {
-      q = filter(q)
-    }
-
-    const contacts = await q
-      .offset(offset)
-      .limit(limit)
-      .toArray()
-    return {count, contacts}
-  },
-
+extend(Contact, factory(Contact), {
   countAll() {
     return db.contact.count()
   },
@@ -142,11 +103,34 @@ extend(Contact, {
       .filter(c => Status.SELECTED === c.status && 0 === c.authorized)
   },
 
-  classProxy: proxyFactory(Contact)
+  async pushQueue(usernames) {
+    // usernames = uniq(usernames)
+    const victims = []
+    // await db.contact.each(function ({login}) {
+    //   if (!usernames.find(name => name === login)) {
+    //     victims.push(name)
+    //   }
+    // })
+    usernames = usernames.reduce((a, n) => a[n] = n, {})
+    await db.contact.each(function ({login}) {
+      if (!usernames[login]) {
+        victims.push(login)
+      }
+    })
+    if (usernames.length > 0) {
+      const contacts = uniq(victims).map(c => ({
+        login: c.login,
+        status: Status.SELECTED,
+        authorized: 0,
+      }))
+      await db.contact.bulkAdd(this.setupMany(contacts))
+      Contact.emit('update')
+    }
+  }
 });
 
-
-db.Contact = Contact.classProxy(db.contact)
+// Contact.delegate(db.contact, Query.proxy, ['orderBy'])
+// db.Contact = Contact.proxy(db.contact)
 
 EventEmitter.call(Contact)
 extend(Contact, EventEmitter.prototype)

@@ -3,15 +3,12 @@ const fs = require('fs')
 const webpack = require('../webpack-common')('react')
 webpack.target = 'node'
 
-var nodeModules = {};
-fs.readdirSync(__dirname + '/../app/node_modules')
-  .filter(function(x) {
-    return ['.bin'].indexOf(x) === -1;
-  })
-  .forEach(function(mod) {
-    nodeModules[mod] = 'commonjs ' + mod;
-  });
+const dirs = fs.readdirSync(__dirname + '/../node_modules')
 
-webpack.externals = nodeModules
+webpack.externals = dirs
+  .filter(x => x !== '.bin')
+  .reduce((a, n) => (a[n] = 'commonjs ' + n) && a, {})
+
+// webpack.externals['config'] = '../app/config'
 
 module.exports = webpack

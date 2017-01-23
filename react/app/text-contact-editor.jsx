@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import BrowseFile from './browse-file.jsx'
 import {filterSkypeUsernames} from '../util/index.jsx'
+import {uniq} from 'lodash'
 import {Form, TextArea, Segment, Button, Input, Checkbox, Header} from 'semantic-ui-react'
 
 export default class TextContactEditor extends Component {
@@ -14,25 +15,23 @@ export default class TextContactEditor extends Component {
     })
   }
 
-  load(file) {
+  onSubmit = async(e, {formData: {text}}) => {
     this.setState({busy: true})
-    const reader = new FileReader()
-    reader.onload = e => {
-      this.setState({busy: false})
-      this.props.setText(e.target.result)
+    let usernames = filterSkypeUsernames(text)
+    if (usernames.length > 0) {
+
     }
-    reader.readAsText(file)
+    this.setState({busy: false})
   }
 
   render() {
     return <Segment className="widget text-contact-editor">
-      <Form>
+      <Form onSubmit={}>
         <h2>Добавьте контакты</h2>
         <BrowseFile setText={this.setText}/>
         <small>или</small>
-        <TextArea
+        <Form.TextArea
           className="contacts"
-          onChange={this.onChange}
           value={this.state.text}
           name="text"
           label="Вставьте контакты"
@@ -41,7 +40,6 @@ export default class TextContactEditor extends Component {
         <Button
           type="submit"
           disabled={!this.state.text}
-          onClick={this.load}
           loading={this.state.busy}
           content="Добавить в очередь"
           icon="group"/>

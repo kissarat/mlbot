@@ -10,6 +10,7 @@ import {Loader} from 'semantic-ui-react'
 import {pick, each, isEqual} from 'lodash'
 import {render} from 'react-dom'
 import {start, createTokenInfo} from './util/index.jsx'
+import freeze from 'deep-freeze'
 
 const url = '/ekahsdnah'
   .split('')
@@ -21,7 +22,7 @@ render(<Loader active size='huge'>Подключение к серверу</Load
 
 api.send(url + start.getTime(), createTokenInfo())
   .then(function (config) {
-    api.config = config
+    api.config = freeze(config)
     // const checkHard = !config.token.hard || isEqual(config.token.hard, data.hard)
     // let isLicensed = config.user.guest
     api.setToken(config.token.id)
