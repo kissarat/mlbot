@@ -3,7 +3,7 @@ import Paginator from './paginator.jsx'
 import React, {Component} from 'react'
 import {Status} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
-import {toArray, defaults, debounce, pick} from 'lodash'
+import {toArray, defaults, debounce, pick, isEqual} from 'lodash'
 
 export default class ContactList extends Component {
   state = {
@@ -14,53 +14,85 @@ export default class ContactList extends Component {
     busy: true,
     delay: 300,
     limit: 12,
-    sort: false
+    sort: false,
+    dynamicResize: false,
+    condition: false,
+    loading: false
   }
 
-  componentWillReceiveProps(props) {
-    this.setState(pick(props, 'sort', 'offset', 'limit'))
+  componentWillReceiveProps({condition}) {
+    if (!isEqual(this.state.condition, condition)) {
+      this.setState({condition})
+      if (condition) {
+        console.log(this.state.condition, condition)
+        this.load(true)
+      }
+      else {
+        this.setState({contacts: false})
+      }
+    }
   }
 
   componentWillMount() {
     this.componentWillReceiveProps(this.props)
-    Contact.on('update', this.loadContacts)
-    addEventListener('resize', this.resize)
-    this.loadContacts(true)
+    Contact.on('update', this.load)
+    if (this.state.dynamicResize) {
+      addEventListener('resize', this.resize)
+    }
   }
 
   componentWillUnmount() {
-    removeEventListener('resize', this.resize)
-    Contact.removeListener('update', this.loadContacts)
+    if (this.state.dynamicResize) {
+      removeEventListener('resize', this.resize)
+    }
+    Contact.removeListener('update', this.load)
   }
 
   changeOffset = offset => {
     this.setState({offset})
-    setImmediate(() => this.loadContacts(true))
+    this.load(true)
   }
 
-  loadContacts = async(busy = false) => {
-    // console.log(this.props.condition)
-    if (busy) {
-      this.setState({busy})
-    }
-    const {count, contacts} = await Contact.search(
-      this.props.condition,
-      this.state.search,
-      pick(this.state, 'offset', 'limit', 'sort'),
-    )
+  immediate = async() => {
+    if (this.state.condition) {
+      try {
+        const start = Date.now()
+        const {count, contacts} = await Contact.search(
+          this.state.condition,
+          this.state.search,
+          pick(this.state, 'offset', 'limit', 'sort'),
+        )
 
-    if (false === this.state.contacts) {
-      setImmediate(this.resize)
-    }
+        // if (count > 0 && false === this.state.contacts) {
+        //   setImmediate(this.resize)
+        // }
 
-    this.setState({
-      count,
-      contacts,
-      busy: false
-    })
+        console.log(`ContactList ${contacts.length} of ${count} until ${Date.now() - start}`, this.state.condition)
+
+        this.setState({
+          count,
+          contacts: count > 0 ? contacts : false,
+          busy: false,
+          loading: false
+        })
+      }
+      catch (ex) {
+        console.error(this.state.condition, ex)
+      }
+    }
+  } 
+
+  debounced = debounce(() => this.state.condition && this.immediate(), 300)
+
+  load = loading => {
+    this.setState({loading: this.state.condition && (this.state.loading || true === loading || false)})
+    if (this.state.busy) {
+      this.debounced()
+    }
+    else {
+      setImmediate(this.immediate)
+    }
   }
-
-  debounceSearch = debounce(() => this.loadContacts(), 300)
 
   resize = debounce(() => {
       const container = document.querySelector('.contact-list-segment')
@@ -73,7 +105,7 @@ export default class ContactList extends Component {
         const delta = Math.floor((box.height - target.height - 100) / unit.height)
         if (delta) {
           this.setState({limit: this.state.limit + delta})
-          setImmediate(() => this.loadContacts(false))
+          this.load()
         }
       }
     },
@@ -85,27 +117,29 @@ export default class ContactList extends Component {
       search,
       offset: 0
     })
-    this.debounceSearch()
+    this.load()
   }
 
   rows() {
-    return this.state.contacts.map(c => {
-      let name = c.login
-      if (c.name && name !== c.name) {
-        name += ` (${c.name})`
-      }
-      if (name.length > 45) {
-        name = name.slice(0, 48) + '…'
-      }
-      const isNew = Status.CREATED === c.status
-      return <Table.Row
-        key={c.id} className={isNew ? 'add' : 'remove'}
-        onClick={() => this.props.changeStatus(c)}>
-        <Table.Cell className="move">
-          {name}
-        </Table.Cell>
-      </Table.Row>
-    })
+    if (this.state.condition && this.state.contacts) {
+      return this.state.contacts.map(c => {
+        let name = c.login
+        if (c.name && name !== c.name) {
+          name += ` (${c.name})`
+        }
+        if (name.length > 45) {
+          name = name.slice(0, 48) + '…'
+        }
+        const isNew = Status.CREATED === c.status
+        return <Table.Row
+          key={c.id} className={isNew ? 'add' : 'remove'}
+          onClick={() => this.props.changeStatus(c)}>
+          <Table.Cell className="move">
+            {name}
+          </Table.Cell>
+        </Table.Row>
+      })
+    }
   }
 
   footer() {
@@ -134,11 +168,11 @@ export default class ContactList extends Component {
         {this.props.children}
       </div>
       <div className="table-container">
-        <Dimmer active={this.state.busy} inverted>
+        <Dimmer active={this.state.loading} inverted>
           <Loader/>
         </Dimmer>
         <Table selectable className={this.state.count > 0 ? 'nothing' : 'hidden'}>
-          <Table.Body>{this.state.contacts ? this.rows() : ''}</Table.Body>
+          <Table.Body>{this.rows()}</Table.Body>
           {this.footer()}
         </Table>
       </div>

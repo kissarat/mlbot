@@ -9,30 +9,27 @@ export default class Alert extends HidableComponent {
   }
 
   componentWillReceiveProps(props) {
-    this.unregisterStorage()
-    if (props.persist) {
-      this.loadState()
-    }
-  }
-
-  componentWillMount() {
-    this.componentWillReceiveProps(this.props)
-  }
-
-  render() {
-    const props = omit(this.props,
+    const messageProps = omit(props,
       'children',
       'persist',
       'content'
     )
-    const content = this.props.content || this.props.children
-    props.className = props.className ? props.className + ' alert visible' : 'alert visible'
+    messageProps['data-persist'] = props.persist
+    messageProps.className = props.className ? props.className + ' alert visible' : 'alert visible'
+    this.setState({messageProps})
+  }
+
+  componentWillMount() {
+    this.componentWillReceiveProps(this.props)
     if (this.props.persist) {
-      props['data-persist'] = this.props.persist
+      this.loadState()
     }
+  }
+
+  render() {
     return this.state.visible
-      ? <Message {...props}>
-      <div className="alert-content">{content}</div>
+      ? <Message {...this.messageProps}>
+      <div className="alert-content">{this.props.content || this.props.children}</div>
       <Icon name="close" size="large" onClick={() => this.setState({visible: false})}/>
     </Message>
       : <div className="alert hidden"></div>

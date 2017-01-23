@@ -9,6 +9,7 @@ import {wait} from '../util/index.jsx'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 import Contact from '../entity/contact.jsx'
+import Alert from '../widget/alert.jsx'
 
 export default class Delivery extends SkypeComponent {
   persistentProps = ['text', 'account']
@@ -31,8 +32,6 @@ export default class Delivery extends SkypeComponent {
       console.error(ex)
     }
   }
-
-  onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
 
   async selectAll(status) {
     const account = this.state.account
@@ -141,8 +140,6 @@ export default class Delivery extends SkypeComponent {
   }
 
   render() {
-    const text = this.state.text || ''
-    const canSend = !!text
     return <Segment.Group horizontal className="page delivery">
       <Segment>
         {this.getMessage()}
@@ -156,16 +153,15 @@ export default class Delivery extends SkypeComponent {
             name="text"
             label="Введите сообщение"
             placeholder="Введите сообщение для его рассылки по выбраным контактам"
-            value={text}
+            value={this.state.text}
             onChange={this.onChange}/>
 
           <Button
             type="submit"
-            disabled={!canSend}
+            disabled={!this.state.text}
             content="Разослать"
             icon="send"
           />
-          {isDevMode ? <Button type="button" floated="right" onClick={this.reset}>Очистить</Button> : ''}
         </Form>
       </Segment>
 

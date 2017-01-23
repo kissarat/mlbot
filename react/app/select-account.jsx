@@ -37,23 +37,27 @@ export default class SelectAccount extends Component {
   }
 
   loginButton(selectedAccount) {
-    const skype = Skype.get(selectedAccount)
-    if (skype) {
+    // const skype = Skype.get(selectedAccount)
+    if (false) {
       return <Button
         className="skype logout"
-        type="button"
-        onClick={() => skype.remove()}
+        content="Выйти"
+        disabled={!selectedAccount}
         icon="sign out"
-        content="Выйти из Skype"/>
+        onClick={() => skype.remove()}
+        type="button"
+      />
     }
     else {
       return <Button
-        loading={this.state.buttonLoading}
         className="skype logout"
-        type="button"
-        onClick={this.openSkype}
+        content="Войти"
+        disabled={!selectedAccount}
         icon="sign in"
-        content="Войти"/>
+        loading={this.state.buttonLoading}
+        onClick={this.openSkype}
+        type="button"
+      />
     }
   }
 

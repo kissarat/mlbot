@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import stateStorage from './state-storage.jsx'
-import {toArray, isObject, merge} from 'lodash'
+import {toArray, isObject, merge, debounce, defaults, pick} from 'lodash'
 import {setImmediate} from './index.jsx'
 
 const Persistent = {
@@ -19,6 +19,18 @@ const Persistent = {
     }
   },
 
+  unregisterStorage(state) {
+    stateStorage.unregister(this.getStorageName(), state || this.state)
+  },
+
+  updateStorage(state) {
+    stateStorage.update(this.getStorageName(), state || this.state)
+  },
+
+  saveStorage(state) {
+    stateStorage.save(this.getStorageName(), state || this.state)
+  },
+
   componentWillMount() {
     this.loadState()
   },
@@ -27,21 +39,20 @@ const Persistent = {
     this.loadState()
   },
 
-  unregisterStorage(state) {
-    stateStorage.unregister(this.getStorageName(), state || this.state)
-  },
-
-  saveStorage(state) {
-    stateStorage.save(this.getStorageName(), state || this.state)
-  },
-
   componentWillUnmount() {
     this.unregisterStorage()
   },
 
   componentDidUpdate() {
-    this.saveStorage()
+    this.updateStorage()
   }
+}
+
+Persistent.mix = function(target) {
+  defaults(target, Persistent)
+  // defaults(target, pick(Persistent, 'getStorageName',
+  //   'loadState', 'unregisterStorage', 'updateStorage',
+  //   'componentWillUnmount'))
 }
 
 export default Persistent

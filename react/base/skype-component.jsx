@@ -16,9 +16,9 @@ export default class SkypeComponent extends Component {
   constructor() {
     super()
     mix(this,
-      Persistent,
       Timeout,
     )
+    Persistent.mix(this)
     this.timeoutDuration = skypeTimeout
   }
 
@@ -31,7 +31,7 @@ export default class SkypeComponent extends Component {
   }
 
   componentDidUpdate(_1, prevState) {
-    this.saveStorage()
+    this.updateStorage(this.state)
     if (prevState.busy != this.state.busy) {
       App.setBusy(this.state.busy)
     }
@@ -41,6 +41,8 @@ export default class SkypeComponent extends Component {
     return Skype.open(this.state.account, busy)
     // .catch(err => this.alert('error', errorMessage(err)))
   }
+
+  onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
 
   changeAccount(account) {
     const name = this.getStorageName().toLowerCase()
@@ -54,7 +56,7 @@ export default class SkypeComponent extends Component {
     if (url) {
       hashHistory.push(url)
     }
-    // console.log(url)
+    console.log('changeAccount', url)
   }
 
   getMessage() {
@@ -70,16 +72,12 @@ export default class SkypeComponent extends Component {
     if (this.state.account) {
       this.alert('warning', 'Вход в скайп')
       await this.getSkype()
-      this.loadContacts()
+      this.immediateLoad()
       this.alert(false)
     }
     else {
       this.alert('warning', 'Выберете, пожалуйста, Skype')
     }
-  }
-
-  async loadContacts() {
-    throw new Error('queryContacts is unimplemented')
   }
 
   alert(type, content) {
@@ -116,10 +114,9 @@ export default class SkypeComponent extends Component {
     Contact.emit('update')
   }
 
-  list(condition) {
-    condition.account = this.state.account
+  list(props) {
     return <ContactList
-      {...condition}
+      {...props}
       changeStatus={this.changeStatus}
     />
   }

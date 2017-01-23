@@ -11,6 +11,9 @@ export default class Contact {
         ? q.filter(condition) : q.where(condition)
     }
     const count = await filter(db.contact).count()
+    if (count <= 0) {
+      return {count: 0, contacts: []}
+    }
     let q = db.contact
     if (sort) {
       q = q.orderBy(sort).filter(condition)

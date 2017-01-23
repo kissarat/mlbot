@@ -6,6 +6,7 @@ export class StateStorage {
   }
 
   register(name, props = false, state = {}) {
+    // console.log('StateStorage.register', name, state)
     this.stores[name] = {props, state: {}, defaults: state}
     return this.load(name, state)
   }
@@ -22,15 +23,20 @@ export class StateStorage {
     return store.state
   }
 
+  update(name, state) {
+    // console.log('StateStorage.update', name, state)
+    return this.stores[name].state = state
+  }
+
   save(name, state) {
+    // console.log('StateStorage.save', name, state)
     const store = this.stores[name]
-    store.state = state || store.state || {}
-    store.state = store.props ? pick(store.state, store.props) : store.state
-    localStorage.setItem(name, JSON.stringify(store.state))
-    return store.state
+    this.update(name, state)
+    localStorage.setItem(name, JSON.stringify(store.props ? pick(store.state, store.props) : store.state))
   }
 
   saveAll() {
+    // console.log('StateStorage.saveAll')
     each(this.stores, (state, name) => this.save(name))
   }
 
@@ -42,6 +48,7 @@ export class StateStorage {
   }
 
   reset(name) {
+    // console.log('StateStorage.reset', name)
     const store = this.stores[name]
     store.state = store.defaults || {}
     localStorage.removeItem(name)
@@ -50,7 +57,7 @@ export class StateStorage {
 }
 
 const stateStorage = new StateStorage()
-// window.stateStorage = stateStorage
+window.stateStorage = stateStorage
 export default stateStorage
 
 addEventListener('beforeunload', () => stateStorage.saveAll())

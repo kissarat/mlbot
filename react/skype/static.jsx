@@ -171,6 +171,7 @@ extend(Skype, {
   },
 
   closeAll() {
+    console.log('Skype.closeAll')
     Skype.all().remove()
   },
 
@@ -181,3 +182,8 @@ extend(Skype, {
 })
 
 export default Skype
+
+// localStorage.setItem = function (key, value) {
+//   console.log(key, value)
+//   Storage.prototype.setItem.call(this, key, value)
+// }
