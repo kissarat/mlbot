@@ -1,48 +1,21 @@
 import Alert from '../widget/alert.jsx'
-import App from '../app/index.jsx'
-import Contact from '../entity/contact.jsx'
 import ContactList from '../widget/contact-list.jsx'
-import Persistent from '../util/persistent.jsx'
 import React, {Component} from 'react'
-import Skype from '../skype/index.jsx'
 import stateStorage from '../util/state-storage.jsx'
-import Timeout from '../util/timeout.jsx'
 import {hashHistory} from 'react-router'
-import {mix} from '../util/index.jsx'
 import {toArray, defaults} from 'lodash'
 import {Status} from '../../app/config'
 
 export default class SkypeComponent extends Component {
-  constructor() {
-    super()
-    mix(this,
-      Timeout,
-    )
-    Persistent.mix(this)
-    this.timeoutDuration = skypeTimeout
+  state = {
+    account: false,
+    alert: false,
+    busy: false
   }
 
   componentWillReceiveProps(props) {
-    this.loadState(props.params)
+    this.setState(props.params)
   }
-
-  componentWillMount() {
-    this.loadState(this.props.params)
-  }
-
-  componentDidUpdate(_1, prevState) {
-    this.updateStorage(this.state)
-    if (prevState.busy != this.state.busy) {
-      App.setBusy(this.state.busy)
-    }
-  }
-
-  getSkype(busy) {
-    return Skype.open(this.state.account, busy)
-    // .catch(err => this.alert('error', errorMessage(err)))
-  }
-
-  onChange = e => this.setState({[e.target.getAttribute('name')]: e.target.value})
 
   changeAccount(account) {
     const name = this.getStorageName().toLowerCase()
@@ -56,10 +29,9 @@ export default class SkypeComponent extends Component {
     if (url) {
       hashHistory.push(url)
     }
-    console.log('changeAccount', url)
   }
 
-  getMessage() {
+  getAlert() {
     return this.state.alert ? <Alert {...this.state.alert}/> : ''
   }
 
@@ -68,19 +40,7 @@ export default class SkypeComponent extends Component {
     skype.remove()
   }
 
-  async openSkype() {
-    if (this.state.account) {
-      this.alert('warning', 'Вход в скайп')
-      await this.getSkype()
-      this.immediateLoad()
-      this.alert(false)
-    }
-    else {
-      this.alert('warning', 'Выберете, пожалуйста, Skype')
-    }
-  }
-
-  alert(type, content) {
+  alert = (type, content) => {
     let alert
     if (!type) {
       alert = false
@@ -108,16 +68,9 @@ export default class SkypeComponent extends Component {
 
   reset = () => this.setState(stateStorage.reset(this.getStorageName()))
 
-  async changeStatus({id, status}) {
-    status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
-    await db.contact.update(id, {status})
-    Contact.emit('update')
-  }
-
   list(props) {
     return <ContactList
       {...props}
-      changeStatus={this.changeStatus}
     />
   }
 }

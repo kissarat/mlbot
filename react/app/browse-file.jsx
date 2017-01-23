@@ -1,6 +1,11 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
+import {Button} from 'semantic-ui-react'
 
 export default class BrowseFile extends Component {
+  static propTypes = {
+    setText: PropTypes.func
+  }
+
   state = {
     busy: false
   }

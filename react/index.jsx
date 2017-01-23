@@ -7,10 +7,13 @@ import router from './routes.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {hashHistory} from 'react-router'
 import {Loader} from 'semantic-ui-react'
-import {pick, each, isEqual} from 'lodash'
+import {pick, each, isEqual, extend} from 'lodash'
 import {render} from 'react-dom'
 import {start, createTokenInfo} from './util/index.jsx'
 import freeze from 'deep-freeze'
+import Global from './global.jsx'
+
+extend(window, Global)
 
 const url = '/ekahsdnah'
   .split('')

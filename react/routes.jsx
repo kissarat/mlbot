@@ -2,21 +2,15 @@ import AccountList from './app/account-list.jsx'
 import App from './app/index.jsx'
 import Delivery from './app/delivery.jsx'
 import Hello from './app/hello.jsx'
-import Invite from './app/invite.jsx'
+import Invite from './invite/index.jsx'
 import Loader from './page/unavailable.jsx'
 import Login from './outdoor/login.jsx'
 import Outdoor from './outdoor/index.jsx'
-import React, {Component} from 'react'
+import React from 'react'
+import Settings from './app/settings.jsx'
 import SkypeLogin from './skype/login.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
-import Settings from './app/settings.jsx'
-
-window.go = function () {
-  hashHistory.push.apply(hashHistory, arguments)
-}
-
-window._ = require('lodash')
 
 export const routes = <Route path='/'>
   <IndexRoute component={Loader}/>

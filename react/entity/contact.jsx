@@ -1,4 +1,4 @@
-import {extend, matches, debounce, each, identity, uniq} from 'lodash'
+import {extend, each, uniq, pick, filter, identity} from 'lodash'
 import {EventEmitter} from 'events'
 import db from '../database.jsx'
 import {millisecondsId} from '../util/index.jsx'
@@ -42,6 +42,12 @@ export function Query() {
 }
 
 Query.prototype = {
+  log() {
+    this.then(function (a) {
+      console.log(a)
+    })
+  },
+
   search(text) {
     if (text && (text = text.trim())) {
       return this.and(c => {
@@ -59,7 +65,7 @@ Query.prototype = {
   }
 }
 
-db.Collection.prototype.search = search
+extend(db.Collection.prototype, Query.prototype)
 
 extend(Query, factory(Query.prototype))
 
@@ -76,6 +82,16 @@ extend(Contact, factory(Contact), {
   // static clearAll() {
   //   return db.contact.delete()
   // }
+
+  async search(condition, search, {offset, limit = 15}) {
+    const count = await db.contact.where(condition).count()
+    const contacts = count > 0 ? [] : await db.contact
+      .where(condition)
+      .offset(offset)
+      .limit(limit)
+      .toArray()
+    return {count, contacts}
+  },
 
   setup(contact) {
     contact.id = contact.account ? contact.account + '~' + contact.login : contact.login
@@ -97,35 +113,50 @@ extend(Contact, factory(Contact), {
     })
   },
 
+  queries: {
+    // queue: c => Status.SELECTED === c.status && 0 === c.authorized,
+    queue: {
+      authorized: 0,
+      status: Status.SELECTED
+    },
+  },
+
   queue() {
-    return this
-      .orderBy('time')
-      .filter(c => Status.SELECTED === c.status && 0 === c.authorized)
+    return db.contact
+      // .orderBy('time')
+      .where(this.queries.queue)
+  },
+
+  delete(id) {
+    return db.contact.delete(id)
   },
 
   async pushQueue(usernames) {
     // usernames = uniq(usernames)
-    const victims = []
+    let contacts = []
     // await db.contact.each(function ({login}) {
     //   if (!usernames.find(name => name === login)) {
     //     victims.push(name)
     //   }
     // })
-    usernames = usernames.reduce((a, n) => a[n] = n, {})
+    usernames = usernames.reduce((a, n) => (a[n] = n) && a, {})
     await db.contact.each(function ({login}) {
-      if (!usernames[login]) {
-        victims.push(login)
+      if (usernames[login]) {
+        usernames[login] = false
       }
     })
+    usernames = filter(usernames).map(identity)
     if (usernames.length > 0) {
-      const contacts = uniq(victims).map(c => ({
-        login: c.login,
+      contacts = usernames.map(login => ({
+        login: login,
         status: Status.SELECTED,
         authorized: 0,
       }))
-      await db.contact.bulkAdd(this.setupMany(contacts))
+      contacts = this.setupMany(uniq(contacts))
+      await db.contact.bulkAdd(contacts)
       Contact.emit('update')
     }
+    return contacts
   }
 });
 
@@ -134,5 +165,3 @@ extend(Contact, factory(Contact), {
 
 EventEmitter.call(Contact)
 extend(Contact, EventEmitter.prototype)
-
-extend(window, exports)

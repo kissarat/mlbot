@@ -1,11 +1,17 @@
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import {Status} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, isEqual} from 'lodash'
 
 export default class ContactList extends Component {
+  static propTypes = {
+    // condition: PropTypes.oneOfType(PropTypes.func, PropTypes.object),
+    condition: PropTypes.object.isRequired,
+    sort: PropTypes.string
+  }
+
   state = {
     search: '',
     offset: 0,
@@ -53,6 +59,12 @@ export default class ContactList extends Component {
     this.load(true)
   }
 
+  async changeStatus({id, status}) {
+    status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
+    await db.contact.update(id, {status})
+    Contact.emit('update')
+  }
+
   immediate = async() => {
     if (this.state.condition) {
       try {
@@ -68,6 +80,10 @@ export default class ContactList extends Component {
         // }
 
         console.log(`ContactList ${contacts.length} of ${count} until ${Date.now() - start}`, this.state.condition)
+
+        // if (this.state.count !== count) {
+        //   this.props.countChanged(count)
+        // }
 
         this.setState({
           count,
@@ -133,7 +149,7 @@ export default class ContactList extends Component {
         const isNew = Status.CREATED === c.status
         return <Table.Row
           key={c.id} className={isNew ? 'add' : 'remove'}
-          onClick={() => this.props.changeStatus(c)}>
+          onClick={() => this.changeStatus(c)}>
           <Table.Cell className="move">
             {name}
           </Table.Cell>

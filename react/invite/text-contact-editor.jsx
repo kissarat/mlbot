@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
-import BrowseFile from './browse-file.jsx'
+import BrowseFile from '../app/browse-file.jsx'
 import {filterSkypeUsernames} from '../util/index.jsx'
 import {uniq} from 'lodash'
-import {Form, TextArea, Segment, Button, Input, Checkbox, Header} from 'semantic-ui-react'
+import {Form, Segment, Button} from 'semantic-ui-react'
+import Contact from '../entity/contact.jsx'
 
 export default class TextContactEditor extends Component {
   state = {
@@ -11,22 +12,23 @@ export default class TextContactEditor extends Component {
 
   setText = string => {
     this.setState({
-      text: filterSkypeUsernames(string)
+      text: filterSkypeUsernames(string).join('\n')
     })
   }
 
   onSubmit = async(e, {formData: {text}}) => {
+    e.preventDefault()
     this.setState({busy: true})
     let usernames = filterSkypeUsernames(text)
     if (usernames.length > 0) {
-
+      await Contact.pushQueue(usernames)
     }
     this.setState({busy: false})
   }
 
   render() {
-    return <Segment className="widget text-contact-editor">
-      <Form onSubmit={}>
+    return <Segment className="widget invite-widget text-contact-editor">
+      <Form onSubmit={this.onSubmit}>
         <h2>Добавьте контакты</h2>
         <BrowseFile setText={this.setText}/>
         <small>или</small>
