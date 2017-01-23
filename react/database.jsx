@@ -21,5 +21,4 @@ merge(db, {
 
 db.create()
 
-window.db = db
 export default db

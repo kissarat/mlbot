@@ -26,17 +26,9 @@ export default class ContactList extends Component {
     loading: false
   }
 
-  componentWillReceiveProps({condition}) {
-    if (!isEqual(this.state.condition, condition)) {
-      this.setState({condition})
-      if (condition) {
-        console.log(this.state.condition, condition)
-        this.load(true)
-      }
-      else {
-        this.setState({contacts: false})
-      }
-    }
+  componentWillReceiveProps(props) {
+    this.setState(props)
+    this.load(true)
   }
 
   componentWillMount() {
@@ -54,6 +46,19 @@ export default class ContactList extends Component {
     Contact.removeListener('update', this.load)
   }
 
+  refreshList({condition}) {
+    if (!isEqual(this.state.condition, condition)) {
+      this.setState({condition})
+      if (condition) {
+        console.log(this.state.condition, condition)
+        this.load(true)
+      }
+      else {
+        this.setState({contacts: false})
+      }
+    }
+  }
+
   changeOffset = offset => {
     this.setState({offset})
     this.load(true)
@@ -62,7 +67,7 @@ export default class ContactList extends Component {
   async changeStatus({id, status}) {
     status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
     await db.contact.update(id, {status})
-    Contact.emit('update')
+    this.load(false)
   }
 
   immediate = async() => {

@@ -131,5 +131,4 @@ extend(Skype.prototype, {
   }
 })
 
-window.Skype = Skype
-module.exports = Skype
+export default Skype

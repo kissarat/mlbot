@@ -84,4 +84,3 @@ class API {
 
 const api = new API()
 export default api
-window.api = api

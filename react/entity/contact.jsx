@@ -85,11 +85,17 @@ extend(Contact, factory(Contact), {
 
   async search(condition, search, {offset, limit = 15}) {
     const count = await db.contact.where(condition).count()
-    const contacts = count > 0 ? [] : await db.contact
-      .where(condition)
-      .offset(offset)
-      .limit(limit)
-      .toArray()
+    let contacts
+    if (count > 0) {
+      contacts = await db.contact
+        .where(condition)
+        .offset(offset)
+        .limit(limit)
+        .toArray()
+    }
+    else {
+      contacts = []
+    }
     return {count, contacts}
   },
 

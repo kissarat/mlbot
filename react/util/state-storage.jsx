@@ -24,7 +24,7 @@ export class StateStorage {
   }
 
   update(name, state) {
-    // console.log('StateStorage.update', name, state)
+    console.log('StateStorage.update', name, this.stores[name], state)
     return this.stores[name].state = state
   }
 
@@ -57,7 +57,6 @@ export class StateStorage {
 }
 
 const stateStorage = new StateStorage()
-window.stateStorage = stateStorage
 export default stateStorage
 
 addEventListener('beforeunload', () => stateStorage.saveAll())
