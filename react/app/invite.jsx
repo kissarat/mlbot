@@ -31,27 +31,6 @@ export default class Invite extends SkypeComponent {
     return usernames
   }
 
-  onClickOpenFile = e => {
-    this.refs.file.click()
-  }
-
-  loadFile(file) {
-    this.setState({loadFile: true})
-    const reader = new FileReader()
-    reader.onload = e => {
-      const list = this.filterSkypeUsernames(e.target.result)
-      this.setState({
-        list: list.join('\n'),
-        loadFile: false
-      })
-    }
-    reader.readAsText(file)
-  }
-
-  onClickInvite = () => {
-    this.invite()
-  }
-
   onClickPushQueue = () => {
     this.pushQueue(this.filterSkypeUsernames(this.state.list))
   }
@@ -81,11 +60,6 @@ export default class Invite extends SkypeComponent {
         console.warn('Все контакты уже добавлены')
       }
     }
-  }
-
-  inviteQueueCondition = {
-    status: Status.SELECTED,
-    authorized: 0
   }
 
   selectedUnauthorizedQuery = c => this.state.account === c.account && Status.SELECTED === c.status && !c.authorized
@@ -194,50 +168,13 @@ export default class Invite extends SkypeComponent {
     })
   }
 
-  loadFileButton() {
-    return <div className="load-file">
-      <input
-        style={{display: 'none'}}
-        name="file"
-        type="file"
-        ref="file"
-        onChange={e => this.loadFile(e.target.files[0])}/>
-      <Button
-        loading={this.state.loadFile}
-        type="button"
-        className="open-file"
-        onClick={this.onClickOpenFile}
-        content="Загрузите файл c контактами"
-        icon="file text outline"/>
-    </div>
-  }
-
   render() {
     return <Segment.Group horizontal className="page invite">
       <Segment compact className="form-segment">
         <Segment.Group>
           {this.getMessage()}
           <Segment.Group horizontal>
-            <Segment>
-              <h2>Добавьте контакты</h2>
-              {this.loadFileButton()}
-              <small>или</small>
-              <TextArea
-                className="contacts"
-                onChange={this.onChange}
-                value={this.state.list}
-                name="list"
-                label="Вставьте контакты"
-                placeholder="Вставьте список из 40-ка Skype-контактов для добавления в друзья"
-              />
-              <Button
-                type="button"
-                disabled={!this.state.list}
-                onClick={this.onClickPushQueue}
-                loading={this.state.pushQueue}
-                content="Добавить в очередь"
-                icon="group"/>
-            </Segment>
+
 
             <Segment>
               <h2>Выберите Skype</h2>
