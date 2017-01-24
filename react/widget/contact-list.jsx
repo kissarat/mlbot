@@ -47,7 +47,11 @@ export default class ContactList extends PureComponent {
   }
 
   getQuery() {
-    return Contact.queries[this.props.queryName]
+    return Contact.queries[this.props.query]
+  }
+
+  request(params) {
+    return this.getQuery().request(params)
   }
 
   listener = state => {
@@ -57,16 +61,20 @@ export default class ContactList extends PureComponent {
 
   changeOffset = offset => {
     this.setState({loading: true})
-    this.getQuery().request({offset})
+    this.request({offset})
   }
 
   async changeStatus({id, status}) {
     status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
     await db.contact.update(id, {status})
+    return this.request()
   }
 
   onSearch = (e, {value}) => {
-    this.getQuery().request({search: value})
+    this.request({
+      search: value,
+      offset: 0
+    })
   }
 
   rows() {

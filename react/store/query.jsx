@@ -1,4 +1,5 @@
 import {merge, defaults, isObject} from 'lodash'
+import Dexie from 'dexie'
 
 export default function Query(state, work) {
   this.state = state
@@ -13,17 +14,19 @@ Query.prototype = {
     else {
       this.next = true
     }
+    const start = Date.now()
     const newState = params || {}
     defaults(newState, this.state)
     return this.work(newState)
       .then(response => {
+        console.log(`Query time ${Date.now() - start}`)
         this.state = newState
         defaults(response, this.state)
         const next = this.next
         if (next) {
           this.next = false
           if (next instanceof Function) {
-            return next()
+            next()
           }
         }
         if (this.listener) {
@@ -33,9 +36,18 @@ Query.prototype = {
           this.next = false
         }
       })
-      .catch(function (err) {
-        console.error(err)
+      .catch(err => {
+        if (err instanceof AbortError) {
+          console.error('Abort')
+        }
+        else {
+          console.error(err)
+        }
       })
+  },
+
+  requestNext() {
+
   },
 
   listen(listener) {

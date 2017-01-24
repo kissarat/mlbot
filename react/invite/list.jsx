@@ -13,7 +13,7 @@ export default class InviteList extends Component {
   removeAll = async() => {
     this.setState({busy: true})
     await Contact.queue().delete()
-    Contact.emit('update')
+    await Contact.queries.queuePage.request()
     this.setState({busy: false})
   }
 
@@ -22,7 +22,7 @@ export default class InviteList extends Component {
 
     }
     return <ContactList
-      queryName="queuePage"
+      query="queuePage"
       sort="time">
       <Button
         loading={this.state.busy}
