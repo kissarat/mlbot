@@ -19,6 +19,7 @@ export default class Editor extends Component {
 
   textarea(props) {
     return <TextArea
+      name="text"
       value={this.state.value}
       onChange={this.onChange}
       {...props}/>

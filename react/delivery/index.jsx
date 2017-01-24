@@ -7,6 +7,7 @@ import SkypeComponent from '../base/skype-component.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
+import Contact from '../entity/contact.jsx'
 
 export default class Delivery extends SkypeComponent {
   send = text =>
@@ -25,7 +26,10 @@ export default class Delivery extends SkypeComponent {
           <Header textAlign="center" as="h2">Ваши контакты</Header>
         </Help>
         <DeliveryList
-          account={this.state.account}
+          query="otherPage"
+          delivery
+          status={Status.CREATED}
+          account={this.props.params.account}
           selected={false}/>
       </Segment>
       <Segment className="contact-list-segment">
@@ -33,7 +37,10 @@ export default class Delivery extends SkypeComponent {
           <Header textAlign="center" as="h2">Выбранные контакты</Header>
         </Help>
         <DeliveryList
-          account={this.state.account}
+          query="selectedPage"
+          delivery
+          status={Status.SELECTED}
+          account={this.props.params.account}
           selected={true}/>
       </Segment>
     </Segment.Group>

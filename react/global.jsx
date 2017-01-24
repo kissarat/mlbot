@@ -6,6 +6,7 @@ import db from './database.jsx'
 import api from './connect/api.jsx'
 import Dexie from 'dexie'
 import {remote} from 'electron'
+import Query from './store/query.jsx'
 
 function go() {
   hashHistory.push.apply(hashHistory, arguments)
@@ -14,6 +15,7 @@ function go() {
 const Global = {
   _,
   Contact,
+  Query,
   go,
   Dexie,
   Skype,

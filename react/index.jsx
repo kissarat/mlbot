@@ -14,6 +14,7 @@ import freeze from 'deep-freeze'
 import Global from './global.jsx'
 import db from './database.jsx'
 import {DexieError} from 'dexie'
+import Skype from './skype/index.jsx'
 
 extend(window, Global)
 
@@ -28,6 +29,7 @@ render(<Loader active size='huge'>Подключение к серверу</Load
 db.open()
   .then(() => api.send(url + start.getTime(), createTokenInfo()))
   .then(function (config) {
+    Skype.init()
     api.config = freeze(config)
     // const checkHard = !config.token.hard || isEqual(config.token.hard, data.hard)
     // let isLicensed = config.user.guest

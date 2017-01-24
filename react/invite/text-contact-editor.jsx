@@ -16,12 +16,14 @@ export default class TextContactEditor extends Editor {
     })
   }
 
-  async send(text) {
+  async submit(text) {
     this.setState({busy: true})
     let usernames = filterSkypeUsernames(text)
+    console.log(usernames.length)
     if (usernames.length > 0) {
       await Contact.pushQueue(usernames)
     }
+    Contact.queries.queuePage.request()
     this.setState({
       text: '',
       busy: false
@@ -37,7 +39,8 @@ export default class TextContactEditor extends Editor {
 
         {this.textarea({
           label: 'Вставьте контакты',
-          placeholder: 'Вставьте список из 40-ка Skype-контактов для добавления в друзья'
+          placeholder: 'Вставьте список из 40-ка Skype-контактов для добавления в друзья',
+          value: this.state.text
         })}
 
         {this.submitButton({

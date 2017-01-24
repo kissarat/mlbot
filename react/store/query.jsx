@@ -1,13 +1,16 @@
-import {merge, defaults, isObject} from 'lodash'
+import {merge, defaults, isObject, extend} from 'lodash'
 import Dexie from 'dexie'
 
-export default function Query(state, work) {
+export default function Query(driver, state) {
   this.state = state
-  this.work = work
+  this.driver = driver
 }
 
 Query.prototype = {
   request(params) {
+    if (!this.listener) {
+      return false
+    }
     if (this.next) {
       return this.next = () => this.request(params)
     }
@@ -17,9 +20,9 @@ Query.prototype = {
     const start = Date.now()
     const newState = params || {}
     defaults(newState, this.state)
-    return this.work(newState)
+    return this.driver.request(newState)
       .then(response => {
-        console.log(`Query time ${Date.now() - start}`)
+        console.log(`Query time ${Date.now() - start}`, response)
         this.state = newState
         defaults(response, this.state)
         const next = this.next
@@ -30,6 +33,7 @@ Query.prototype = {
           }
         }
         if (this.listener) {
+          console.log(response)
           this.listener(response)
         }
         else {
@@ -37,7 +41,7 @@ Query.prototype = {
         }
       })
       .catch(err => {
-        if (err instanceof AbortError) {
+        if (err instanceof Dexie.AbortError) {
           console.error('Abort')
         }
         else {
@@ -46,12 +50,28 @@ Query.prototype = {
       })
   },
 
-  requestNext() {
+  query(params) {
+    return this.driver.query(params
+      ? defaults(params, this.state)
+      : this.state)
+  },
 
+  async delete(params) {
+    await this.query(params).delete()
+    await this.request()
+  },
+
+  async update(params, changes) {
+    await this.query(params).update(changes)
+    await this.request()
   },
 
   listen(listener) {
     this.listener = listener
     return this
+  },
+
+  extend(proto) {
+    return extend(this, proto)
   }
 }

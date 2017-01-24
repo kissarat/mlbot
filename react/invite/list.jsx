@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Button} from 'semantic-ui-react'
 import {Status} from '../../app/config'
-import {toArray, defaults, keyBy, uniq} from 'lodash'
+import {toArray, defaults, keyBy, uniq, pick} from 'lodash'
 import Contact from '../entity/contact.jsx'
 import ContactList from '../widget/contact-list.jsx'
 
@@ -12,8 +12,7 @@ export default class InviteList extends Component {
 
   removeAll = async() => {
     this.setState({busy: true})
-    await Contact.queue().delete()
-    await Contact.queries.queuePage.request()
+    await Contact.queries.queuePage.delete()
     this.setState({busy: false})
   }
 

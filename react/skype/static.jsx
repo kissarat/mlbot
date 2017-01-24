@@ -2,6 +2,7 @@ import {extend, each} from 'lodash'
 import Skype from './webview.jsx'
 import {operationTimeout} from '../util/index.jsx'
 import App from '../app/index.jsx'
+import Contact from '../entity/contact.jsx'
 
 function all(array) {
   return new Proxy(array, {
@@ -111,6 +112,8 @@ extend(Skype, {
                 clearTimeout(timer)
                 resolve(skype)
                 emitStage('finish')
+                Contact.emit('update')
+                skype.emit('updated')
               })
           })
         })
@@ -127,6 +130,7 @@ extend(Skype, {
         setTimeout(() => skypes.remove(), 50)
         return Skype.load(data, busy)
       }
+      Skype.omit('open', extend({busy, skype}, data))
       return Promise.resolve(skype)
     }
 
@@ -178,6 +182,10 @@ extend(Skype, {
   show(visible) {
     document.getElementById('app').style.display = visible ? 'none' : 'block'
     document.getElementById('dark').style.opacity = visible ? '1' : '0'
+  },
+
+  init() {
+    Skype.dark = document.getElementById('dark')
   }
 })
 

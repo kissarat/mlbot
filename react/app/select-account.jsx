@@ -6,10 +6,10 @@ import {toArray} from 'lodash'
 export default class SelectAccount extends Component {
   state = {
     accounts: [],
-    buttonLoading: false
+    busy: false
   }
 
-  componentWillMount() {
+  componentDidMount() {
     Skype.getAccountList(false)
       .then(accounts => this.setState({accounts}))
   }
@@ -31,14 +31,13 @@ export default class SelectAccount extends Component {
   }
 
   openSkype = async() => {
-    this.setState({buttonLoading: true})
+    this.setState({busy: true})
     await Skype.open(this.value())
-    this.setState({buttonLoading: false})
+    this.setState({busy: false})
   }
 
   loginButton(selectedAccount) {
-    // const skype = Skype.get(selectedAccount)
-    if (false) {
+    if (Skype.dark.childElementCount) {
       return <Button
         className="skype logout"
         content="Выйти"
@@ -54,7 +53,7 @@ export default class SelectAccount extends Component {
         content="Войти"
         disabled={!selectedAccount}
         icon="sign in"
-        loading={this.state.buttonLoading}
+        loading={this.state.busy}
         onClick={this.openSkype}
         type="button"
       />

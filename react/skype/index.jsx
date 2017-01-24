@@ -111,7 +111,9 @@ extend(Skype.prototype, {
       .map(c => c.id)
     await db.contact.bulkDelete(absent)
     await db.contact.bulkPut(profile.contacts)
-    Contact.emit('update')
+    Contact.emit('update', {
+      account: profile.login
+    })
     return this
   },
 

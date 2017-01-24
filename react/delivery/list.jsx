@@ -17,8 +17,11 @@ export default class DeliveryList extends Component {
 
   changeStatusAll = async() => {
     this.setState({busy: true})
-    await Contact.selectAll(this.props.account, !this.props.selected)
-    Contact.emit('update')
+    await Contact
+      .queries[this.props.selected ? 'otherPage' : 'selectedPage']
+      .update({account: this.props.account},
+        {status: this.props.selected ? Status.CREATED : Status.SELECTED}
+      )
     this.setState({busy: false})
   }
 
@@ -38,16 +41,11 @@ export default class DeliveryList extends Component {
       title="Кому отправить сообщение?"/>
   }
 
-  condition() {
-    return this.props.account
-      ? Contact.selectedQuery(this.props.account, this.props.selected)
-      : false
-  }
-
   render() {
     return <ContactList
+      account={this.props.account}
       className={this.className()}
-      condition={this.condition()}>
+      query={this.props.query}>
       {this.button()}
     </ContactList>
   }

@@ -6,13 +6,11 @@ import SelectAccount from '../app/select-account.jsx'
 import Alert from '../widget/alert.jsx'
 
 export default class SkypeComponent extends Component {
-
   state = {
     account: '',
     alert: false,
     busy: false
   }
-
 
   componentWillReceiveProps(props) {
     // this.registerStorage()
@@ -20,7 +18,7 @@ export default class SkypeComponent extends Component {
   }
 
   changeAccount(account) {
-    const name = this.getStorageName().toLowerCase()
+    const name = this.constructor.name.toLowerCase()
     let url
     if (account && account.login !== this.state.account) {
       url = `/${name}/` + account.login

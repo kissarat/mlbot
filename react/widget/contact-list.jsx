@@ -7,11 +7,8 @@ import {toArray, defaults, debounce, pick, isEqual, isObject} from 'lodash'
 
 export default class ContactList extends PureComponent {
   static propTypes = {
-    condition: PropTypes.oneOfType([
-      // PropTypes.func.isRequired,
-      PropTypes.object.isRequired,
-      PropTypes.bool.isRequired
-    ]),
+    account: PropTypes.string,
+    status: PropTypes.string,
     sort: PropTypes.string
   }
 
@@ -25,21 +22,26 @@ export default class ContactList extends PureComponent {
   }
 
   componentWillReceiveProps(props) {
-    console.log('props', props)
+    if (props.account && this.props.account !== props.account) {
+      this.request({
+        account: props.account,
+        authorized: 1,
+        status: props.status
+      })
+    }
   }
 
-  getRelevantState() {
-    return pick(this.state, 'search', 'offset', 'limit', 'count')
+  getRelevantState(props) {
+    const state = pick(this.state, 'search', 'offset', 'limit', 'count')
+    return defaults(state, pick(props, 'account'))
   }
-
-  // shouldComponentUpdate({query}, state) {
-  //   return !(this.props.query === query && isEqual(state, this.getRelevantState()))
-  // }
 
   componentDidMount() {
-    this.getQuery()
-      .listen(this.listener)
-      .request(this.getRelevantState())
+    const query = this.getQuery()
+    query.listen(this.listener)
+    if (!this.props.delivery || this.props.account) {
+      query.request(this.getRelevantState(this.props))
+    }
   }
 
   componentWillUnmount() {
