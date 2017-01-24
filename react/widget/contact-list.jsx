@@ -29,7 +29,7 @@ export default class ContactList extends PureComponent {
   }
 
   getRelevantState() {
-    return pick(this.state, 'search', 'offset', 'limit')
+    return pick(this.state, 'search', 'offset', 'limit', 'count')
   }
 
   // shouldComponentUpdate({query}, state) {
