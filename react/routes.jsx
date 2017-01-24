@@ -1,6 +1,6 @@
 import AccountList from './app/account-list.jsx'
 import App from './app/index.jsx'
-import Delivery from './app/delivery.jsx'
+import Delivery from './delivery/index.jsx'
 import Hello from './app/hello.jsx'
 import Invite from './invite/index.jsx'
 import Loader from './page/unavailable.jsx'

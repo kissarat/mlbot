@@ -1,19 +1,13 @@
-import React, {Component} from 'react'
-import BrowseFile from '../app/browse-file.jsx'
+import React, {Component, PropTypes} from 'react'
+import BrowseFile from '../widget/browse-file.jsx'
 import {filterSkypeUsernames} from '../util/index.jsx'
-import {uniq} from 'lodash'
-import {Form, Segment, Button} from 'semantic-ui-react'
+import {Form, Segment} from 'semantic-ui-react'
 import Contact from '../entity/contact.jsx'
-import Persistent from '../util/persistent.jsx'
+import Editor from '../base/editor.jsx'
 
-export default class TextContactEditor extends Component {
-  constructor() {
-    super()
-    Persistent.mix(this)
-  }
-
-  state = {
-    busy: false
+export default class TextContactEditor extends Editor {
+  static propTypes = {
+    submit: PropTypes.func
   }
 
   setText = string => {
@@ -22,8 +16,7 @@ export default class TextContactEditor extends Component {
     })
   }
 
-  onSubmit = async(e, {formData: {text}}) => {
-    e.preventDefault()
+  async send(text) {
     this.setState({busy: true})
     let usernames = filterSkypeUsernames(text)
     if (usernames.length > 0) {
@@ -41,19 +34,16 @@ export default class TextContactEditor extends Component {
         <h2>Добавьте контакты</h2>
         <BrowseFile setText={this.setText}/>
         <small>или</small>
-        <Form.TextArea
-          className="contacts"
-          value={this.state.text}
-          name="text"
-          label="Вставьте контакты"
-          placeholder="Вставьте список из 40-ка Skype-контактов для добавления в друзья"
-        />
-        <Button
-          type="submit"
-          disabled={!this.state.text}
-          loading={this.state.busy}
-          content="Добавить в очередь"
-          icon="group"/>
+
+        {this.textarea({
+          label: 'Вставьте контакты',
+          placeholder: 'Вставьте список из 40-ка Skype-контактов для добавления в друзья'
+        })}
+
+        {this.submitButton({
+          content: 'Добавить в очередь',
+          icon: 'group'
+        })}
       </Form>
     </Segment>
   }

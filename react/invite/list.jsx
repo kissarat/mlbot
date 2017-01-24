@@ -18,10 +18,14 @@ export default class InviteList extends Component {
   }
 
   render() {
+    if (this.props.account) {
+
+    }
     return <ContactList
       condition={Contact.queries.queue}
       sort="time">
       <Button
+        loading={this.state.busy}
         type="button"
         className="remove-all"
         onClick={this.removeAll}

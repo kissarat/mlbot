@@ -8,37 +8,27 @@ const Persistent = {
     return this.constructor.name
   },
 
-  loadState(defaultProps) {
-    /*
-    let state = stateStorage.register(this.getStorageName(), this.persistentProps, this.state)
-    if (isObject(defaultProps)) {
-      state = merge(state, defaultProps)
-    }
-    this.setState(state)
+  registerStorage(initial) {
     if (this.initialize instanceof Function) {
-      setImmediate(() => this.initialize())
+      console.warn('initialize', this.getStorageName())
     }
-    */
+    return stateStorage.register(this.getStorageName(), initial)
   },
 
   unregisterStorage(state) {
-    // stateStorage.unregister(this.getStorageName(), state || this.state)
+    stateStorage.unregister(this.getStorageName(), state || this.state)
   },
 
   updateStorage(state) {
-    // stateStorage.update(this.getStorageName(), state || this.state)
+    stateStorage.update(this.getStorageName(), state || this.state)
   },
 
   saveStorage(state) {
-    // stateStorage.save(this.getStorageName(), state || this.state)
+    stateStorage.save(this.getStorageName(), state || this.state)
   },
 
   componentWillMount() {
-    this.loadState()
-  },
-
-  componentWillReceiveProps() {
-    this.loadState()
+    this.registerStorage()
   },
 
   componentWillUnmount() {
@@ -51,10 +41,17 @@ const Persistent = {
 }
 
 Persistent.mix = function(target) {
-  defaults(target, Persistent)
+    defaults(target, Persistent)
   // defaults(target, pick(Persistent, 'getStorageName',
   //   'loadState', 'unregisterStorage', 'updateStorage',
   //   'componentWillUnmount'))
+}
+
+Persistent.setup = function (target, defaultValues) {
+  if (!target.registerStorage) {
+    Persistent.mix(target)
+  }
+  return target.registerStorage(defaultValues)
 }
 
 export default Persistent

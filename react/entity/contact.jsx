@@ -114,11 +114,26 @@ extend(Contact, factory(Contact), {
   },
 
   queries: {
-    // queue: c => Status.SELECTED === c.status && 0 === c.authorized,
     queue: {
       authorized: 0,
       status: Status.SELECTED
     },
+  },
+
+  selectedQuery(account, selected) {
+    return {
+      account,
+      authorized: 1,
+      status: selected ? Status.SELECTED : Status.CREATED
+    }
+  },
+
+  selectAll(account, select) {
+    return db.contact
+      .filter(c => c.account === account)
+      .modify({
+        status: select ? Status.SELECTED : Status.CREATED
+      })
   },
 
   queue() {

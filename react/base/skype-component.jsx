@@ -1,26 +1,28 @@
-import Alert from '../widget/alert.jsx'
-import ContactList from '../widget/contact-list.jsx'
-import React, {Component, PropTypes} from 'react'
-import stateStorage from '../util/state-storage.jsx'
+import React, {Component} from 'react'
 import {hashHistory} from 'react-router'
-import {toArray, defaults} from 'lodash'
+import {toArray, defaults, isObject} from 'lodash'
 import {Status} from '../../app/config'
 import Persistent from '../util/persistent.jsx'
+import SelectAccount from '../app/select-account.jsx'
+import Alert from '../widget/alert.jsx'
 
 export default class SkypeComponent extends Component {
   constructor() {
     super()
-    Persistent.mix(this)
+    // Persistent.mix(this)
   }
 
   state = {
-    account: false,
+    account: '',
     alert: false,
     busy: false
   }
 
+  getStorageName = Persistent.getStorageName
+
   componentWillReceiveProps(props) {
-    this.loadState(props.params)
+    // this.registerStorage()
+    this.setState(props.params)
   }
 
   componentWillMount() {
@@ -41,13 +43,15 @@ export default class SkypeComponent extends Component {
     }
   }
 
-  getAlert() {
-    return this.state.alert ? <Alert {...this.state.alert}/> : ''
+  selectAccount() {
+    return <SelectAccount
+      value={this.state.account}
+      select={account => this.changeAccount(account)}/>
   }
 
-  skypeUnavailable(skype) {
-    this.alert('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
-    skype.remove()
+  alertMessage() {
+    const alert = this.state.alert || {visible: false}
+    return <Alert {...alert}/>
   }
 
   alert = (type, content) => {
@@ -74,13 +78,5 @@ export default class SkypeComponent extends Component {
 
   setBusy(busy) {
     this.setState({busy})
-  }
-
-  reset = () => this.setState(stateStorage.reset(this.getStorageName()))
-
-  list(props) {
-    return <ContactList
-      {...props}
-    />
   }
 }

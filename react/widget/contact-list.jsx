@@ -3,12 +3,15 @@ import Paginator from './paginator.jsx'
 import React, {Component, PropTypes} from 'react'
 import {Status} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
-import {toArray, defaults, debounce, pick, isEqual} from 'lodash'
+import {toArray, defaults, debounce, pick, isEqual, isObject} from 'lodash'
 
 export default class ContactList extends Component {
   static propTypes = {
-    // condition: PropTypes.oneOfType(PropTypes.func, PropTypes.object),
-    condition: PropTypes.object.isRequired,
+    condition: PropTypes.oneOfType([
+      // PropTypes.func.isRequired,
+      PropTypes.object.isRequired,
+      PropTypes.bool.isRequired
+    ]),
     sort: PropTypes.string
   }
 
@@ -27,9 +30,10 @@ export default class ContactList extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState(props)
-    if (props.condition) {
-      this.load(true)
+    if (!isEqual(this.state.condition, props.condition)) {
+      console.log(this.state.condition, props.condition)
+      setImmediate(() => this.load(true))
+      this.setState({props})
     }
   }
 
@@ -46,19 +50,6 @@ export default class ContactList extends Component {
       removeEventListener('resize', this.resize)
     }
     Contact.removeListener('update', this.load)
-  }
-
-  refreshList({condition}) {
-    if (!isEqual(this.state.condition, condition)) {
-      this.setState({condition})
-      if (condition) {
-        console.log(this.state.condition, condition)
-        this.load(true)
-      }
-      else {
-        this.setState({contacts: false})
-      }
-    }
   }
 
   changeOffset = offset => {
@@ -103,18 +94,19 @@ export default class ContactList extends Component {
         console.error(this.state.condition, ex)
       }
     }
-  } 
+  }
 
   debounced = debounce(() => this.state.condition && this.immediate(), 300)
 
   load = loading => {
     this.setState({loading: this.state.condition && (this.state.loading || true === loading || false)})
-    if (this.state.busy) {
-      this.debounced()
-    }
-    else {
-      setImmediate(this.immediate)
-    }
+    this.immediate()
+    // if (this.state.busy) {
+    //   this.debounced()
+    // }
+    // else {
+    //   setImmediate(this.immediate)
+    // }
   }
 
   resize = debounce(() => {
@@ -177,8 +169,14 @@ export default class ContactList extends Component {
     </Table.Footer>
   }
 
+  getAccount() {
+    return !isObject(this.state.condition) || this.state.condition.account
+  }
+
   render() {
-    return <div className="widget contact-list">
+    return <div
+      className={'widget contact-list ' + (this.props.className || '')}
+      data-account={this.getAccount() || ''}>
       <div className="control">
         <Input
           icon="search"
