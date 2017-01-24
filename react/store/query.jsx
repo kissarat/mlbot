@@ -1,16 +1,20 @@
-import {merge, defaults} from 'lodash'
+import {merge, defaults, isObject} from 'lodash'
 
 export default function Query(state, work) {
   this.state = state
   this.work = work
+  this.busy = false
 }
 
 Query.prototype = {
   request(params) {
-    console.log(params)
-    if (!this.next) {
+    if (this.busy) {
       this.next = params
-      merge(this.state, params)
+    } else {
+      this.busy = true
+      if (params) {
+        merge(this.state, params)
+      }
       return this.work(this.state)
         .then(r => this.debounce(r))
         .catch(function (err) {
@@ -20,16 +24,15 @@ Query.prototype = {
   },
 
   debounce(response) {
-    const next = this.next
     defaults(response, this.state)
-    console.log(response)
     if (this.listener) {
       this.listener(response)
-      if (next) {
-        this.request(next)
+      if (this.busy) {
+        this.busy = false
+        this.request(this.next)
       }
     }
-    this.next = false
+    this.busy = false
   },
 
   listen(listener) {

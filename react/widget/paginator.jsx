@@ -52,6 +52,7 @@ export default class Paginator extends Component {
           onClick={() => this.open(this.state.totalPages - 2)}
           disabled={this.state.totalPages < 5}/>
       </Menu.Item>
+      <Menu.Item>{this.props.count}</Menu.Item>
     </Menu>
   }
 }
