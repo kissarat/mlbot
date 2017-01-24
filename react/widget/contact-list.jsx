@@ -51,8 +51,8 @@ export default class ContactList extends PureComponent {
   }
 
   listener = state => {
+    state.loading = false
     this.setState(state)
-    this.setState({loading: false})
   }
 
   changeOffset = offset => {

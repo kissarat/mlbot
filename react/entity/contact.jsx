@@ -41,6 +41,7 @@ export function factory(object) {
 
 export function ContactQuery() {
 }
+
 ContactQuery.prototype = {
   search(text) {
     if (text && (text = text.trim())) {
@@ -60,6 +61,20 @@ ContactQuery.prototype = {
 }
 
 
+function createTextSearchFilter(text) {
+  if (text && (text = text.trim())) {
+    const words = text.split(/\s+/)
+    return function (c) {
+      return words.every(word =>
+        c.login.indexOf(word) >= 0
+        || (c.name && c.name.indexOf(word) >= 0)
+      )
+    }
+  }
+}
+
+
+
 export default function Contact() {
 }
 
@@ -75,13 +90,19 @@ extend(Contact, factory(Contact), {
   // }
 
   async search({condition, search, offset, limit}) {
-    const count = await db.contact.where(condition).count()
+    // const searchTextFilter = createTextSearchFilter(search)
+
+    function sub() {
+      const q = db.contact
+        .where(condition)
+      return ContactQuery.prototype.search.call(q, search)
+      // return searchTextFilter ? q.and(searchTextFilter) : q
+    }
+
+    const count = await sub().count()
     let contacts
     if (count > 0) {
-      let q = db.contact
-        .where(condition)
-      ContactQuery.prototype.search.call(q, search)
-      contacts = await q
+      contacts = await sub()
         .offset(offset)
         .limit(limit)
         .toArray()
