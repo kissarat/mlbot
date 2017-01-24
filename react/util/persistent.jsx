@@ -9,6 +9,7 @@ const Persistent = {
   },
 
   loadState(defaultProps) {
+    /*
     let state = stateStorage.register(this.getStorageName(), this.persistentProps, this.state)
     if (isObject(defaultProps)) {
       state = merge(state, defaultProps)
@@ -17,18 +18,19 @@ const Persistent = {
     if (this.initialize instanceof Function) {
       setImmediate(() => this.initialize())
     }
+    */
   },
 
   unregisterStorage(state) {
-    stateStorage.unregister(this.getStorageName(), state || this.state)
+    // stateStorage.unregister(this.getStorageName(), state || this.state)
   },
 
   updateStorage(state) {
-    stateStorage.update(this.getStorageName(), state || this.state)
+    // stateStorage.update(this.getStorageName(), state || this.state)
   },
 
   saveStorage(state) {
-    stateStorage.save(this.getStorageName(), state || this.state)
+    // stateStorage.save(this.getStorageName(), state || this.state)
   },
 
   componentWillMount() {

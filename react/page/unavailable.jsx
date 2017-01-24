@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import Footer from '../widget/footer.jsx'
+import {Message} from 'semantic-ui-react'
 
 export default class Unavailable extends Component {
   render() {
@@ -8,6 +9,8 @@ export default class Unavailable extends Component {
         <img src="images/logo-leader.png"/>
         <p>ML Skype AutoBot ™ </p>
       </header>
+
+      <Message error>{this.props.message}</Message>
 
       <div className="message">
         <h1>Ошибка! </h1>

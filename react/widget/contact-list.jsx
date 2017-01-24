@@ -28,7 +28,9 @@ export default class ContactList extends Component {
 
   componentWillReceiveProps(props) {
     this.setState(props)
-    this.load(true)
+    if (props.condition) {
+      this.load(true)
+    }
   }
 
   componentWillMount() {

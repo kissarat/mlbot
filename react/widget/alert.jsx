@@ -21,7 +21,11 @@ export default class Alert extends HidableComponent {
       'content',
       'visible'
     )
-    messageProps['data-persist'] = props.persist
+
+    if (props.persist) {
+      messageProps['data-persist'] = props.persist
+      // this.loadState()
+    }
     messageProps.className = props.className ? props.className + ' alert visible' : 'alert visible'
     if (this.state.visible && !props.visible) {
       this.setState({visible: false})
@@ -31,9 +35,6 @@ export default class Alert extends HidableComponent {
 
   componentWillMount() {
     this.componentWillReceiveProps(this.props)
-    if (this.props.persist) {
-      this.loadState()
-    }
   }
 
   render() {

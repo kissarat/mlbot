@@ -1,12 +1,18 @@
 import Alert from '../widget/alert.jsx'
 import ContactList from '../widget/contact-list.jsx'
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import stateStorage from '../util/state-storage.jsx'
 import {hashHistory} from 'react-router'
 import {toArray, defaults} from 'lodash'
 import {Status} from '../../app/config'
+import Persistent from '../util/persistent.jsx'
 
 export default class SkypeComponent extends Component {
+  constructor() {
+    super()
+    Persistent.mix(this)
+  }
+
   state = {
     account: false,
     alert: false,
@@ -14,7 +20,11 @@ export default class SkypeComponent extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState(props.params)
+    this.loadState(props.params)
+  }
+
+  componentWillMount() {
+    this.componentWillReceiveProps(this.props)
   }
 
   changeAccount(account) {

@@ -1,15 +1,13 @@
-import React, {Component} from 'react'
 import api from '../connect/api.jsx'
-import {defaults, omit, map} from 'lodash'
-import {Button, Form, Segment} from 'semantic-ui-react'
-import {hashHistory} from 'react-router'
 import Contact from '../entity/contact.jsx'
 import db from '../database.jsx'
-import Skype from '../skype/index.jsx'
-import {remote} from 'electron'
-import moment from 'moment'
 import fs from 'fs-promise'
+import React, {Component} from 'react'
+import Skype from '../skype/index.jsx'
+import {Button, Segment} from 'semantic-ui-react'
 import {createTokenInfo} from '../util/index.jsx'
+import {defaults, omit, map} from 'lodash'
+import {remote} from 'electron'
 
 export default class Settings extends Component {
   state = {

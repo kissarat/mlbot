@@ -1,12 +1,11 @@
 import Dexie from 'dexie'
-import {debounce, each, find, keyBy, toArray, extend} from 'lodash'
-import {pick, isObject, merge} from 'lodash'
+import {extend} from 'lodash'
 
 const db = new Dexie('mlbot')
 
-merge(db, {
+const Database = {
   create() {
-    return db.version(1)
+    db.version(1)
       .stores({
         contact: '&id, [status+authorized], [account+status+authorized], login, name, &time'
       })
@@ -17,8 +16,9 @@ merge(db, {
     await this.create()
     await db.open()
   }
-})
+}
 
+extend(db, Database)
 db.create()
 
 export default db

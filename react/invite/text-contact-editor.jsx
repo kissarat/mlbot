@@ -4,8 +4,14 @@ import {filterSkypeUsernames} from '../util/index.jsx'
 import {uniq} from 'lodash'
 import {Form, Segment, Button} from 'semantic-ui-react'
 import Contact from '../entity/contact.jsx'
+import Persistent from '../util/persistent.jsx'
 
 export default class TextContactEditor extends Component {
+  constructor() {
+    super()
+    Persistent.mix(this)
+  }
+
   state = {
     busy: false
   }
@@ -23,7 +29,10 @@ export default class TextContactEditor extends Component {
     if (usernames.length > 0) {
       await Contact.pushQueue(usernames)
     }
-    this.setState({busy: false})
+    this.setState({
+      text: '',
+      busy: false
+    })
   }
 
   render() {

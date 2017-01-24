@@ -28,16 +28,20 @@ export class StateStorage {
     return this.stores[name].state = state
   }
 
+  _save(store) {
+    const state = store.props ? pick(store.state, store.props) : store.state
+    localStorage.setItem(name, JSON.stringify(state))
+  }
+
   save(name, state) {
     // console.log('StateStorage.save', name, state)
-    const store = this.stores[name]
     this.update(name, state)
-    localStorage.setItem(name, JSON.stringify(store.props ? pick(store.state, store.props) : store.state))
+    this._save(this.stores[name])
   }
 
   saveAll() {
     // console.log('StateStorage.saveAll')
-    each(this.stores, (state, name) => this.save(name))
+    each(this.stores, this._save)
   }
 
   unregister(name, state) {

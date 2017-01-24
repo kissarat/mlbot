@@ -42,12 +42,6 @@ export function Query() {
 }
 
 Query.prototype = {
-  log() {
-    this.then(function (a) {
-      console.log(a)
-    })
-  },
-
   search(text) {
     if (text && (text = text.trim())) {
       return this.and(c => {
@@ -65,9 +59,9 @@ Query.prototype = {
   }
 }
 
-extend(db.Collection.prototype, Query.prototype)
+// extend(db.Collection.prototype, Query.prototype)
 
-extend(Query, factory(Query.prototype))
+// extend(Query, factory(Query.prototype))
 
 export default function Contact() {
 }
