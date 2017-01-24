@@ -26,22 +26,18 @@ export default class Delivery extends SkypeComponent {
           <Header textAlign="center" as="h2">Ваши контакты</Header>
         </Help>
         <DeliveryList
-          query="otherPage"
-          delivery
-          status={Status.CREATED}
+          authorized={1}
           account={this.props.params.account}
-          selected={false}/>
+          status={Status.CREATED}/>
       </Segment>
       <Segment className="contact-list-segment">
         <Help text="Нажмите, чтобы исключить контакт из рассылки">
           <Header textAlign="center" as="h2">Выбранные контакты</Header>
         </Help>
         <DeliveryList
-          query="selectedPage"
-          delivery
-          status={Status.SELECTED}
+          authorized={1}
           account={this.props.params.account}
-          selected={true}/>
+          status={Status.SELECTED}/>
       </Segment>
     </Segment.Group>
   }

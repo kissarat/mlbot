@@ -25,14 +25,9 @@ export default class SelectAccount extends Component {
     }))
   }
 
-  value() {
-    return this.state.accounts.find(a => a.login === this.props.value)
-      ? this.props.value : ''
-  }
-
   openSkype = async() => {
     this.setState({busy: true})
-    await Skype.open(this.value())
+    await Skype.open(this.props.value)
     this.setState({busy: false})
   }
 
@@ -61,7 +56,6 @@ export default class SelectAccount extends Component {
   }
 
   render() {
-    const selectedAccount = this.value()
     return <div className="widget select-account">
       <Select
         id="select-skype"
@@ -69,9 +63,9 @@ export default class SelectAccount extends Component {
         onChange={this.onChange}
         options={this.options()}
         placeholder="Выберите Skype"
-        value={selectedAccount}
+        value={this.props.value}
       />
-      {this.loginButton(selectedAccount)}
+      {this.loginButton(this.props.value)}
     </div>
   }
 }

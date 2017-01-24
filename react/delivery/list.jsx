@@ -4,11 +4,14 @@ import {Status} from '../../app/config'
 import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Contact from '../entity/contact.jsx'
 import ContactList from '../widget/contact-list.jsx'
+import db from '../database.jsx'
 
 export default class DeliveryList extends Component {
   static propTypes = {
+    authorized: React.PropTypes.oneOf([0, 1]).isRequired,
+    status: React.PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
     account: PropTypes.string,
-    selected: PropTypes.bool.isRequired,
+    sort: PropTypes.string,
   }
 
   state = {
@@ -17,11 +20,15 @@ export default class DeliveryList extends Component {
 
   changeStatusAll = async() => {
     this.setState({busy: true})
-    await Contact
-      .queries[this.props.selected ? 'otherPage' : 'selectedPage']
+    await db.contact.where({
+      account: this.props.account,
+      status: this.props.selected ? Status.SELECTED : Status.CREATED,
+      authorized: 1
+    })
       .update({account: this.props.account},
         {status: this.props.selected ? Status.CREATED : Status.SELECTED}
       )
+    Contact.emit('update')
     this.setState({busy: false})
   }
 
@@ -43,9 +50,8 @@ export default class DeliveryList extends Component {
 
   render() {
     return <ContactList
-      account={this.props.account}
-      className={this.className()}
-      query={this.props.query}>
+      {...this.props}
+      className={this.className()}>
       {this.button()}
     </ContactList>
   }

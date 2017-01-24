@@ -3,13 +3,14 @@ import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
 import {Status} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
-import {toArray, defaults, debounce, pick, isEqual, isObject} from 'lodash'
+import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
 
 export default class ContactList extends PureComponent {
   static propTypes = {
+    authorized: React.PropTypes.oneOf([0, 1]).isRequired,
+    status: React.PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
     account: PropTypes.string,
-    status: PropTypes.string,
-    sort: PropTypes.string
+    sort: PropTypes.string,
   }
 
   state = {
@@ -21,59 +22,60 @@ export default class ContactList extends PureComponent {
     loading: false
   }
 
-  componentWillReceiveProps(props) {
-    if (props.account && this.props.account !== props.account) {
-      this.request({
-        account: props.account,
-        authorized: 1,
-        status: props.status
-      })
-    }
+  constructor() {
+    super()
+    this.debounced = debounce(this.load, 300)
   }
 
-  getRelevantState(props) {
-    const state = pick(this.state, 'search', 'offset', 'limit', 'count')
-    return defaults(state, pick(props, 'account'))
+  componentWillReceiveProps(props) {
+    this.initialize(props)
   }
 
   componentDidMount() {
-    const query = this.getQuery()
-    query.listen(this.listener)
-    if (!this.props.delivery || this.props.account) {
-      query.request(this.getRelevantState(this.props))
+    Contact.on('update', this.update)
+    this.initialize(this.props)
+  }
+
+  initialize(props) {
+    if (!props.authorized || props.account) {
+      const params = pick(props, 'account', 'status', 'authorized')
+      defaults(params, pick(this.state, 'offset', 'limit'))
+      this.setState({loading: true})
+      this.load(params)
     }
   }
 
   componentWillUnmount() {
-    this.getQuery().listen(false)
+    Contact.removeListener('update', this.update)
   }
 
-  getQuery() {
-    return Contact.queries[this.props.query]
+  update = () => {
+    this.load(this.state)
   }
 
-  request(params) {
-    return this.getQuery().request(params)
-  }
-
-  listener = state => {
-    state.loading = false
-    this.setState(state)
+  async load(state) {
+    defaults(state, this.state)
+    const result = await Contact.request(state)
+    defaults(result, state)
+    result.loading = false
+    this.setState(result)
   }
 
   changeOffset = offset => {
-    this.setState({loading: true})
-    this.request({offset})
+    this.load({
+      loading: true,
+      offset
+    })
   }
 
   async changeStatus({id, status}) {
     status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
     await db.contact.update(id, {status})
-    return this.request()
+    Contact.emit('update')
   }
 
   onSearch = (e, {value}) => {
-    this.request({
+    this[this.state.count > 600 ? 'debounced' : 'load']({
       search: value,
       offset: 0
     })

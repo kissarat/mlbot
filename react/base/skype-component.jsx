@@ -14,7 +14,9 @@ export default class SkypeComponent extends Component {
 
   componentWillReceiveProps(props) {
     // this.registerStorage()
-    this.setState(props.params)
+    if (props.params.account !== this.state.account) {
+      this.setState(props.params)
+    }
   }
 
   changeAccount(account) {

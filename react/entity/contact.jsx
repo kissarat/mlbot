@@ -44,26 +44,16 @@ extend(Contact, {
   async request(params) {
     const result = {}
 
-    if ('number' === typeof params.count) {
-      result.count = await Contact.query(params).count()
+    result.count = await Contact.query(params).count()
+    if (result.count > 0) {
+      result.contacts =  await Contact.query(params)
+        .offset(params.offset)
+        .limit(params.limit)
+        .toArray()
     }
-
-    if (0 === result.count) {
+    else (
       result.contacts = []
-      return result
-    }
-
-    const q = Contact.query(params)
-
-    if (params.offset) {
-      q.offset(params.offset)
-    }
-
-    if (params.limit) {
-      q.limit(params.limit)
-    }
-
-    result.contacts = await q.toArray()
+    )
 
     return result
   },

@@ -21,10 +21,11 @@ export default class InviteList extends Component {
 
     }
     return <ContactList
-      query="queuePage"
-      sort="time">
+      authorized={0}
+      status={Status.SELECTED}>
       <Button
         loading={this.state.busy}
+        {...this.props}
         type="button"
         className="remove-all"
         onClick={this.removeAll}

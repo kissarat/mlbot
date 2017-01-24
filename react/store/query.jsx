@@ -1,5 +1,6 @@
 import {merge, defaults, isObject, extend} from 'lodash'
 import Dexie from 'dexie'
+import {Status} from '../../app/config'
 
 export default function Query(driver, state) {
   this.state = state
@@ -10,12 +11,6 @@ Query.prototype = {
   request(params) {
     if (!this.listener) {
       return false
-    }
-    if (this.next) {
-      return this.next = () => this.request(params)
-    }
-    else {
-      this.next = true
     }
     const start = Date.now()
     const newState = params || {}
@@ -69,6 +64,10 @@ Query.prototype = {
   listen(listener) {
     this.listener = listener
     return this
+  },
+
+  opposite() {
+    return Status.CREATED === this.state.status ? this.queries.selectedPage : this.queries.otherPage
   },
 
   extend(proto) {
