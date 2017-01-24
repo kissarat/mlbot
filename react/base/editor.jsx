@@ -1,13 +1,11 @@
 import React, {Component} from 'react'
 import {Button, TextArea} from 'semantic-ui-react'
-import Persistent from '../util/persistent.jsx'
 
 export default class Editor extends Component {
   persist = ['text']
 
   constructor() {
     super()
-    Persistent.mix(this)
   }
 
   onChange = (e, {name, value}) => {

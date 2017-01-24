@@ -22,7 +22,7 @@ export default class InviteList extends Component {
 
     }
     return <ContactList
-      condition={Contact.queries.queue}
+      queryName="queuePage"
       sort="time">
       <Button
         loading={this.state.busy}

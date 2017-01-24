@@ -3,6 +3,7 @@ import {EventEmitter} from 'events'
 import db from '../database.jsx'
 import {millisecondsId} from '../util/index.jsx'
 import {Status} from '../../app/config'
+import Query from '../store/query.jsx'
 
 export function factory(object) {
   function delegate(target, proxy, methods) {
@@ -38,10 +39,9 @@ export function factory(object) {
   return {delegate, decorate, proxy}
 }
 
-export function Query() {
+export function ContactQuery() {
 }
-
-Query.prototype = {
+ContactQuery.prototype = {
   search(text) {
     if (text && (text = text.trim())) {
       return this.and(c => {
@@ -59,9 +59,6 @@ Query.prototype = {
   }
 }
 
-// extend(db.Collection.prototype, Query.prototype)
-
-// extend(Query, factory(Query.prototype))
 
 export default function Contact() {
 }
@@ -77,12 +74,14 @@ extend(Contact, factory(Contact), {
   //   return db.contact.delete()
   // }
 
-  async search(condition, search, {offset, limit = 15}) {
+  async search({condition, search, offset, limit}) {
     const count = await db.contact.where(condition).count()
     let contacts
     if (count > 0) {
-      contacts = await db.contact
+      let q = db.contact
         .where(condition)
+      ContactQuery.prototype.search.call(q, search)
+      contacts = await q
         .offset(offset)
         .limit(limit)
         .toArray()
@@ -138,7 +137,7 @@ extend(Contact, factory(Contact), {
 
   queue() {
     return db.contact
-      // .orderBy('time')
+    // .orderBy('time')
       .where(this.queries.queue)
   },
 
@@ -174,6 +173,17 @@ extend(Contact, factory(Contact), {
     return contacts
   }
 });
+
+
+Contact.queries.queuePage = new Query({
+    condition: {
+      authorized: 0,
+      status: Status.SELECTED
+    }
+  },
+  function (state) {
+    return Contact.search(state)
+  })
 
 // Contact.delegate(db.contact, Query.proxy, ['orderBy'])
 // db.Contact = Contact.proxy(db.contact)

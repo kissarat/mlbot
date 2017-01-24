@@ -2,15 +2,10 @@ import React, {Component} from 'react'
 import {hashHistory} from 'react-router'
 import {toArray, defaults, isObject} from 'lodash'
 import {Status} from '../../app/config'
-import Persistent from '../util/persistent.jsx'
 import SelectAccount from '../app/select-account.jsx'
 import Alert from '../widget/alert.jsx'
 
 export default class SkypeComponent extends Component {
-  constructor() {
-    super()
-    // Persistent.mix(this)
-  }
 
   state = {
     account: '',
@@ -18,15 +13,10 @@ export default class SkypeComponent extends Component {
     busy: false
   }
 
-  getStorageName = Persistent.getStorageName
 
   componentWillReceiveProps(props) {
     // this.registerStorage()
     this.setState(props.params)
-  }
-
-  componentWillMount() {
-    this.componentWillReceiveProps(this.props)
   }
 
   changeAccount(account) {

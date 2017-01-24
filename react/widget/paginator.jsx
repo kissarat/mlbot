@@ -8,6 +8,10 @@ export default class Paginator extends Component {
     const page = Math.ceil(offset / limit)
     const numbers = range(Math.max(page - 2, 1), Math.min(page + 3, totalPages))
     // const numbers = range(page - 2, page + 3)
+    // console.log(
+    //   offset, limit, count,
+    //   page,
+    //   totalPages)
     this.setState({
       page,
       numbers,
