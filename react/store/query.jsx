@@ -7,33 +7,29 @@ export default function Query(state, work) {
 
 Query.prototype = {
   request(params) {
-    merge(this.state, params)
-    return this.work(this.state)
-      .then(answer => {
-        this.debounce(answer)
-      })
-      .catch(function (err) {
-        console.error(err)
-      })
+    console.log(params)
+    if (!this.next) {
+      this.next = params
+      merge(this.state, params)
+      return this.work(this.state)
+        .then(r => this.debounce(r))
+        .catch(function (err) {
+          console.error(err)
+        })
+    }
   },
 
   debounce(response) {
+    const next = this.next
     defaults(response, this.state)
-    if (this.timer) {
-      this.response = response
-    }
-    else {
+    console.log(response)
+    if (this.listener) {
       this.listener(response)
-      this.timer = setTimeout(() => {
-          const response = this.response
-          if (response) {
-            this.response = null
-            this.listener(response)
-          }
-          this.timer = false
-        },
-        300)
+      if (next) {
+        this.request(next)
+      }
     }
+    this.next = false
   },
 
   listen(listener) {

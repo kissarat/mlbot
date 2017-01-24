@@ -28,15 +28,18 @@ export default class ContactList extends PureComponent {
     console.log('props', props)
   }
 
-  // shouldComponentUpdate(props, state) {
-    // return !isEqual(this.props.queryName, props.queryName)
-    // return true
+  getRelevantState() {
+    return pick(this.state, 'search', 'offset', 'limit')
+  }
+
+  // shouldComponentUpdate({query}, state) {
+  //   return !(this.props.query === query && isEqual(state, this.getRelevantState()))
   // }
 
   componentDidMount() {
     this.getQuery()
       .listen(this.listener)
-      .request(pick(this.state, 'search', 'offset', 'limit'))
+      .request(this.getRelevantState())
   }
 
   componentWillUnmount() {
@@ -48,11 +51,12 @@ export default class ContactList extends PureComponent {
   }
 
   listener = state => {
-    console.log(state)
     this.setState(state)
+    this.setState({loading: false})
   }
 
   changeOffset = offset => {
+    this.setState({loading: true})
     this.getQuery().request({offset})
   }
 
