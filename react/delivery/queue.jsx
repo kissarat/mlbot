@@ -13,9 +13,9 @@ const DeliveryQueue = {
 
     if (contactsCount > 0) {
       const skype = await Skype.open(account, true)
-      this.setBusy('Подождите 3 секунды')
+      inform('busy', 'Подождите 3 секунды')
       await wait(3000)
-      this.setBusy('Получение списка рассылки')
+      inform('busy', 'Получение списка рассылки')
       this.setTimeout(() => {
         inform('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
         skype.remove()

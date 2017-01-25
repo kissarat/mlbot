@@ -10,6 +10,7 @@ export default class InviteGreeting extends Editor {
   }
 
   render() {
+    console.log(this.props.disabled)
     return <Form className="widget invite-widget invite-greeting"
                  onSubmit={this.onSubmit}>
       {this.textarea({

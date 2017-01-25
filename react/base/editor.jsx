@@ -1,13 +1,18 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import {Button, TextArea} from 'semantic-ui-react'
 import Persistence from '../util/persistence.jsx'
 
 export default class Editor extends Component {
-  persist = ['text']
+  persist = ['value']
+
+  static propTypes = {
+    disabled: PropTypes.bool,
+    submit: PropTypes.func
+  }
 
   componentWillMount() {
     this.setState(Persistence.register(this, {
-      text: '',
+      value: '',
       busy: false
     }))
   }
@@ -18,28 +23,27 @@ export default class Editor extends Component {
 
   textarea(props) {
     return <TextArea
-      name="text"
+      name="value"
       value={this.state.value}
       onChange={this.onChange}
       {...props}/>
-
   }
 
   submitButton(props) {
     return <Button
       type="submit"
-      disabled={!this.state.text}
+      disabled={this.props.disabled && !this.state.value}
       loading={this.state.busy}
       {...props}/>
   }
 
-  onSubmit = (e, {formData: {text}}) => {
+  onSubmit = (e, {formData: {value}}) => {
     e.preventDefault()
     if (this.submit instanceof Function) {
-      this.submit(text)
+      this.submit(value)
     }
     else if (this.props.submit instanceof Function) {
-      this.props.submit(text)
+      this.props.submit(value)
     }
     else {
       console.error('Cannot submit')

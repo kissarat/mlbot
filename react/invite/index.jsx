@@ -24,7 +24,9 @@ export default class Invite extends SkypeComponent {
             <Segment>
               <h2>Выберите Skype</h2>
               {this.selectAccount()}
-              <InviteGreeting submit={this.invite}/>
+              <InviteGreeting
+                disabled={!this.state.account}
+                submit={this.invite}/>
             </Segment>
           </Segment.Group>
 

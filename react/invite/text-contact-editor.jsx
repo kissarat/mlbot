@@ -6,13 +6,9 @@ import Contact from '../entity/contact.jsx'
 import Editor from '../base/editor.jsx'
 
 export default class TextContactEditor extends Editor {
-  static propTypes = {
-    submit: PropTypes.func
-  }
-
   setText = string => {
     this.setState({
-      text: filterSkypeUsernames(string).join('\n')
+      value: filterSkypeUsernames(string).join('\n')
     })
   }
 
@@ -25,7 +21,7 @@ export default class TextContactEditor extends Editor {
     }
     Contact.queries.queuePage.request()
     this.setState({
-      text: '',
+      value: '',
       busy: false
     })
   }

@@ -17,7 +17,9 @@ export default class Delivery extends SkypeComponent {
       <Segment>
         {this.alertMessage()}
         {this.selectAccount()}
-        <Message send={this.send}/>
+        <Message
+          disabled={!this.state.account}
+          submit={this.send}/>
       </Segment>
 
       <Segment className="contact-list-segment">
