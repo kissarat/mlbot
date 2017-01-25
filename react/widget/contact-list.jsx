@@ -50,7 +50,7 @@ export default class ContactList extends PureComponent {
   componentDidUpdate() {
     if (!this.state.resized) {
       setTimeout(this.resize, 300)
-      this.state.resized = true
+      this.setState({resized: true})
     }
   }
 

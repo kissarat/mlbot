@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import {Button} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults, keyBy, uniq, pick} from 'lodash'
@@ -12,7 +12,12 @@ export default class InviteList extends Component {
 
   removeAll = async() => {
     this.setState({busy: true})
-    await Contact.queries.queuePage.delete()
+    await db.contact.where({
+      status: Status.SELECTED,
+      authorized: 0
+    })
+      .delete()
+    Contact.emit('update')
     this.setState({busy: false})
   }
 

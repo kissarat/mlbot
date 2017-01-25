@@ -20,22 +20,26 @@ export default class DeliveryList extends Component {
   }
 
   changeStatusAll = async() => {
-    this.setState({busy: true})
-    await db.contact.where({
-      account: this.props.account,
-      status: this.props.selected ? Status.SELECTED : Status.CREATED,
-      authorized: 1
-    })
-      .update({account: this.props.account},
-        {status: this.props.selected ? Status.CREATED : Status.SELECTED}
-      )
-    Contact.emit('update')
-    this.setState({busy: false})
+    if (this.props.account) {
+      this.setState({busy: true})
+      const where = {
+        account: this.props.account,
+        status: this.props.status,
+        authorized: 1
+      }
+      const mods = {
+        status: Status.CREATED === this.props.status ? Status.SELECTED : Status.CREATED
+      }
+      // console.log(where, mods)
+      await db.contact.where(where).modify(mods)
+      Contact.emit('update')
+      this.setState({busy: false})
+    }
   }
 
   className() {
     let className = (this.props.className || '') + ' delivery-list '
-    className += this.props.selected ? 'selected' : 'other'
+    className += this.props.status ? 'selected' : 'other'
     return className
   }
 
@@ -45,7 +49,7 @@ export default class DeliveryList extends Component {
       loading={this.state.busy}
       type="button"
       onClick={this.changeStatusAll}
-      content={this.props.selected ? 'Никому' : 'Разослать всем'}
+      content={Status.SELECTED === this.props.status ? 'Никому' : 'Разослать всем'}
       title="Кому отправить сообщение?"/>
   }
 
