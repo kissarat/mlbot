@@ -11,13 +11,18 @@ export default class BrowseFile extends Component {
   }
 
   load(file) {
-    this.setState({busy: true})
-    const reader = new FileReader()
-    reader.onload = e => {
-      this.setState({busy: false})
-      this.props.setText(e.target.result)
+    if (file) {
+      this.setState({busy: true})
+      const reader = new FileReader()
+      reader.onload = e => {
+        this.setState({busy: false})
+        this.props.setText(e.target.result)
+      }
+      reader.readAsText(file)
     }
-    reader.readAsText(file)
+    else {
+      console.warn('No file choose')
+    }
   }
 
   render() {

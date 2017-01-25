@@ -5,12 +5,7 @@ import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Editor from '../base/editor.jsx'
 
 export default class InviteGreeting extends Editor {
-  static propTypes = {
-    submit: PropTypes.func
-  }
-
   render() {
-    console.log(this.props.disabled)
     return <Form className="widget invite-widget invite-greeting"
                  onSubmit={this.onSubmit}>
       {this.textarea({

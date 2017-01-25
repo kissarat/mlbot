@@ -35,8 +35,7 @@ export default class TextContactEditor extends Editor {
 
         {this.textarea({
           label: 'Вставьте контакты',
-          placeholder: 'Вставьте список из 40-ка Skype-контактов для добавления в друзья',
-          value: this.state.text
+          placeholder: 'Вставьте список из 40-ка Skype-контактов для добавления в друзья'
         })}
 
         {this.submitButton({
