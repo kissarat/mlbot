@@ -5,7 +5,7 @@ import {EventEmitter} from 'events'
 import {extend, toArray, each} from 'lodash'
 import {Status, start} from '../../app/config'
 import Contact from '../entity/contact.jsx'
-import {millisecondsId} from '../util/index.jsx'
+import {millisecondsId, isSkypeUsername} from '../util/index.jsx'
 
 extend(Skype.prototype, {
   login(username, password) {
@@ -89,31 +89,32 @@ extend(Skype.prototype, {
       .filter(c => profile.login === c.account)
       .toArray()
     const g = millisecondsId()
-    profile.contacts = profile.contacts.map(function (c) {
-      const id = profile.username + '~' + c.id
-      const found = existing.find(x => id === x.id)
-      const contact = {
-        id,
-        account: profile.username,
-        login: c.id,
-        name: c.display_name,
-        authorized: c.authorized ? 1 : 0,
-        status: found ? found.status : Status.CREATED,
-        time: found ? found.time : g.next().value
+    const contacts = []
+    profile.contacts.forEach(function (c) {
+      if (isSkypeUsername(c.id)) {
+        const id = profile.username + '~' + c.id
+        const found = existing.find(x => id === x.id)
+        const contact = {
+          id,
+          account: profile.username,
+          login: c.id,
+          name: c.display_name,
+          authorized: c.authorized ? 1 : 0,
+          status: found ? found.status : Status.CREATED,
+          time: found ? found.time : g.next().value
+        }
+        if (c.authorized && db.INVITED === contact.status) {
+          contact.status = Status.CREATED
+        }
+        contacts.push(contact)
       }
-      if (c.authorized && db.INVITED === contact.status) {
-        contact.status = Status.CREATED
-      }
-      return contact
     })
-    const absent = profile.contacts
+    const absent = contacts
       .filter(c => !existing.find(x => c.id == x.id))
       .map(c => c.id)
     await db.contact.bulkDelete(absent)
-    await db.contact.bulkPut(profile.contacts)
-    Contact.emit('update', {
-      account: profile.login
-    })
+    await db.contact.bulkPut(contacts)
+    Contact.emit('update', {account: profile.login})
     return this
   },
 

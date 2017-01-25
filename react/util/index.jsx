@@ -54,12 +54,16 @@ export function stringify(object, sep = '&', eq = '=') {
   return strings.join(sep)
 }
 
+export function isSkypeUsername(string) {
+  return string && !/^\+?\d+/.test(string) && !string.includes('facebook:')
+}
+
 export function filterSkypeUsernames(value) {
   const array = 'string' === typeof value ? value.split(/\s*\n\s*/) : value
   const usernames = []
   array.forEach(function (string) {
     string = string.trim()
-    if (string && !/^\+?\d+/.test(string) && !string.includes('facebook:')) {
+    if (isSkypeUsername()) {
       usernames.push(string)
     }
     else {
