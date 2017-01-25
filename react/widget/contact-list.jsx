@@ -1,11 +1,11 @@
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
-import React, {PureComponent, PropTypes} from 'react'
+import React, {Component, PropTypes} from 'react'
 import {Status} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
 
-export default class ContactList extends PureComponent {
+export default class ContactList extends Component {
   static propTypes = {
     account: PropTypes.string,
     authorized: PropTypes.oneOf([0, 1]).isRequired,
@@ -31,7 +31,7 @@ export default class ContactList extends PureComponent {
   }
 
   componentWillReceiveProps(props) {
-    if (this.state.authorized) {
+    if (props.authorized) {
       this.initialize(props)
     }
   }
