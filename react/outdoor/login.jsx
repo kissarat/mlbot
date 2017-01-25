@@ -1,27 +1,41 @@
 import api from '../connect/api.jsx'
 import React, {Component} from 'react'
-import {Button, Form, Grid, Image, Header, Icon} from 'semantic-ui-react'
+import {Button, Form, Grid, Image, Header, Icon, Message} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import BrowserLink from '../widget/browser-link.jsx'
-// import Persistent from '../util/persistent.jsx'
+import Persistent from '../util/persistence.jsx'
 
 export default class Login extends Component {
-  persistentProps = ['email']
-  state = {
-    loading: false,
-    email: ''
+  persist = ['email']
+
+  constructor() {
+    super()
+    this.state = Persistent.register(this, {
+      loading: false,
+      email: '',
+    })
   }
 
   onSubmit = (e, {formData}) => {
     e.preventDefault()
-    this.setState({loading: true})
+    this.setState({
+      loading: true,
+      alert: false
+    })
     api.send('user/login/' + formData.email, formData)
       .then((data) => {
+        this.setState({
+          alert: !data.success,
+          loading: false,
+        })
         if (data.success) {
-          this.setState({loading: false})
           hashHistory.push('/accounts')
         }
       })
+  }
+
+  getMessage() {
+    return this.state.alert ? <Message error>Неверные логин или пароль</Message> : ''
   }
 
   render() {
@@ -31,10 +45,10 @@ export default class Login extends Component {
           <Image src="images/logo.png"/>
         </Grid.Column>
       </Grid.Row>
-
       <Grid.Row columns={2}>
         <Grid.Column>
           <Header as="h2">Вход</Header>
+          {this.getMessage()}
           <Form onSubmit={this.onSubmit} loading={this.state.loading}>
             <Form.Field name="email"
                         placeholder="Введите Email"

@@ -18,3 +18,7 @@ app.on('ready', function () {
   win.webContents.openDevTools()
   }
 })
+
+app.on('window-all-closed', () => {
+  app.quit()
+})
