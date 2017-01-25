@@ -8,10 +8,10 @@ import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 
 export default class ContactList extends PureComponent {
   static propTypes = {
     account: PropTypes.string,
-    authorized: React.PropTypes.oneOf([0, 1]).isRequired,
+    authorized: PropTypes.oneOf([0, 1]).isRequired,
     disabled: PropTypes.bool,
     sort: PropTypes.string,
-    status: React.PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
+    status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
   }
 
   state = {

@@ -1,20 +1,19 @@
 import React, {Component} from 'react'
 import {Button, TextArea} from 'semantic-ui-react'
+import Persistence from '../util/persistence.jsx'
 
 export default class Editor extends Component {
   persist = ['text']
 
-  constructor() {
-    super()
+  componentWillMount() {
+    this.setState(Persistence.register(this, {
+      text: '',
+      busy: false
+    }))
   }
 
   onChange = (e, {name, value}) => {
     this.setState({[name]: value})
-  }
-
-  state = {
-    busy: false,
-    text: ''
   }
 
   textarea(props) {

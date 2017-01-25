@@ -33,10 +33,6 @@ export default class Alert extends HidableComponent {
     this.setState({messageProps})
   }
 
-  componentWillMount() {
-    this.componentWillReceiveProps(this.props)
-  }
-
   render() {
     return this.state.visible
       ? <Message {...this.messageProps}>

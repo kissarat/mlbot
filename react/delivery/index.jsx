@@ -8,8 +8,15 @@ import {Segment, Header} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 import Contact from '../entity/contact.jsx'
+import Persistence from '../util/persistence.jsx'
 
 export default class Delivery extends SkypeComponent {
+  persist = ['account']
+
+  componentWillMount() {
+    this.setState(Persistence.register(this, this.props))
+  }
+
   send = text =>
     DeliveryQueue.execute(this.state.account, text, this.alert)
 

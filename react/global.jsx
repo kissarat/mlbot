@@ -7,6 +7,7 @@ import api from './connect/api.jsx'
 import Dexie from 'dexie'
 import {remote} from 'electron'
 import Query from './store/query.jsx'
+import {Registry} from './util/persistence.jsx'
 
 function go() {
   hashHistory.push.apply(hashHistory, arguments)
@@ -14,6 +15,7 @@ function go() {
 
 const Global = {
   _,
+  Registry,
   Contact,
   Query,
   go,
