@@ -130,7 +130,7 @@ extend(Skype, {
         setTimeout(() => skypes.remove(), 50)
         return Skype.load(data, busy)
       }
-      Skype.omit('open', extend({busy, skype}, data))
+      Skype.emit('open', extend({busy, skype}, data))
       return Promise.resolve(skype)
     }
 

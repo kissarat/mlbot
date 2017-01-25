@@ -6,6 +6,7 @@ import {Status} from '../../app/config'
 
 const InviteQueue = {
   async execute(account, greeting, inform) {
+    this.timeoutDuration = skypeTimeout
       let count = await Contact.queue().count()
       if (count <= 0) {
         return void inform('error', 'Все контакты уже добавлены')

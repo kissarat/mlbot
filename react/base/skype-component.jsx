@@ -5,6 +5,7 @@ import SelectAccount from '../app/select-account.jsx'
 import Alert from '../widget/alert.jsx'
 import Persistent from '../util/persistence.jsx'
 import Skype from '../skype/index.jsx'
+import App from '../app/index.jsx'
 
 export default class SkypeComponent extends Component {
   persist = ['account']
@@ -26,6 +27,7 @@ export default class SkypeComponent extends Component {
         }
       })
     }
+    window.delivery = this
   }
 
   changeAccount(account) {
@@ -43,8 +45,7 @@ export default class SkypeComponent extends Component {
   }
 
   alertMessage() {
-    const alert = this.state.alert || {visible: false}
-    return <Alert {...alert}/>
+    return this.state.alert ? <Alert {...this.state.alert}/> : ''
   }
 
   alert = (type, content) => {
@@ -58,18 +59,14 @@ export default class SkypeComponent extends Component {
     else {
       alert = {type, content}
     }
-    const busy = 'busy' === alert.type
+    let busy = 'busy' === type
     if (busy) {
-      alert.type = 'info'
+      App.setBusy(content)
+      alert = false
     }
-    // console.log(alert)
-    this.setState({
-      alert,
-      busy
-    })
-  }
-
-  setBusy(busy) {
-    this.setState({busy})
+    else {
+      App.setBusy(false)
+    }
+    this.setState({alert})
   }
 }

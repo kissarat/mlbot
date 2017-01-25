@@ -1,28 +1,32 @@
 import Contact from '../entity/contact.jsx'
 import Skype from '../skype/index.jsx'
+import {wait} from '../util/index.jsx'
 import Timeout from '../util/timeout.jsx'
 import {extend} from 'lodash'
 import {Status} from '../../app/config'
 
 const DeliveryQueue = {
   async execute(account, text, inform) {
+    this.timeoutDuration = skypeTimeout
     const query = Contact.selectedQuery(account, true)
-    const contactsCount = await db.contact
+    const count = await db.contact
       .where(query)
       .count()
 
-    if (contactsCount > 0) {
+    if (count > 0) {
+      inform('busy', 'Подготовка входа в скайп')
       const skype = await Skype.open(account, true)
       inform('busy', 'Подождите 3 секунды')
       await wait(3000)
       inform('busy', 'Получение списка рассылки')
       this.setTimeout(() => {
-        inform('error', `Skype не отвечает в течении ${Math.round(skypeTimeout / 1000)} секунд`)
+        const seconds = Math.round(skypeTimeout / 1000)
+        inform('error', `Skype не отвечает в течении ${seconds} секунд`)
         skype.remove()
       })
       skype.openSettings()
 
-      const informInvited = i => inform('busy', `Отправлено ${i} контактам из ${contactsCount}`)
+      const informInvited = i => inform('busy', `Отправлено ${i} контактам из ${count}`)
 
       let i = 0
       const pull = async() => {
@@ -40,10 +44,10 @@ const DeliveryQueue = {
         await db.contact.update(contact.id, {status: Status.CREATED})
         informInvited(++i)
         this.updateTimeout()
-        if (i < contactsCount) {
+        Contact.emit('update')
+        if (i < count) {
           await pull()
         }
-        Contact.emit('update')
       }
 
       informInvited(0)

@@ -9,8 +9,10 @@ import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 
 export default class Delivery extends SkypeComponent {
-  send = text =>
+  send = text => {
     DeliveryQueue.execute(this.state.account, text, this.alert)
+    this.alert(false)
+  }
 
   render() {
     return <Segment.Group horizontal className="page delivery">

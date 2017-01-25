@@ -8,6 +8,7 @@ import Dexie from 'dexie'
 import {remote} from 'electron'
 import Query from './store/query.jsx'
 import {Registry} from './util/persistence.jsx'
+import Delivery from './delivery/index.jsx'
 
 function go() {
   hashHistory.push.apply(hashHistory, arguments)
@@ -15,15 +16,16 @@ function go() {
 
 const Global = {
   _,
-  Registry,
-  Contact,
-  Query,
-  go,
-  Dexie,
-  Skype,
-  db,
   api,
-  app: remote.app
+  app: remote.app,
+  Contact,
+  db,
+  Delivery,
+  Dexie,
+  go,
+  Query,
+  Registry,
+  Skype,
 }
 
 export default Global

@@ -6,20 +6,29 @@ const Persistence = {
   },
 
   load(defaultValues) {
-    const raw = localStorage.getItem(this.getStorageName())
-    try {
-      const state = JSON.parse(raw)
-      defaults(state, defaultValues)
-      return state || {}
+    const name = this.getStorageName()
+    if (name) {
+      const raw = localStorage.getItem(this.getStorageName())
+      try {
+        const state = JSON.parse(raw)
+        defaults(state, defaultValues)
+        return state || {}
+      }
+      catch (ex) {
+      }
+      return defaultValues || {}
     }
-    catch (ex) {
+    else {
+      return defaultValues
     }
-    return defaultValues || {}
   },
 
   save(state) {
     state = pick(state || this.state, this.persist)
-    localStorage.setItem(this.getStorageName(), JSON.stringify(state))
+    const name = this.getStorageName()
+    if (name) {
+      localStorage.setItem(name, JSON.stringify(state))
+    }
   },
 
   componentWillUnmount() {

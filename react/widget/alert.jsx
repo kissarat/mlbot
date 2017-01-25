@@ -27,9 +27,6 @@ export default class Alert extends HidableComponent {
       // this.loadState()
     }
     messageProps.className = props.className ? props.className + ' alert visible' : 'alert visible'
-    if (this.state.visible && !props.visible) {
-      this.setState({visible: false})
-    }
     this.setState({messageProps})
   }
 
