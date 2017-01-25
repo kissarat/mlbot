@@ -20,21 +20,38 @@ export default class ContactList extends PureComponent {
     limit: 12,
     count: 0,
     contacts: [],
-    loading: false
+    loading: false,
+    resized: false
   }
 
   constructor() {
     super()
     this.debounced = debounce(this.load, 300)
+    this.resizeDebounced = debounce(this.resize, 300)
   }
 
   componentWillReceiveProps(props) {
-    this.initialize(props)
+    if (this.state.authorized) {
+      this.initialize(props)
+    }
   }
 
   componentDidMount() {
     Contact.on('update', this.update)
+    addEventListener('resize', this.resizeDebounced)
     this.initialize(this.props)
+  }
+
+  componentWillUnmount() {
+    removeEventListener('resize', this.resizeDebounced)
+    Contact.removeListener('update', this.update)
+  }
+
+  componentDidUpdate() {
+    if (!this.state.resized) {
+      setTimeout(this.resize, 300)
+      this.state.resized = true
+    }
   }
 
   initialize(props) {
@@ -44,10 +61,6 @@ export default class ContactList extends PureComponent {
       this.setState({loading: true})
       this.load(params)
     }
-  }
-
-  componentWillUnmount() {
-    Contact.removeListener('update', this.update)
   }
 
   update = () => {
@@ -60,6 +73,26 @@ export default class ContactList extends PureComponent {
     defaults(result, state)
     result.loading = false
     this.setState(result)
+  }
+
+  softLoad(state) {
+    this[this.state.count > 600 ? 'debounced' : 'load'](state)
+  }
+
+  resize = () => {
+    const container = document.querySelector('.contact-list-segment')
+    const table = document.querySelector('.contact-list .table-container table')
+    const td = document.querySelector('.contact-list .table-container td')
+    if (container && table && td) {
+      const unit = td.getBoundingClientRect()
+      const target = table.getBoundingClientRect()
+      const box = container.getBoundingClientRect()
+      const delta = Math.floor((box.height - target.height - 100) / unit.height)
+      if (delta) {
+        this.load({limit: this.state.limit + delta})
+        return true
+      }
+    }
   }
 
   changeOffset = offset => {
@@ -76,7 +109,7 @@ export default class ContactList extends PureComponent {
   }
 
   onSearch = (e, {value}) => {
-    this[this.state.count > 600 ? 'debounced' : 'load']({
+    this.softLoad({
       search: value,
       offset: 0
     })
