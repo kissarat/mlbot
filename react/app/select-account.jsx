@@ -32,13 +32,13 @@ export default class SelectAccount extends Component {
   }
 
   loginButton(selectedAccount) {
-    if (Skype.dark.childElementCount) {
+    if (selectedAccount && Skype.get(selectedAccount)) {
       return <Button
         className="skype logout"
         content="Выйти"
         disabled={!selectedAccount}
         icon="sign out"
-        onClick={() => skype.remove()}
+        onClick={() => Skype.all().remove()}
         type="button"
       />
     }

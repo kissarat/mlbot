@@ -7,16 +7,8 @@ import SkypeComponent from '../base/skype-component.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import Contact from '../entity/contact.jsx'
-import Persistence from '../util/persistence.jsx'
 
 export default class Delivery extends SkypeComponent {
-  persist = ['account']
-
-  componentWillMount() {
-    this.setState(Persistence.register(this, this.props))
-  }
-
   send = text =>
     DeliveryQueue.execute(this.state.account, text, this.alert)
 
@@ -34,7 +26,7 @@ export default class Delivery extends SkypeComponent {
         </Help>
         <DeliveryList
           authorized={1}
-          account={this.props.params.account}
+          account={this.state.account}
           status={Status.CREATED}/>
       </Segment>
       <Segment className="contact-list-segment">
@@ -43,7 +35,7 @@ export default class Delivery extends SkypeComponent {
         </Help>
         <DeliveryList
           authorized={1}
-          account={this.props.params.account}
+          account={this.state.account}
           status={Status.SELECTED}/>
       </Segment>
     </Segment.Group>

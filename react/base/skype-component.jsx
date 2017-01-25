@@ -1,35 +1,38 @@
 import React, {Component} from 'react'
-import {hashHistory} from 'react-router'
 import {toArray, defaults, isObject} from 'lodash'
 import {Status} from '../../app/config'
 import SelectAccount from '../app/select-account.jsx'
 import Alert from '../widget/alert.jsx'
+import Persistent from '../util/persistence.jsx'
+import Skype from '../skype/index.jsx'
 
 export default class SkypeComponent extends Component {
-  state = {
-    account: '',
-    alert: false,
-    busy: false
+  persist = ['account']
+
+  constructor() {
+    super()
+    this.state = Persistent.register(this, {
+      account: '',
+      alert: false,
+      busy: false
+    })
   }
 
-  componentWillReceiveProps(props) {
-    // this.registerStorage()
-    if (props.params.account !== this.state.account) {
-      this.setState(props.params)
+  componentDidMount() {
+    if (this.state.account) {
+      Skype.getAccount(this.state.account).then(account => {
+        if (!account) {
+          this.setState({account: ''})
+        }
+      })
     }
   }
 
   changeAccount(account) {
-    const name = this.constructor.name.toLowerCase()
-    let url
-    if (account && account.login !== this.state.account) {
-      url = `/${name}/` + account.login
-    }
-    else if (!account) {
-      url = '/' + name
-    }
-    if (url) {
-      hashHistory.push(url)
+    if (account.login) {
+      this.setState({
+        account: account.login
+      })
     }
   }
 

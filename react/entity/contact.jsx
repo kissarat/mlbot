@@ -31,6 +31,7 @@ extend(Contact, {
   query(params) {
     const searchTextFilter = createTextSearchFilter(params.search)
 
+    console.log(params)
     const q = db.contact
       .where(pick(params, 'account', 'status', 'authorized'))
 
