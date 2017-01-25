@@ -32,7 +32,7 @@ export default class SkypeLogin extends Component {
         else {
           this.setState({error: 'Неизвестная ошибка'})
         }
-        Skype.all().remove()
+        // Skype.all().remove()
       })
   }
 

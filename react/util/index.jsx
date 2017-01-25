@@ -63,7 +63,7 @@ export function filterSkypeUsernames(value) {
   const usernames = []
   array.forEach(function (string) {
     string = string.trim()
-    if (isSkypeUsername()) {
+    if (isSkypeUsername(string)) {
       usernames.push(string)
     }
     else {

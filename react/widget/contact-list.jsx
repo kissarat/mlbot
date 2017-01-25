@@ -89,7 +89,7 @@ export default class ContactList extends Component {
       const box = container.getBoundingClientRect()
       const delta = Math.floor((box.height - target.height - 100) / unit.height)
       if (delta) {
-        this.load({limit: this.state.limit + delta})
+        this.load({limit: this.state.limit + delta - 1})
         return true
       }
     }

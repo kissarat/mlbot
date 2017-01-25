@@ -156,14 +156,11 @@ extend(Skype, {
   },
 
   async getAccount(login) {
-    function find() {
-      return Skype.accounts.find(account => login === account.login)
-    }
-
     if (!this.accounts) {
       await Skype.getAccountList(false)
     }
-    return find()
+    const liveLogin = 'live:' + login
+    return Skype.accounts.find(a => login === a.login || liveLogin === a.login)
   },
 
   close(account) {
