@@ -24,18 +24,30 @@ export default class Login extends Component {
     })
     api.send('user/login/' + formData.email, formData)
       .then((data) => {
-        this.setState({
-          alert: !data.success,
-          loading: false,
-        })
+        let alert = false
         if (data.success) {
           hashHistory.push('/accounts')
         }
+        else {
+          if ('ABSENT' === data.status) {
+            alert = 'Неверные логин или пароль'
+          }
+          else if ('ALERT' === data.status) {
+            alert = data.error.message
+          }
+          else {
+            alert = 'Неизвестная ошибка'
+          }
+        }
+        this.setState({
+          alert,
+          loading: false,
+        })
       })
   }
 
   getMessage() {
-    return this.state.alert ? <Message error>Неверные логин или пароль</Message> : ''
+    return this.state.alert ? <Message error>{this.state.alert}</Message> : ''
   }
 
   render() {
