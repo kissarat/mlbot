@@ -92,11 +92,11 @@ extend(Skype.prototype, {
     const contacts = []
     profile.contacts.forEach(function (c) {
       if (isSkypeUsername(c.id)) {
-        const id = profile.username + '~' + c.id
+        const id = profile.login + '~' + c.id
         const found = existing.find(x => id === x.id)
         const contact = {
           id,
-          account: profile.username,
+          account: profile.login,
           login: c.id,
           name: c.display_name,
           authorized: c.authorized ? 1 : 0,

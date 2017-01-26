@@ -159,8 +159,7 @@ extend(Skype, {
     if (!this.accounts) {
       await Skype.getAccountList(false)
     }
-    const liveLogin = 'live:' + login
-    return Skype.accounts.find(a => login === a.login || liveLogin === a.login)
+    return Skype.accounts.find(a => login === a.login)
   },
 
   close(account) {

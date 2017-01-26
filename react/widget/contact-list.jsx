@@ -1,7 +1,7 @@
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {Component, PropTypes} from 'react'
-import {Status} from '../../app/config'
+import {Status, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
 
@@ -42,7 +42,26 @@ export default class ContactList extends Component {
     this.initialize(this.props)
   }
 
+  setupDev(clear) {
+    if (dev) {
+      const self = clear ? null : this
+
+      if (this.props.authorized) {
+        if (this.props.status) {
+          window.otherContacts = self
+        }
+        else if (this.props.status) {
+          window.selectedContacts = self
+        }
+      }
+      else {
+        window.queueContacts = self
+      }
+    }
+  }
+
   componentWillUnmount() {
+    this.setupDev(true)
     removeEventListener('resize', this.resizeDebounced)
     Contact.removeListener('update', this.update)
   }
@@ -52,6 +71,7 @@ export default class ContactList extends Component {
       setTimeout(this.resize, 300)
       this.setState({resized: true})
     }
+    this.setupDev(false)
   }
 
   initialize(props) {
