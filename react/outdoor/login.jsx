@@ -3,47 +3,53 @@ import React, {Component} from 'react'
 import {Button, Form, Grid, Image, Header, Icon, Message} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import BrowserLink from '../widget/browser-link.jsx'
+import {pick} from 'lodash'
 import Persistent from '../util/persistence.jsx'
 
 export default class Login extends Component {
   persist = ['email']
-
-  constructor() {
-    super()
-    this.state = Persistent.register(this, {
-      loading: false,
-      email: '',
-    })
+  state = {
+    loading: false
   }
+
+  // onChange = e => this.setState({[e.target.getAttribute('name')]: [e.target.value]})
 
   onSubmit = (e, {formData}) => {
     e.preventDefault()
-    this.setState({
-      loading: true,
-      alert: false
-    })
-    api.send('user/login/' + formData.email, formData)
-      .then((data) => {
-        let alert = false
-        if (data.success) {
-          hashHistory.push('/accounts')
-        }
-        else {
-          if ('ABSENT' === data.status) {
-            alert = 'Неверные логин или пароль'
-          }
-          else if ('ALERT' === data.status) {
-            alert = data.error.message
+    if (formData.email.length < 3) {
+      this.setState({alert: 'Введите Email'})
+    }
+    else if (formData.password.length < 3) {
+      this.setState({alert: 'Введите пароль'})
+    }
+    else {
+      this.setState({
+        loading: true,
+        alert: false
+      })
+      api.send('user/login/' + formData.email, formData)
+        .then((data) => {
+          let alert = false
+          if (data.success) {
+            hashHistory.push('/accounts')
           }
           else {
-            alert = 'Неизвестная ошибка'
+            if ('ABSENT' === data.status) {
+              alert = 'Неверные логин или пароль'
+            }
+            else if ('ALERT' === data.status) {
+              alert = data.error.message
+            }
+            else {
+              alert = 'Неизвестная ошибка'
+            }
           }
-        }
-        this.setState({
-          alert,
-          loading: false,
+          this.setState({
+            alert,
+            loading: false,
+          })
         })
-      })
+    }
   }
 
   getMessage() {
@@ -65,14 +71,14 @@ export default class Login extends Component {
             <Form.Field name="email"
                         placeholder="Введите Email"
                         control="input"
-                        type="text"
-                        value={this.state.email}
-                        onChange={e => this.setState({email: e.target.value})}/>
+                        type="text"/>
             <Form.Field name="password"
-                        placeholder="Введите Пароль"
                         control="input"
+                        placeholder="Введите Пароль"
                         type="password"/>
-            <Button type="submit">Вход</Button>
+            <Button type="submit">
+              Вход
+            </Button>
           </Form>
         </Grid.Column>
         <Grid.Column>
