@@ -1,4 +1,4 @@
-const {defaultsDeep} = require('lodash')
+const merge = require('deepmerge')
 const freeze = require('deep-freeze')
 
 var local
@@ -11,7 +11,7 @@ catch (ex) {
 const config = {
   dev: false,
   reset: false,
-  origin: 'http://service.inbisoft.com',
+  origin: 'http://app.inbisoft.com',
   window: {
     minWidth: 640,
     minHeight: 480,
@@ -39,4 +39,4 @@ const config = {
   }
 }
 
-module.exports = freeze(defaultsDeep(local, config))
+module.exports = freeze(merge(config, local))

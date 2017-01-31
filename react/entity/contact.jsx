@@ -3,7 +3,6 @@ import {EventEmitter} from 'events'
 import db from '../database.jsx'
 import {millisecondsId} from '../util/index.jsx'
 import {Status} from '../../app/config'
-import Query from '../store/query.jsx'
 
 function createTextSearchFilter(text) {
   if (text && (text = text.trim())) {
@@ -79,13 +78,6 @@ extend(Contact, {
     })
   },
 
-  queries: {
-    queue: {
-      authorized: 0,
-      status: Status.SELECTED
-    },
-  },
-
   selectAll(account, select) {
     return db.contact
       .filter(c => c.account === account)
@@ -134,42 +126,5 @@ extend(Contact, {
   }
 });
 
-Contact.queries.queuePage = new Query(Contact, {
-  authorized: 0,
-  status: Status.SELECTED
-})
-
-Contact.queries.otherPage = new Query(Contact, {
-  authorized: 1,
-  status: Status.CREATED
-})
-
-Contact.queries.selectedPage = new Query(Contact, {
-  authorized: 1,
-  status: Status.SELECTED
-})
-
-// Contact.delegate(db.contact, Query.proxy, ['orderBy'])
-// db.Contact = Contact.proxy(db.contact)
-
 EventEmitter.call(Contact)
 extend(Contact, EventEmitter.prototype)
-
-each(Contact.queries, function (query) {
-  if (Contact === query.driver) {
-    function update(params) {
-      console.log(params)
-      query.request(params)
-    }
-
-    query.listen = function (listener) {
-      if (listener) {
-        Contact.on('update', update)
-      }
-      else {
-        Contact.removeListener('update', update)
-      }
-      this.listener = listener
-    }
-  }
-})
