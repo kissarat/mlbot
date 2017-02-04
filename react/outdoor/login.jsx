@@ -27,7 +27,7 @@ export default class Login extends Component {
         loading: true,
         alert: false
       })
-      api.send('user/login/' + formData.email, formData)
+      api.send('user/login', formData)
         .then((data) => {
           let alert = false
           if (data.success) {

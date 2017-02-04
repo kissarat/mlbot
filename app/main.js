@@ -15,7 +15,7 @@ app.on('ready', function () {
     })
   })
   if (config.dev) {
-  win.webContents.openDevTools()
+    win.webContents.openDevTools()
   }
 })
 

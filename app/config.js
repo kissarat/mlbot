@@ -39,4 +39,4 @@ const config = {
   }
 }
 
-module.exports = freeze(merge(config, local))
+module.exports = freeze(local ? merge(config, local) : config)
