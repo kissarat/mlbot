@@ -5,6 +5,8 @@ import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Editor from '../base/editor.jsx'
 
 export default class InviteGreeting extends Editor {
+  persist = ['value']
+
   render() {
     return <Form className="widget invite-widget invite-greeting"
                  onSubmit={this.onSubmit}>
