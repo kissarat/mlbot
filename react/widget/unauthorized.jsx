@@ -15,7 +15,7 @@ export default class Unauthorized extends PureComponent {
     return db.contact.filter(a => a.account === this.props.account && 0 === a.authorized)
   }
 
-  clear = () => {
+  clear = async() => {
     const queue = new Queue({
       inform: this.props.alert,
       account: this.props.account,
@@ -27,7 +27,9 @@ export default class Unauthorized extends PureComponent {
       query: this.query()
     })
 
-    return queue.execute()
+    await queue.execute()
+    await this.count()
+    this.props.alert('success', 'Серые контакты удалены')
   }
 
   count = async () => {
@@ -36,7 +38,7 @@ export default class Unauthorized extends PureComponent {
     })
   }
 
-  componentDidUpdate(props) {
+  componentWillReceiveProps(props) {
     if (this.props.account != props.account) {
       void this.count()
     }
