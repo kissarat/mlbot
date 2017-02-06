@@ -1,11 +1,8 @@
 {
   "name": "mlbot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "main.js",
-  "scripts": {
-    "webpack": "webpack -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "author": "Taras Labiak <kissarat@gmail.com>",
   "license": "UNLICENSED",
   "repository": {

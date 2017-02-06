@@ -9,6 +9,7 @@ export default class ContactList extends Component {
   static propTypes = {
     account: PropTypes.string,
     authorized: PropTypes.oneOf([0, 1]).isRequired,
+    online: PropTypes.oneOf([null, 1]).isRequired,
     disabled: PropTypes.bool,
     sort: PropTypes.string,
     status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
@@ -77,6 +78,9 @@ export default class ContactList extends Component {
   initialize(props) {
     if (!props.authorized || props.account) {
       const params = pick(props, 'account', 'status', 'authorized')
+      if (1 === props.online) {
+        params.online = 1
+      }
       defaults(params, pick(this.state, 'offset', 'limit'))
       this.setState({loading: true})
       this.load(params)
