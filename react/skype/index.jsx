@@ -131,6 +131,13 @@ extend(Skype.prototype, {
       this.once('invite', resolve)
       this.invoke('invite', [username])
     })
+  },
+
+  removeContact(username) {
+    return new Promise(resolve => {
+      this.once('contact.remove', resolve)
+      this.invoke('removeContact', [username])
+    })
   }
 })
 

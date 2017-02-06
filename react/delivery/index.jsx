@@ -4,14 +4,78 @@ import Help from '../widget/help.jsx'
 import Message from './message.jsx'
 import React from 'react'
 import SkypeComponent from '../base/skype-component.jsx'
-import {Form, Segment, Header} from 'semantic-ui-react'
+import {Button, Segment, Header} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
+import Queue from '../base/queue.jsx'
+import db from '../database.jsx'
 
 export default class Delivery extends SkypeComponent {
+  state = {
+    online: null,
+    unauthorizedCount: null
+  }
+
+  unauthorizedQuery() {
+    return db.contact.filter(a => a.account === this.state.account && 0 === a.authorized)
+  }
+
+  clearUnauthorized = () => {
+    const queue = new Queue({
+      inform: this.alert,
+      success: (i, count) => `Удалено ${i} из ${count} контактов`,
+      account: this.state.account,
+      async work(skype, contact) {
+        return skype.removeContact(contact.login)
+      },
+
+      query: this.unauthorizedQuery()
+    })
+
+    return queue.execute()
+  }
+
+  async countUnauthorized() {
+    this.setState({
+      unauthorizedCount: await this.unauthorizedQuery().count()
+    })
+  }
+
+  changeAccount(account) {
+    if (account.login) {
+      this.setState({
+        account: account.login,
+        unauthorizedCount: null
+      })
+    }
+  }
+
+  componentDidUpdate(props, state) {
+    if (this.state.account != state.account) {
+      void this.countUnauthorized()
+    }
+  }
+
+  async componentDidMount() {
+    this.checkSkype()
+    if (this.state.account) {
+      await this.countUnauthorized()
+    }
+  }
+
   send = text => {
     DeliveryQueue.execute(this.state.account, text, this.alert)
     this.alert(false)
+  }
+
+  clearUnauthorizedButton() {
+    return <Button
+      type="button"
+      disabled={!this.state.account}
+      onClick={this.clearUnauthorized}>
+      Удалить серые контакты
+      {'number' === typeof this.state.unauthorizedCount ? ` (${this.state.unauthorizedCount})` : ''}
+    </Button>
   }
 
   render() {
@@ -19,10 +83,7 @@ export default class Delivery extends SkypeComponent {
       <Segment>
         {this.alertMessage()}
         {this.selectAccount()}
-        <Form.Checkbox
-          label="Показывать контакты которые онлайн"
-          onChange={e => this.setState({online: e.target.checked ? 1 : null})}
-        />
+        {this.clearUnauthorizedButton()}
         <Message
           disabled={!this.state.account}
           submit={this.send}/>

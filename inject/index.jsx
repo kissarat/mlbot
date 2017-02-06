@@ -23,42 +23,6 @@ function insertTextIntoInput(input, text) {
   insertText(text)
 }
 
-function pause(value = true) {
-  pause.value = value
-}
-
-function checkPause(name) {
-  if (pause.value) {
-    pause.value = false
-    const object = {type: 'pause'}
-    if (name) {
-      object.name = name
-    }
-    sky.send(object)
-  }
-}
-
-function insertSpaceInterval() {
-  if (!insertSpaceInterval.timer) {
-    insertSpaceInterval.timer = setInterval(function () {
-        const input = $$('[role=search]')
-        let text = input.value.trim()
-        if (text) {
-          input.focus()
-          input.value = ''
-          if (Math.random() > 0.5) {
-            text += ' '
-          }
-          else {
-            text = ' ' + text
-          }
-          insertText(text)
-        }
-      },
-      2000)
-  }
-}
-
 function sendMessage(message) {
   $$('swx-search-input button').click()
   // $all('swx-recent-item').forEach(function (item) {
@@ -166,9 +130,7 @@ addEventListener('load', function () {
 })
 
 export {
-  checkPause,
   clearData,
-  insertSpaceInterval,
   insertText,
   insertTextIntoInput,
   login,

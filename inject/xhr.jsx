@@ -57,6 +57,14 @@ extend(window, {
           status
         })
       })
+  },
+
+  removeContact(username) {
+    sky.removeContact()
+      .then(() => sky.send({
+        type: 'contact.remove',
+        username
+      }))
   }
 })
 

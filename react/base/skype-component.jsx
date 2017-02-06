@@ -20,6 +20,10 @@ export default class SkypeComponent extends Component {
   }
 
   componentDidMount() {
+    this.checkSkype()
+  }
+
+  checkSkype() {
     if (this.state.account) {
       Skype.getAccount(this.state.account).then(account => {
         if (!account) {
@@ -27,7 +31,7 @@ export default class SkypeComponent extends Component {
         }
       })
     }
-    window.delivery = this
+    return !!this.state.account
   }
 
   changeAccount(account) {
