@@ -1,15 +1,15 @@
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
-import React, {Component, PropTypes} from 'react'
+import React, {PureComponent, PropTypes} from 'react'
 import {Status, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
 
-export default class ContactList extends Component {
+export default class ContactList extends PureComponent {
   static propTypes = {
     account: PropTypes.string,
     authorized: PropTypes.oneOf([0, 1]).isRequired,
-    online: PropTypes.oneOf([null, 1]).isRequired,
+    online: PropTypes.number,
     disabled: PropTypes.bool,
     sort: PropTypes.string,
     status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
@@ -36,6 +36,10 @@ export default class ContactList extends Component {
       this.initialize(props)
     }
   }
+
+  // shouldComponentUpdate(props, state) {
+  //   return !isEqual(this.state, state)
+  // }
 
   componentDidMount() {
     Contact.on('update', this.update)
