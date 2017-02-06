@@ -12,7 +12,12 @@ sky.fetchOptions = {
 extend(sky, {
   fetch(url, options) {
     return fetch(url, defaultsDeep(options, sky.fetchOptions))
-      .then(a => a.json())
+      .then(function (r) {
+        const type = r.headers.get('content-type')
+        if (type && type.indexOf('json') > 0) {
+          return r.json()
+        }
+      })
   },
 
   getContacts(username) {
@@ -30,6 +35,14 @@ extend(sky, {
         greeting
       })
     })
+  },
+
+  removeContact(username) {
+    const fetch = url => this.fetch(url + username, {
+      method: 'DELETE'
+    })
+    return fetch(`https://contacts.skype.com/contacts/v2/users/${this.profile.username}/contacts/8:`)
+      .then(() => fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/contacts/8:'))
   }
 })
 
