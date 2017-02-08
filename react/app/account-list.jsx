@@ -60,7 +60,7 @@ export default class AccountList extends Component {
     return <div className="page account-list">
       {this.addSkype()}
       {this.accounts()}
-      <Alert info persist="addSkypeHelp"
+      <Alert persist="addSkypeHelp"
       content="Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
         и вести рекламную деятельность в интернете"/>
     </div>

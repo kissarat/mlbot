@@ -10,9 +10,7 @@ import {toArray, defaults} from 'lodash'
 import Unauthorized from '../widget/unauthorized.jsx'
 
 export default class Delivery extends SkypeComponent {
-  state = {
-    online: null,
-  }
+  name = 'Delivery'
 
   send = text => {
     DeliveryQueue.execute(this.state.account, text, this.alert)
@@ -39,7 +37,6 @@ export default class Delivery extends SkypeComponent {
         <DeliveryList
           authorized={1}
           account={this.state.account}
-          online={this.state.online}
           status={Status.CREATED}/>
       </Segment>
       <Segment className="contact-list-segment">
@@ -49,7 +46,6 @@ export default class Delivery extends SkypeComponent {
         <DeliveryList
           authorized={1}
           account={this.state.account}
-          online={this.state.online}
           status={Status.SELECTED}/>
       </Segment>
     </Segment.Group>

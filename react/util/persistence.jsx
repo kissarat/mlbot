@@ -2,7 +2,7 @@ import {merge, defaults, pick, each, isObject} from 'lodash'
 
 const Persistence = {
   getStorageName() {
-    return this.constructor.name
+    return this.name
   },
 
   load(defaultValues) {
@@ -19,6 +19,7 @@ const Persistence = {
       return defaultValues || {}
     }
     else {
+      console.error('Unnamed Component', this.constructor.name, defaultValues)
       return defaultValues
     }
   },

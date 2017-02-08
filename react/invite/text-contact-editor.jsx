@@ -6,6 +6,7 @@ import Contact from '../entity/contact.jsx'
 import Editor from '../base/editor.jsx'
 
 export default class TextContactEditor extends Editor {
+  name = 'TextContactEditor'
   persist = ['value']
 
   setText = string => {

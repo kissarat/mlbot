@@ -9,7 +9,6 @@ export default class ContactList extends PureComponent {
   static propTypes = {
     account: PropTypes.string,
     authorized: PropTypes.oneOf([0, 1]).isRequired,
-    online: PropTypes.number,
     disabled: PropTypes.bool,
     sort: PropTypes.string,
     status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,

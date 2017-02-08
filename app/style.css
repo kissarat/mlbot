@@ -4,7 +4,15 @@
     font-weight: 100;
 }
 
-p, h1, h2, h3, h4, h5, h6, input, body {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+body {
     font-family: Panton, sans-serif !important;
 }
 
@@ -150,7 +158,8 @@ footer.expanded .close {
     transition: all .1s;
 }
 
-p, .copyright {
+p,
+.copyright {
     font-size: 16px;
     font-weight: 400;
     line-height: 18px;
@@ -219,9 +228,8 @@ textarea {
     font-weight: 400;
 }
 
-.ui.horizontal.page.delivery.segments .ui.segment
-.ui.form > .field, .ui.horizontal.page.delivery.segments
-.ui.segment .ui.form > .field label {
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field,
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field label {
     display: flex;
     flex-direction: column;
     font-family: Panton, sans-serif;
@@ -305,11 +313,15 @@ textarea {
     max-width: 50px;
 }
 
-footer .control > *, footer .control i:hover, .contact-list-segment .item {
+footer .control > *,
+footer .control i:hover,
+.contact-list-segment .item {
     cursor: pointer;
 }
 
-footer.expanded .chevron, footer.collapsed .close, footer.collapsed .advertise {
+footer.expanded .chevron,
+footer.collapsed .close,
+footer.collapsed .advertise {
     display: none;
 }
 
@@ -322,7 +334,6 @@ div.copyright {
 }
 
 .nothing {
-
 }
 
 .contact-list {
@@ -333,6 +344,7 @@ div.copyright {
 
 .widget.contact-list .table-container {
     /* for Dimmer */
+
     position: relative;
     flex: 1 0 auto;
 }
@@ -342,28 +354,33 @@ div.copyright {
     white-space: nowrap;
 }
 
-.contact-list .control, .select-account {
+.contact-list .control,
+.select-account {
     display: flex;
 }
 
 @media (min-width: 1200px) {
-    .contact-list .control, .select-account {
+    .contact-list .control,
+    .select-account {
         min-height: 36px;
     }
 
-    .contact-list [type=button], .select-account button {
+    .contact-list [type=button],
+    .select-account button {
         margin-left: 6px !important;
     }
 }
 
 @media (max-width: 1199px) {
-    .contact-list .control, .page .select-account {
+    .contact-list .control,
+    .page .select-account {
         flex-direction: column;
         justify-content: space-between;
         min-height: 76px;
     }
 
-    .contact-list .control button, .page .select-account button {
+    .contact-list .control button,
+    .page .select-account button {
         margin: 0;
     }
 }
@@ -374,6 +391,7 @@ div.copyright {
 
 .contact-list table tbody {
     /*display: inline-block;*/
+
     overflow-x: hidden;
 }
 
@@ -430,7 +448,6 @@ div.copyright {
 }
 
 .page.invite form .text-fields > * {
-    /*flex: 1;*/
     width: calc(50% - 16px);
 }
 

@@ -11,6 +11,8 @@ import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Alert from '../widget/alert.jsx'
 
 export default class Invite extends SkypeComponent {
+  name = 'Invite'
+
   invite = greeting =>
     InviteQueue.execute(this.state.account, greeting, this.alert)
 

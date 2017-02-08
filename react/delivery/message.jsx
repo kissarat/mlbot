@@ -4,6 +4,7 @@ import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Editor from '../base/editor.jsx'
 
 export default class Message extends Editor {
+  name = 'Message'
   persist = ['value', 'signature', 'sign']
 
   state = {

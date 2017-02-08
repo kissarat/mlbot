@@ -1,9 +1,19 @@
-import React, {Component} from 'react'
+import React, {PureComponent} from 'react'
 import BrowserLink from '../widget/browser-link.jsx'
 import {Grid, Image, Icon} from 'semantic-ui-react'
-import HidableComponent from '../base/hidable-component.jsx'
+import Persistence from '../util/persistence.jsx'
 
-export default class Footer extends HidableComponent {
+export default class Footer extends PureComponent {
+  name = 'Footer'
+  persist = ['visible']
+
+  constructor() {
+    super()
+    this.state = Persistence.register(this, {
+      visible: true
+    })
+  }
+
   render() {
     const className = (this.state.visible ? 'expanded' : 'collapsed') + ' widget footer'
     return <footer className={className}>

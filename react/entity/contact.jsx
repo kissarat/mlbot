@@ -30,7 +30,7 @@ extend(Contact, {
   query(params) {
     const searchTextFilter = createTextSearchFilter(params.search)
 
-    console.log(params)
+    // console.log(params)
     const q = db.contact
       .where(pick(params, 'account', 'status', 'authorized'))
 
@@ -88,7 +88,10 @@ extend(Contact, {
 
   queue() {
     return db.contact
-      .where(this.queries.queue)
+      .where({
+        authorized: 0,
+        status: Status.SELECTED
+      })
   },
 
   delete(id) {

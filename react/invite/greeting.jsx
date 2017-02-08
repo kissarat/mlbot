@@ -5,6 +5,7 @@ import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Editor from '../base/editor.jsx'
 
 export default class InviteGreeting extends Editor {
+  name = 'InviteGreeting'
   persist = ['value']
 
   render() {

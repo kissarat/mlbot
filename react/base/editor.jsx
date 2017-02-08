@@ -42,7 +42,7 @@ export default class Editor extends Component {
       this.submit(formData.value, formData)
     }
     else if (this.props.submit instanceof Function) {
-      this.props.submit(value)
+      this.props.submit(formData.value, formData)
     }
     else {
       console.error('Cannot submit')

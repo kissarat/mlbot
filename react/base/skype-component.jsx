@@ -10,13 +10,12 @@ import App from '../app/index.jsx'
 export default class SkypeComponent extends Component {
   persist = ['account']
 
-  constructor() {
-    super()
-    this.state = Persistent.register(this, {
-      account: '',
-      alert: false,
-      busy: false
-    })
+  componentWillMount() {
+   this.setState(Persistent.register(this, {
+     account: '',
+     alert: false,
+     busy: false
+   }))
   }
 
   componentDidMount() {

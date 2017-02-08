@@ -26,10 +26,12 @@ export default class Alert extends PureComponent {
     if (props.persist) {
       messageProps['data-persist'] = props.persist
     }
-    this.setState(Persistence.register(this, {
-      messageProps,
-      hidden: false
-    }))
+    if (props.persist) {
+      setTimeout(() => this.setState(Persistence.register(this, {
+        messageProps,
+        hidden: false
+      })), 0)
+    }
   }
 
   componentWillMount() {
@@ -42,9 +44,12 @@ export default class Alert extends PureComponent {
   }
 
   render() {
-    return <Message
-      onDismiss={this.onDismiss}
-      hidden={this.state.hidden}
-      {...this.state.messageProps}/>
+    if (this.state) {
+      return <Message
+        onDismiss={this.onDismiss}
+        hidden={this.state.hidden}
+        {...this.state.messageProps}/>
+    }
+    return <div className="empty"></div>
   }
 }

@@ -1,4 +1,5 @@
 import 'babel-polyfill'
+import './style.scss'
 import React, {Component} from 'react'
 import Unavailable from './page/unavailable.jsx'
 import {Loader} from 'semantic-ui-react'

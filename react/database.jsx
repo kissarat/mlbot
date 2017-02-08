@@ -5,10 +5,10 @@ const db = new Dexie('mlbot')
 
 const Database = {
   create() {
-    db.version(2)
+    db.version(1)
       .stores({
-        contact: `&id, login, name, &time, online,
-        [status+authorized], [account+authorized+status], [account+authorized+status+online]`
+        contact: `&id, login, name, &time,
+        [status+authorized], [account+authorized+status]`
       })
   },
 
