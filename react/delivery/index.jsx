@@ -7,7 +7,6 @@ import SkypeComponent from '../base/skype-component.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import Queue from '../base/queue.jsx'
 import Unauthorized from '../widget/unauthorized.jsx'
 
 export default class Delivery extends SkypeComponent {

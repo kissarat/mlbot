@@ -30,12 +30,12 @@ export default class Invite extends SkypeComponent {
             </Segment>
           </Segment.Group>
 
-          <Alert warning persist="inviteLimitWarning" attached="bottom">
-            Добавляйте в сутки на один Skype-аккаунт не более 40 контактов, потому
-            что Microsoft морозит и блокирует Skype. Примерно после 40-ка заявок —
-            они перестают доходить к адресатам и висят в воздухе, портя «карму» Вашему Skype.
-            Рекомендуем завести 5 скайпов и добавлять в каждый по 40 новых контактов.
-          </Alert>
+          <Alert warning persist="inviteLimitWarning" attached="bottom" content="
+          Добавляйте в сутки на один Skype-аккаунт не более 40 контактов, потому
+          что Microsoft морозит и блокирует Skype. Примерно после 40-ка заявок —
+          они перестают доходить к адресатам и висят в воздухе, портя «карму» Вашему Skype.
+          Рекомендуем завести 5 скайпов и добавлять в каждый по 40 новых контактов.
+          "/>
         </Segment.Group>
       </Segment>
       <Segment className="contact-list-segment">

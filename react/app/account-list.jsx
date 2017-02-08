@@ -34,9 +34,8 @@ export default class AccountList extends Component {
   addSkype() {
     if (this.state.accounts) {
       if (this.state.accounts.length >= 5) {
-        return <Alert warning>
-          <p>К сожалению в данной версии приложения вы не можете добавить больше 5-ти скайпов</p>
-        </Alert>
+        return <Alert warning
+        content="К сожалению в данной версии приложения вы не можете добавить больше 5-ти скайпов"/>
       }
       else {
         return <Link to="/accounts/login">Добавить Skype</Link>
@@ -61,10 +60,9 @@ export default class AccountList extends Component {
     return <div className="page account-list">
       {this.addSkype()}
       {this.accounts()}
-      <Alert persist="addSkypeHelp">
-        Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
-        и вести рекламную деятельность в интернете
-      </Alert>
+      <Alert info persist="addSkypeHelp"
+      content="Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
+        и вести рекламную деятельность в интернете"/>
     </div>
   }
 }

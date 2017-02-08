@@ -42,7 +42,8 @@ export default class Message extends Editor {
         name="signature"
         disabled={!this.state.sign}
         value={this.state.signature}
-        onChange={this.onChange}/>
+        onChange={this.onChange}
+        autoHeight={true}/>
 
       {this.submitButton({
         content: 'Разослать',

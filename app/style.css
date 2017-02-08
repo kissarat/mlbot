@@ -200,7 +200,7 @@ textarea {
     min-width: 250px;
 }
 
-.ui.horizontal.page.delivery.segments #select-skype {
+.ui.horizontal.page.segments #select-skype {
     width: 100%;
 }
 
@@ -357,13 +357,13 @@ div.copyright {
 }
 
 @media (max-width: 1199px) {
-    .contact-list .control, .page.delivery .select-account {
+    .contact-list .control, .page .select-account {
         flex-direction: column;
         justify-content: space-between;
         min-height: 76px;
     }
 
-    .contact-list .control button, .page.delivery .select-account button {
+    .contact-list .control button, .page .select-account button {
         margin: 0;
     }
 }
@@ -449,4 +449,9 @@ div.copyright {
 .page.invite small {
     font-size: 0.9em;
     margin-top: 8px;
+}
+
+.widget.clear-unauthorized {
+    margin: 4px auto;
+    width: 100%;
 }

@@ -59,6 +59,7 @@ export default class Unauthorized extends PureComponent {
 
   render() {
     return <Button
+      className="widget clear-unauthorized"
       type="button"
       disabled={!this.props.account}
       onClick={this.clear}>

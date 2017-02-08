@@ -1,41 +1,51 @@
-import React, {PropTypes} from 'react'
-import {Message, Icon} from 'semantic-ui-react'
+import React, {PureComponent, PropTypes} from 'react'
+import {Message} from 'semantic-ui-react'
 import {omit, pick} from 'lodash'
-import HidableComponent from '../base/hidable-component.jsx'
+import Persistence from '../util/persistence.jsx'
 
-export default class Alert extends HidableComponent {
+export default class Alert extends PureComponent {
   static propTypes = {
-    visible: PropTypes.bool,
+    hidden: PropTypes.bool,
     persist: PropTypes.string,
     content: PropTypes.string,
   }
 
+  constructor() {
+    super()
+    this.state = Persistence.register(this, {
+      hidden: false
+    })
+  }
+
   getStorageName() {
-    return this.props.persist
+    return this.props && this.props.persist
   }
 
   componentWillReceiveProps(props) {
     const messageProps = omit(props,
       'children',
       'persist',
-      'content',
-      'visible'
+      'hidden'
     )
 
     if (props.persist) {
       messageProps['data-persist'] = props.persist
-      // this.loadState()
     }
-    messageProps.className = props.className ? props.className + ' alert visible' : 'alert visible'
     this.setState({messageProps})
   }
 
+  componentWillMount() {
+    this.componentWillReceiveProps(this.props)
+  }
+
+  onDismiss = () => {
+    this.setState({hidden: true})
+  }
+
   render() {
-    return this.state.visible
-      ? <Message {...this.messageProps}>
-      <div className="alert-content">{this.props.content || this.props.children}</div>
-      <Icon name="close" size="large" onClick={() => this.setState({visible: false})}/>
-    </Message>
-      : <div className="alert hidden"></div>
+    return <Message
+      onDismiss={this.onDismiss}
+      hidden={this.props.hidden || this.state.hidden}
+      {...this.state.messageProps}/>
   }
 }
