@@ -4,17 +4,12 @@ import {omit, pick} from 'lodash'
 import Persistence from '../util/persistence.jsx'
 
 export default class Alert extends PureComponent {
+  persist = ['hidden']
+
   static propTypes = {
     hidden: PropTypes.bool,
     persist: PropTypes.string,
     content: PropTypes.string,
-  }
-
-  constructor() {
-    super()
-    this.state = Persistence.register(this, {
-      hidden: false
-    })
   }
 
   getStorageName() {
@@ -31,7 +26,10 @@ export default class Alert extends PureComponent {
     if (props.persist) {
       messageProps['data-persist'] = props.persist
     }
-    this.setState({messageProps})
+    this.setState(Persistence.register(this, {
+      messageProps,
+      hidden: false
+    }))
   }
 
   componentWillMount() {
@@ -40,12 +38,13 @@ export default class Alert extends PureComponent {
 
   onDismiss = () => {
     this.setState({hidden: true})
+    setTimeout(() => this.save(), 0)
   }
 
   render() {
     return <Message
       onDismiss={this.onDismiss}
-      hidden={this.props.hidden || this.state.hidden}
+      hidden={this.state.hidden}
       {...this.state.messageProps}/>
   }
 }
