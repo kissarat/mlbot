@@ -45,7 +45,6 @@ export default class Unauthorized extends PureComponent {
   }
 
   async componentDidMount() {
-    this.checkSkype()
     if (this.props.account) {
       await this.count()
     }

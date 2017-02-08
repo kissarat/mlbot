@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react'
 import {Form} from 'semantic-ui-react'
 import Persistence from '../util/persistence.jsx'
+import {defaults} from 'lodash'
 
 export default class Editor extends Component {
   static propTypes = {
@@ -9,10 +10,10 @@ export default class Editor extends Component {
   }
 
   componentWillMount() {
-    this.setState(Persistence.register(this, {
+    this.setState(Persistence.register(this, defaults({
       value: '',
       busy: false
-    }))
+    }, this.state)))
   }
 
   onChange = (e, {name, value}) => {
