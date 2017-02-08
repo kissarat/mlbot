@@ -11,7 +11,7 @@ export default class Message extends Editor {
   }
 
   submit(value, {signature}) {
-    if (signature) {
+    if (this.state.sign && signature) {
       value += '\n' + signature
     }
     this.props.submit(value)
@@ -24,9 +24,15 @@ export default class Message extends Editor {
         label: 'Введите сообщение',
         placeholder: 'Введите сообщение для его рассылки по выбраным контактам'
       })}
+      <Form.Checkbox
+      label="добавить подпись"
+      name="signature"
+      checked={this.state.sign}
+      onChange={e => this.setState({sign: e.target.checked})}/>
       <Form.TextArea
         label= "Подпись"
         name="signature"
+        disabled={!this.state.sign}
         value={this.state.signature}
         onChange={this.onChange}/>
 
