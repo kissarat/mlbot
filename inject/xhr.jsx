@@ -60,7 +60,7 @@ extend(window, {
   },
 
   removeContact(username) {
-    sky.removeContact()
+    sky.removeContact(username)
       .then(() => sky.send({
         type: 'contact.remove',
         username

@@ -11,16 +11,6 @@ $blue_selection: #3498db;
 //fonts
 $font: Panton, Ubuntu, sans-serif;
 
-//@extend-elements
-//original selectors
-//p, .copyright
-%extend_1 {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 18px;
-  margin: 8px 0 0 !important;
-}
-
 //original selectors
 //.ui.horizontal.page.delivery.segments .ui.segment .ui.form >.field, .ui.horizontal.page.delivery.segments .ui.segment .ui.form >.field label
 %extend_2 {
@@ -33,6 +23,22 @@ $font: Panton, Ubuntu, sans-serif;
 
 #dark {
   opacity: 0;
+}
+
+#back {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.02;
+  background-size: 60px;
+}
+
+.ui.segment, .ui.horizontal.segments {
+  background-color: transparent;
 }
 
 webview {
@@ -236,12 +242,11 @@ footer {
   }
 }
 
-p {
-  @extend %extend_1;
-}
-
-.copyright {
-  @extend %extend_1;
+p, .copyright {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 18px;
+  margin: 8px 0 0 !important;
 }
 
 input {

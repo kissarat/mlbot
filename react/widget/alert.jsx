@@ -26,11 +26,15 @@ export default class Alert extends PureComponent {
     if (props.persist) {
       messageProps['data-persist'] = props.persist
     }
+    const state = {
+      messageProps,
+      hidden: false
+    }
     if (props.persist) {
-      setTimeout(() => this.setState(Persistence.register(this, {
-        messageProps,
-        hidden: false
-      })), 0)
+      setTimeout(() => this.setState(Persistence.register(this, state)), 0)
+    }
+    else {
+      this.setState(state)
     }
   }
 

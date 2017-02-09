@@ -12,7 +12,11 @@ export default class Unauthorized extends PureComponent {
   }
 
   query() {
-    return db.contact.filter(a => a.account === this.props.account && 0 === a.authorized)
+    return db.contact.where({
+      account: this.props.account,
+      authorized: 0,
+      status: Status.CREATED
+    })
   }
 
   clear = async() => {
@@ -20,8 +24,10 @@ export default class Unauthorized extends PureComponent {
       inform: this.props.alert,
       account: this.props.account,
       success: (i, count) => `Удалено ${i} из ${count} контактов`,
-      async work(skype, contact) {
-        return skype.removeContact(contact.login)
+      work: async(skype, contact) =>{
+        const {username} = await skype.removeContact(contact.login)
+        console.log(username)
+        return this.query().filter(c => username === c.login).delete()
       },
 
       query: this.query()

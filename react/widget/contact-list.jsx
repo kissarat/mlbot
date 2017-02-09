@@ -149,7 +149,7 @@ export default class ContactList extends PureComponent {
         name += ` (${c.name})`
       }
       if (name.length > 45) {
-        name = name.slice(0, 48) + '…'
+        name = name.slice(0, 45) + '…'
       }
       const isNew = Status.CREATED === c.status
       return <Table.Row
