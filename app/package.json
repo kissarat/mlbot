@@ -15,8 +15,7 @@
     "productName": "MLBot",
     "nsis": {
       "language": "0019",
-      "perMachine": true,
-      "guid": "f091a437-748a-50c9-af55-739ba345b5a3"
+      "perMachine": true
     },
     "win": {
       "icon": "images/bitcoin.ico"

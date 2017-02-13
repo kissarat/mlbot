@@ -2,7 +2,7 @@ import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
 import {Status, dev} from '../../app/config'
-import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
+import {Table, Dimmer, Loader, Input} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
 
 export default class ContactList extends PureComponent {

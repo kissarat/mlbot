@@ -2,17 +2,23 @@ import React, {Component, PropTypes} from 'react'
 import {Form} from 'semantic-ui-react'
 import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Editor from '../base/editor.jsx'
+import api from '../connect/api.jsx'
 
 export default class Message extends Editor {
   name = 'Message'
   persist = ['value', 'signature', 'sign']
 
   state = {
-    sign: true
+    sign: true,
+    signature: 'https://club-leader.com/'
   }
 
   static propTypes = {
     submit: PropTypes.func
+  }
+
+  componentWillMount() {
+    this.setState({signature: 'https://club-leader.com/?r=' + api.config.user.nick})
   }
 
   submit(value, {signature}) {
@@ -43,6 +49,7 @@ export default class Message extends Editor {
         name="signature"
         disabled={!this.state.sign}
         value={this.state.signature}
+        readOnly
         onChange={this.onChange}
         autoHeight={true}/>
 

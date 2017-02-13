@@ -25,8 +25,7 @@ const InviteQueue = {
       count = 40
     }
 
-    const informInvited = i => inform('busy',
-      `Приглашено ${i} контактов из ${count}`)
+    const informInvited = i => inform('busy', `Приглашено ${i} контактов из ${count}`)
 
     let i = 0
     const pull = async() => {
@@ -52,7 +51,7 @@ const InviteQueue = {
     informInvited(0)
     await pull()
     this.clearTimeout()
-    inform('success', 'Все преглашены!')
+    inform('success', 'Все приглашены!')
   }
 }
 
