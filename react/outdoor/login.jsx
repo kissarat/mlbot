@@ -34,10 +34,10 @@ export default class Login extends Component {
             hashHistory.push('/accounts')
           }
           else {
-            if ('ABSENT' === data.status) {
+            if ('ABSENT' === data.error.status) {
               alert = 'Неверные логин или пароль'
             }
-            else if ('ALERT' === data.status) {
+            else if ('ALERT' === data.error.status) {
               alert = data.error.message
             }
             else {

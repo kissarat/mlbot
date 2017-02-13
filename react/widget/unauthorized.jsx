@@ -24,9 +24,8 @@ export default class Unauthorized extends PureComponent {
       inform: this.props.alert,
       account: this.props.account,
       success: (i, count) => `Удалено ${i} из ${count} контактов`,
-      work: async(skype, contact) =>{
+      work: async(skype, contact) => {
         const {username} = await skype.removeContact(contact.login)
-        console.log(username)
         return this.query().filter(c => username === c.login).delete()
       },
 
@@ -38,10 +37,9 @@ export default class Unauthorized extends PureComponent {
     this.props.alert('success', 'Серые контакты удалены')
   }
 
-  count = async () => {
-    this.setState({
-      unauthorizedCount: await this.query().count()
-    })
+  count = async() => {
+    const unauthorizedCount = await this.query().count()
+    this.setState({unauthorizedCount})
   }
 
   componentWillReceiveProps(props) {
