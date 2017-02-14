@@ -2,6 +2,7 @@ import {isEmpty, each} from 'lodash'
 import {stringify} from '../util/index.jsx'
 import config from '../../app/config'
 import {hashHistory} from 'react-router'
+import crypto from 'crypto'
 
 const headers = {
   'Accept': 'application/json',
@@ -19,6 +20,16 @@ class API {
 
   setToken(value) {
     localStorage.setItem('sam', value)
+  }
+
+  get hashToken() {
+    const token = this.getToken()
+    if (token) {
+      const hash = crypto.createHash('md5')
+      hash.update(token, 'utf8')
+      return hash.digest('hex')
+    }
+    return ''
   }
 
   buildURL(url, params) {

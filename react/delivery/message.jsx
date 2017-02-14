@@ -20,7 +20,7 @@ export default class Message extends Editor {
 
   componentWillMount() {
     this.setState({
-      signature: 'Сообщение отправлено с помощью программы: https://club-leader.com/?&r='
+      signature: 'Сообщение отправлено с помощью программы: https://club-leader.com/?r='
       + api.config.user.nick
     })
   }

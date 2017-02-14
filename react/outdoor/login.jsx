@@ -4,6 +4,7 @@ import {Button, Form, Grid, Image, Header, Icon, Message} from 'semantic-ui-reac
 import {hashHistory} from 'react-router'
 import BrowserLink from '../widget/browser-link.jsx'
 import {pick} from 'lodash'
+import Invalid from '../page/invalid.jsx'
 import Persistent from '../util/persistence.jsx'
 
 export default class Login extends Component {
@@ -29,25 +30,30 @@ export default class Login extends Component {
       })
       api.send('user/login', formData)
         .then((data) => {
-          let alert = false
-          if (data.success) {
-            hashHistory.push('/accounts')
+          if (409 === data.status) {
+            Invalid.render()
           }
           else {
-            if ('ABSENT' === data.error.status) {
-              alert = 'Неверные логин или пароль'
-            }
-            else if ('ALERT' === data.error.status) {
-              alert = data.error.message
+            let alert = false
+            if (data.success) {
+              hashHistory.push('/accounts')
             }
             else {
-              alert = 'Неизвестная ошибка'
+              if ('ABSENT' === data.error.status) {
+                alert = 'Неверные логин или пароль'
+              }
+              else if ('ALERT' === data.error.status) {
+                alert = data.error.message
+              }
+              else {
+                alert = 'Неизвестная ошибка'
+              }
             }
+            this.setState({
+              alert,
+              loading: false,
+            })
           }
-          this.setState({
-            alert,
-            loading: false,
-          })
         })
     }
   }

@@ -248,7 +248,9 @@ footer .two.column.row > .column:first-child {
   justify-content: space-between;
 }
 
-.page.error footer, .layout.outdoor footer {
+.page.error footer,
+.page.invalid footer,
+.layout.outdoor footer {
   position: fixed;
   right: 0;
   bottom: 0;
