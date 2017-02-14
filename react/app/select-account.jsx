@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Select, Button} from 'semantic-ui-react'
+import {Select, Button, Icon} from 'semantic-ui-react'
 import Skype from '../skype/index.jsx'
 import {toArray} from 'lodash'
 
@@ -32,27 +32,13 @@ export default class SelectAccount extends Component {
   }
 
   loginButton(selectedAccount) {
-    if (selectedAccount && Skype.get(selectedAccount)) {
-      return <Button
-        className="skype logout"
-        content="Выйти"
-        disabled={!selectedAccount}
-        icon="sign out"
-        onClick={() => Skype.all().remove()}
-        type="button"
-      />
-    }
-    else {
-      return <Button
-        className="skype logout"
-        content="Войти"
-        disabled={!selectedAccount}
-        icon="sign in"
-        loading={this.state.busy}
-        onClick={this.openSkype}
-        type="button"
-      />
-    }
+    return <Icon
+      name="refresh"
+      loading={this.state.busy}
+      size="big"
+      title="Обновить список контактов"
+      disabled={!selectedAccount}
+      onClick={this.openSkype}/>
   }
 
   render() {
