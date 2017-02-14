@@ -1,6 +1,25 @@
 const path = require('path')
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, MenuItem} = require('electron')
 const config = require('./config')
+const {map} = require('lodash')
+
+const labels = {
+  selectall: 'Выделить всё',
+  cut: 'Вырезать',
+  copy: 'Копировать',
+  paste: 'Вставить',
+}
+
+require('electron-context-menu')({
+  showInspectElement: false,
+  // append() {
+  //   return map(labels, (label, role) => new MenuItem({role, label}))
+  // },
+  append() {
+    return [new MenuItem({role: 'selectall', label: 'Выделить всё'})]
+  },
+  labels
+})
 
 BrowserWindow.prototype.loadFile = function (path) {
   return this.loadURL(`file://${__dirname}${path}`)
