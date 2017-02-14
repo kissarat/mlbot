@@ -72,6 +72,15 @@ export default class App extends SingletonComponent {
     hashHistory.push('/login')
   }
 
+  componentDidMount() {
+    setTimeout(function () {
+      if (!(isObject(api.config.user) && 'string' === typeof api.config.user.nick)) {
+        location.reload()
+      }
+    }
+    , 500)
+  }
+
   render() {
     return <div className="layout app">
       <Dimmer active={!!this.state.busy} inverted>

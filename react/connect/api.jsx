@@ -77,6 +77,16 @@ class API {
     return this.config.entities
   }
 
+  report(err) {
+    console.error(err)
+    return this.send('report/error', {time: Date.now()}, {
+      url: location.hash.slice(1),
+      name: err.name,
+      message: err.message,
+      stack: err._e && 'string' === typeof err._e.stack ? err._e.stack : err.stack
+    })
+  }
+
   logout() {
     return this.send('user/logout')
   }

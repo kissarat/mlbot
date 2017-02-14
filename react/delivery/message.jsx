@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from 'react'
 import {Form} from 'semantic-ui-react'
-import {toArray, defaults, keyBy, uniq} from 'lodash'
+import {toArray, defaults, keyBy, uniq, isObject} from 'lodash'
 import Editor from '../base/editor.jsx'
 import api from '../connect/api.jsx'
+import Help from '../widget/help.jsx'
 
 export default class Message extends Editor {
   name = 'Message'
@@ -19,15 +20,14 @@ export default class Message extends Editor {
 
   componentWillMount() {
     this.setState({
-      signature: '▁▁▁▁▁▁▁▁▁▁▁▁▁\n' +
-      'Сообщение отправлено с помощью программы: https://club-leader.com/?r='
+      signature: 'Сообщение отправлено с помощью программы: https://club-leader.com/?r='
       + api.config.user.nick
     })
   }
 
-  submit(value, {signature}) {
-    if (this.state.sign && signature) {
-      value += '\n' + signature
+  submit(value) {
+    if (this.state.sign) {
+      value += '\n▁▁▁▁▁▁▁▁▁▁▁▁▁\n' + this.state.signature
     }
     this.props.submit(value)
   }
@@ -43,19 +43,13 @@ export default class Message extends Editor {
         label: 'Введите сообщение',
         placeholder: 'Введите сообщение для его рассылки по выбраным контактам'
       })}
-      <Form.Checkbox
-        label="добавить подпись"
-        name="sign"
-        checked={this.state.sign}
-        onChange={this.onCheckboxChange}/>
-      <Form.TextArea
-        label="Подпись"
-        name="signature"
-        disabled={!this.state.sign}
-        value={this.state.signature}
-        readOnly
-        onChange={this.onChange}
-        autoHeight={true}/>
+      <Help text={this.state.signature}>
+        <Form.Checkbox
+          label="добавить подпись"
+          name="sign"
+          checked={this.state.sign}
+          onChange={this.onCheckboxChange}/>
+      </Help>
 
       {this.submitButton({
         content: 'Разослать',

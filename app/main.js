@@ -1,7 +1,6 @@
 const path = require('path')
 const {app, BrowserWindow, MenuItem} = require('electron')
 const config = require('./config')
-const {map} = require('lodash')
 
 const labels = {
   selectall: 'Выделить всё',
@@ -11,7 +10,7 @@ const labels = {
 }
 
 require('electron-context-menu')({
-  showInspectElement: false,
+  showInspectElement: config.dev,
   // append() {
   //   return map(labels, (label, role) => new MenuItem({role, label}))
   // },

@@ -177,6 +177,7 @@ extend(Skype, {
 
   show(visible) {
     document.getElementById('app').style.display = visible ? 'none' : 'block'
+    document.getElementById('back').style.display = visible ? 'none' : 'block'
     document.getElementById('dark').style.opacity = visible ? '1' : '0'
   },
 

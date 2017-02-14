@@ -1,5 +1,4 @@
 import 'babel-polyfill'
-// import './style.scss'
 import React, {Component} from 'react'
 import Unavailable from './page/unavailable.jsx'
 import {Loader} from 'semantic-ui-react'
@@ -30,7 +29,7 @@ db.setup()
         }
       }
       catch (ex) {
-        console.error(ex)
+        api.report(ex)
       }
     }
     else {
@@ -55,7 +54,6 @@ db.setup()
       const stack = err._e && 'string' === typeof err._e.stack ? err._e.stack : err.stack
       message += `\n______________________\n${err.name} ${err.message}\n${stack}`
     }
-    window.error = err
-    console.error(err)
+    api.report(err)
     render(<Unavailable message={message}/>, appRoot)
   })
