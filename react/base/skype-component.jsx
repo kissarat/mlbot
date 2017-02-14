@@ -11,11 +11,11 @@ export default class SkypeComponent extends Component {
   persist = ['account']
 
   componentWillMount() {
-   this.setState(Persistent.register(this, {
-     account: '',
-     alert: false,
-     busy: false
-   }))
+    this.setState(Persistent.register(this, {
+      account: '',
+      alert: false,
+      busy: false
+    }))
   }
 
   componentDidMount() {
@@ -41,10 +41,11 @@ export default class SkypeComponent extends Component {
     }
   }
 
-  selectAccount() {
+  selectAccount(login) {
     return <SelectAccount
       value={this.state.account}
-      select={account => this.changeAccount(account)}/>
+      select={account => this.changeAccount(account)}
+      login={login}/>
   }
 
   alertMessage() {

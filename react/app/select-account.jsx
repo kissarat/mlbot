@@ -65,7 +65,7 @@ export default class SelectAccount extends Component {
         placeholder="Выберите Skype"
         value={this.props.value}
       />
-      {this.loginButton(this.props.value)}
+      {this.props.login ? this.loginButton(this.props.value) : ''}
     </div>
   }
 }
