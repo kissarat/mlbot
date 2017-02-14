@@ -86,7 +86,7 @@ export default class Login extends Component {
           <div>
             <p>
               Для входа в программу MLBot Skype используйте почту и пароль проекта&nbsp;
-              <BrowserLink href="https://club-leader.com/">club-leader.com</BrowserLink>.
+              <BrowserLink href="https://club-leader.com/">club-leader.com</BrowserLink>
             </p>
             <p>
               MLBot заработает при наличии открытой матрицы Silver в самом прибыльном

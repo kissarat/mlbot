@@ -4,10 +4,11 @@ import db from '../database.jsx'
 import fs from 'fs-promise'
 import React, {Component} from 'react'
 import Skype from '../skype/index.jsx'
-import {Button, Segment} from 'semantic-ui-react'
+import {Button, Segment, Message, Icon} from 'semantic-ui-react'
 import {createTokenInfo} from '../util/index.jsx'
-import {defaults, omit, map} from 'lodash'
+import {merge, defaults, omit, map, pick} from 'lodash'
 import {remote} from 'electron'
+import BrowserLink from '../widget/browser-link.jsx'
 
 export default class Settings extends Component {
   state = {
@@ -35,10 +36,9 @@ export default class Settings extends Component {
   }
 
   clearSettings = () => {
-    const token = localStorage.getItem('sam')
+    const preserve = pick(localStorage, 'sam', 'mlbot.version')
     localStorage.clear()
-    localStorage.setItem('sam', token)
-    // hashHistory.push('/login')
+    merge(localStorage, preserve)
   }
 
   clearContacts = async() => {
@@ -153,6 +153,11 @@ export default class Settings extends Component {
           content="Импорт"
           onClick={this.fileImport}
         />
+        <Message color="teal">
+          <Icon size="huge" name="question circle outline" />
+          Сайт программы с описанием, инструкцией по работе, помощью и поддержкой от разработчиков
+          <BrowserLink href="http://mlbot.inbisoft.com">Перейти →</BrowserLink>
+        </Message>
       </Segment>
     </Segment.Group>
   }

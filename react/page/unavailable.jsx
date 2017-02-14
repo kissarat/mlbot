@@ -10,7 +10,7 @@ export default class Unavailable extends Component {
         <p>ML Skype AutoBot ™ </p>
       </header>
 
-      <Message error>{this.props.message}</Message>
+      <Message error><pre>{this.props.message}</pre></Message>
 
       <div className="message">
         <h1>Ошибка! </h1>

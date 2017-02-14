@@ -13,18 +13,6 @@ module.exports = function (name) {
     },
     module: {
       loaders: [
-        // {
-        //   test: /\.(svg)$/,
-        //   loader: "url-loader"
-        // },
-        // {
-        //   test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        //   loader: "url-loader?limit=10000&minetype=application/font-woff"
-        // },
-        // {
-        //   test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        //   loader: "file-loader"
-        // },
         {
           test: /\.json$/,
           loader: "json-loader"
@@ -41,17 +29,28 @@ module.exports = function (name) {
             ]
           }
         },
-        {
-          test: /\.scss$/,
-          // loader: "sass-loader",
-          loaders: [{
-            loader: "style-loader" // creates style nodes from JS strings
-          }, {
-            loader: "css-loader" // translates CSS into CommonJS
-          }, {
-            loader: "sass-loader" // compiles Sass to CSS
-          }]
-        }
+        // {
+        //   test: /\.(svg)$/,
+        //   loader: "url-loader"
+        // },
+        // {
+        //   test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        //   loader: "url-loader?limit=10000&minetype=application/font-woff"
+        // },
+        // {
+        //   test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        //   loader: "file-loader"
+        // },
+        // {
+        //   test: /\.scss$/,
+          // loaders: [{
+          //   loader: "style-loader" // creates style nodes from JS strings
+          // }, {
+          //   loader: "css-loader" // translates CSS into CommonJS
+          // }, {
+          //   loader: "sass-loader" // compiles Sass to CSS
+          // }]
+        // }
       ]
     },
     resolve: {

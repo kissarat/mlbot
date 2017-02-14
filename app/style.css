@@ -1,0 +1,520 @@
+@charset "UTF-8";
+
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field, .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field label {
+  display: flex;
+  flex-direction: column;
+  font-family: Panton, Ubuntu, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+#dark {
+  opacity: 0;
+}
+
+#back {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+}
+
+.ui.segment, .ui.horizontal.segments {
+  background-color: transparent;
+}
+
+webview {
+  height: 768px;
+  overflow: scroll;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 1024px;
+}
+
+#app {
+  bottom: 0;
+  height: 100vh;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100vw;
+}
+
+nav ul {
+  padding: 4px 2px 0;
+}
+
+nav li {
+  display: inline-block;
+  list-style: none;
+  padding: 0 2px;
+}
+
+.contact-list-segment {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  overflow-x: hidden;
+}
+
+.contact-list-segment .scroll {
+  flex: 1;
+}
+
+.contact-list-segment .item {
+  cursor: pointer;
+}
+
+.scroll {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.page.delivery {
+  display: flex;
+  height: calc(100% - 14px);
+}
+
+.page.delivery > * {
+  flex: 1;
+  height: 100%;
+}
+
+.page.delivery .field.text {
+  margin-top: 16px;
+}
+
+.page.invite {
+  height: calc(100% - 14px);
+}
+
+.page.invite .limit [type=number] {
+  font-family: Panton, Ubuntu, sans-serif;
+  text-align: right;
+  width: 60px;
+  all: initial;
+}
+
+.page.invite .limit .ui.input {
+  display: inline-block;
+  all: initial;
+}
+
+.page.invite .form-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.page.invite .form-header > * {
+  flex: 1;
+}
+
+.page.invite .form-header .load-file {
+  text-align: left;
+}
+
+.page.invite .form-header .select-account {
+  text-align: right;
+}
+
+.page.invite .form-header .select-account [type=button] {
+  margin-left: 6px;
+}
+
+.page.invite .field.contacts {
+  margin-top: 4px;
+}
+
+.page.invite .field.greeting {
+  margin-top: 14px;
+}
+
+.page.invite small {
+  font-size: 0.9em;
+  margin-top: 8px;
+}
+
+.page.invite form .text-fields > * {
+  width: calc(50% - 16px);
+}
+
+.page.account-list {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.page.account-list > a {
+  background: #3498db;
+  border-radius: 43px;
+  color: #fff;
+  display: block;
+  font-family: Panton, Ubuntu, sans-serif;
+  font-size: 17px;
+  text-align: center;
+  width: 250px;
+  margin: 40px 0;
+  padding: 15px 25px;
+}
+
+.page.account-list > a:hover {
+  opacity: 0.9;
+}
+
+.page.account-list .remove.icon {
+  cursor: pointer;
+  font-size: 21px;
+}
+
+.page.account-list .remove.icon:hover {
+  color: red;
+}
+
+.page.account-list .ui.list {
+  max-width: 300px;
+}
+
+.page.settings .reset.segment {
+  max-width: 400px;
+}
+
+.page.settings .reset .control {
+  display: flex;
+  flex-direction: column;
+}
+
+.page.settings .reset .control button {
+  margin-top: 4px;
+}
+
+footer {
+  background: radial-gradient(attop, #feffff, #e5f7f6);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+footer img {
+  display: inline-block !important;
+  height: auto;
+  max-width: 45% !important;
+}
+
+footer .control {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1em;
+}
+
+footer .control > * {
+  cursor: pointer;
+}
+
+footer .control i:hover {
+  cursor: pointer;
+}
+
+footer.expanded .close {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+footer.expanded .chevron {
+  display: none;
+}
+
+footer.collapsed .close {
+  display: none;
+}
+
+footer.collapsed .advertise {
+  display: none;
+}
+
+footer .two.column.row > .column:first-child {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.page.error footer, .layout.outdoor footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+}
+
+.layout.outdoor .two.column.row p a.browser-link {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+p, .copyright {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 18px;
+  margin: 8px 0 0 !important;
+}
+
+input {
+  border-radius: 3px !important;
+  color: #000 !important;
+  font-family: Panton, Ubuntu, sans-serif !important;
+  letter-spacing: 1px;
+  padding: 10px !important;
+}
+
+textarea {
+  height: 112px;
+}
+
+.widget.contact-list .search {
+  width: 100%;
+}
+
+.widget.contact-list td {
+  padding: 4px 7px;
+}
+
+.widget.contact-list tr {
+  background-color: transparent;
+}
+
+.widget.contact-list tr.add .move:before {
+  color: green;
+  content: " +";
+}
+
+.widget.contact-list tr.remove .move:before {
+  color: red;
+  content: "– ";
+}
+
+.widget.contact-list .move {
+  cursor: pointer;
+}
+
+.widget.contact-list .table-container {
+  position: relative;
+  flex: 1 0 auto;
+}
+
+.widget.clear-unauthorized {
+  margin: 4px auto;
+  width: 100%;
+}
+
+.ui.horizontal.page.delivery.segments > * {
+  max-width: 33%;
+  min-width: 250px;
+}
+
+.ui.horizontal.page.delivery.segments .loader {
+  align-items: center;
+  display: flex;
+  height: 280px;
+  justify-content: center;
+  margin: -5px;
+}
+
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .control {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  height: 61px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.ui.horizontal.page.delivery.segments .ui.segment .ui.form > .control strong {
+  font-family: Panton, Ubuntu, sans-serif;
+  font-weight: 400;
+}
+
+.ui.horizontal.page.segments #select-skype {
+  width: 100%;
+}
+
+.ui.segment .ui.message .content p {
+  font-size: 12px;
+  text-align: center;
+  margin: 0 !important;
+}
+
+.help-question {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.help-question .question.circle {
+  color: #3498db;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.help-text {
+  margin: 6px 0 0;
+}
+
+.help-text .content p {
+  font-size: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.contact-list td {
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+.contact-list .control {
+  display: flex;
+}
+
+.contact-list [type=button] {
+  min-width: 160px;
+}
+
+.contact-list table tbody {
+  overflow-x: hidden;
+}
+
+.select-account {
+  display: flex;
+}
+
+.select-account button.skype {
+  min-width: 180px;
+}
+
+@media (min-width: 1200px) {
+  .contact-list .control {
+    min-height: 36px;
+  }
+
+  .contact-list [type=button] {
+    margin-left: 6px !important;
+  }
+
+  .select-account {
+    min-height: 36px;
+  }
+
+  .select-account button {
+    margin-left: 6px !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  .contact-list .control {
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 76px;
+  }
+
+  .contact-list .control button {
+    margin: 0;
+  }
+
+  .page .select-account {
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 76px;
+  }
+
+  .page .select-account button {
+    margin: 0;
+  }
+}
+
+[data-persist="inviteLimitWarning"] {
+  max-width: 70vw;
+}
+
+.layout.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.layout.app .content {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.content .one.column.row > .column {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.two.column.row .column > .widget.browser-link {
+  align-items: center;
+  background: #fff;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  max-width: 220px;
+  transition: all .1s;
+  padding: 13px 13px 15px;
+}
+
+.two.column.row .column > .widget.browser-link:hover {
+  background: #fdfdfd;
+  transition: all .1s;
+}
+
+.paginator a {
+  max-width: 50px;
+}
+
+div.copyright {
+  font-weight: 600;
+}
+
+.invite .text-fields {
+  display: flex;
+  justify-content: space-between;
+}
+
+footer, textarea, input, .ui.menu {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ui.button {
+  color: black;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+.page.settings .browser-link {
+  margin-left: 6px;
+}
+
+.ui.teal.message {
+  display: flex;
+  align-items: center;
+}
