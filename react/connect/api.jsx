@@ -25,9 +25,10 @@ class API {
   get hashToken() {
     const token = this.getToken()
     if (token) {
-      const hash = crypto.createHash('md5')
+      const hash = crypto.createHash('sha256')
       hash.update(token, 'utf8')
-      return hash.digest('hex')
+      return hash.digest('base64')
+        .replace(/[+/=]/g, 'a')
     }
     return ''
   }
