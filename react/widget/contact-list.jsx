@@ -85,6 +85,9 @@ export default class ContactList extends PureComponent {
         params.online = 1
       }
       defaults(params, pick(this.state, 'offset', 'limit'))
+      if (this.props.account !== props.account) {
+        params.offset = 0
+      }
       this.setState({loading: true})
       this.load(params)
     }

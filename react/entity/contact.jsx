@@ -6,11 +6,11 @@ import {Status} from '../../app/config'
 
 function createTextSearchFilter(text) {
   if (text && (text = text.trim())) {
-    const words = text.split(/\s+/)
+    const words = text.toLowerCase().split(/\s+/)
     return function (c) {
       return words.every(word =>
         c.login.indexOf(word) >= 0
-        || (c.name && c.name.indexOf(word) >= 0)
+        || (c.name && c.name.toLowerCase().indexOf(word) >= 0)
       )
     }
   }
