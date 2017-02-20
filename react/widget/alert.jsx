@@ -43,8 +43,13 @@ export default class Alert extends PureComponent {
   }
 
   onDismiss = () => {
-    this.setState({hidden: true})
-    setTimeout(() => this.save(), 0)
+    if (this.props.onDismiss instanceof Function) {
+      this.props.onDismiss()
+    }
+    else {
+      this.setState({hidden: true})
+      setTimeout(() => this.save(), 0)
+    }
   }
 
   render() {

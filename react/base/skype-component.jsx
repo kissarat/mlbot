@@ -49,7 +49,9 @@ export default class SkypeComponent extends Component {
   }
 
   alertMessage() {
-    return this.state.alert ? <Alert {...this.state.alert}/> : ''
+    return this.state.alert ? <Alert
+        {...this.state.alert}
+        onDismiss={() => this.setState({alert: false})}/> : ''
   }
 
   alert = (type, content) => {
