@@ -13,6 +13,11 @@ const Database = {
         contact: `&id, login, name, &time,
         [status+authorized], [account+authorized+status]`
       })
+    db.version(2)
+      .stores({
+        contact: `&id, login, name, type, &time,
+        [status+authorized], [account+authorized+status]`
+      })
   },
 
   async reset() {
@@ -33,15 +38,17 @@ const Database = {
   },
 
   async setup() {
-    const appVersion = localStorage.getItem(VERSION)
+    await db.create()
+    return db.open()
+    // const appVersion = localStorage.getItem(VERSION)
     // localStorage.setItem(VERSION, package_json.version)
-    if (!appVersion || appVersion === package_json.version) {
-      await db.create()
-      return db.open()
-    }
-    else {
-      await db.reset()
-    }
+    // if (!appVersion || appVersion === package_json.version) {
+    //   await db.create()
+    //   return db.open()
+    // }
+    // else {
+    //   await db.reset()
+    // }
   }
 }
 

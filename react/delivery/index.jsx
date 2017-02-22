@@ -39,6 +39,7 @@ export default class Delivery extends SkypeComponent {
           account={this.state.account}
           status={Status.CREATED}/>
       </Segment>
+
       <Segment className="contact-list-segment">
         <Help text="Нажмите, чтобы исключить контакт из рассылки">
           <Header textAlign="center" as="h2">Выбранные контакты</Header>
