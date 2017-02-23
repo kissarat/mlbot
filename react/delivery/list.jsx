@@ -1,18 +1,19 @@
 import React, {Component, PropTypes} from 'react'
 import {Button} from 'semantic-ui-react'
-import {Status} from '../../app/config'
-import {toArray, defaults, keyBy, uniq} from 'lodash'
+import {Status, Type} from '../../app/config'
+import {toArray, defaults, keyBy, uniq, values} from 'lodash'
 import Contact from '../entity/contact.jsx'
 import ContactList from '../widget/contact-list.jsx'
 import db from '../database.jsx'
 
 export default class DeliveryList extends Component {
   static propTypes = {
+    type: PropTypes.oneOf(values(Type)).isRequired,
     account: PropTypes.string,
-    authorized: React.PropTypes.oneOf([0, 1]).isRequired,
+    authorized: PropTypes.oneOf([0, 1]).isRequired,
     disabled: PropTypes.bool,
     sort: PropTypes.string,
-    status: React.PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
+    status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
   }
 
   state = {

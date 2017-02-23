@@ -6,18 +6,21 @@ const DBNAME = 'mlbot'
 const VERSION = 'version'
 const db = new Dexie(DBNAME)
 
+const schema = {
+  contact: ["&id", "login", "name", "&time", "[status+authorized]", "[account+authorized+status]"]
+}
+
 const Database = {
   create() {
     db.version(1)
       .stores({
-        contact: `&id, login, name, &time,
-        [status+authorized], [account+authorized+status]`
+        contact: schema.contact.join(',')
       })
     db.version(2)
       .stores({
-        contact: `&id, login, name, type, &time,
-        [status+authorized], [account+authorized+status]`
+        contact: schema.contact.concat(['type']).join(',')
       })
+      .upgrade(db => db.contact.toCollection().modify(content => content.type = 0))
   },
 
   async reset() {

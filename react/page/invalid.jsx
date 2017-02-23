@@ -13,9 +13,11 @@ export default class Invalid extends Component {
         <Message
           error
           icon="warning sign"
-          content="Ваше предложение было привязано к другому компьютеру,
-          для того чтобы привьязать к этому компьютеру"/>
-        <BrowserLink href={'http://mlbot.inbisoft.com/conflict/' + api.hashToken}>Обратитесь в техподдержку</BrowserLink>
+          content="Ваш аккаунт был привязан к другому компьютеру,
+          для того чтобы привьязать к этому компьютеру перейдите по ссылке ниже"/>
+        <BrowserLink href={'http://mlbot.inbisoft.com/conflict/' + api.hashToken}>
+          Запрос на сброс привьязки
+        </BrowserLink>
       </Segment>
       <Footer/>
     </div>

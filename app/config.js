@@ -19,6 +19,7 @@ const config = {
     height: 960,
     x: 0
   },
+
   Status: {
     FORBIDDEN: -2,
     ABSENT: -1,
@@ -30,6 +31,12 @@ const config = {
     SENT: 4,
     DOUBLE: 5,
   },
+
+  Type: {
+    PERSON: 0,
+    CHAT: 1,
+  },
+
   start: {
     delay: 3000
   },

@@ -80,7 +80,7 @@ export default class ContactList extends PureComponent {
 
   initialize(props) {
     if (!props.authorized || props.account) {
-      const params = pick(props, 'account', 'status', 'authorized')
+      const params = pick(props, 'type', 'account', 'status', 'authorized')
       if (1 === props.online) {
         params.online = 1
       }

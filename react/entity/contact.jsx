@@ -28,11 +28,17 @@ extend(Contact, {
   },
 
   query(params) {
+    Object.freeze(params.type)
+
     const searchTextFilter = createTextSearchFilter(params.search)
 
     // console.log(params)
     const q = db.contact
       .where(pick(params, 'account', 'status', 'authorized'))
+
+    if ('number' === typeof params.type) {
+      q.filter(c => params.type === c.type)
+    }
 
     if (searchTextFilter) {
       q.and(searchTextFilter)

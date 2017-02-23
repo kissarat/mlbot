@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {toArray, defaults, isObject} from 'lodash'
+import {toArray, merge, defaults, isObject} from 'lodash'
 import {Status} from '../../app/config'
 import SelectAccount from '../app/select-account.jsx'
 import Alert from '../widget/alert.jsx'
@@ -11,11 +11,15 @@ export default class SkypeComponent extends Component {
   persist = ['account']
 
   componentWillMount() {
-    this.setState(Persistent.register(this, {
+    this.setup()
+  }
+
+  setup(state) {
+    this.setState(Persistent.register(this, merge({
       account: '',
       alert: false,
       busy: false
-    }))
+    }, state)))
   }
 
   componentDidMount() {

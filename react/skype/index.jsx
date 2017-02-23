@@ -3,7 +3,7 @@ import Skype from './static.jsx'
 import {clear} from '../util/index.jsx'
 import {EventEmitter} from 'events'
 import {extend, toArray, each} from 'lodash'
-import {Status, start} from '../../app/config'
+import {Status, Type, start} from '../../app/config'
 import Contact from '../entity/contact.jsx'
 import {millisecondsId, isSkypeUsername} from '../util/index.jsx'
 
@@ -95,6 +95,7 @@ extend(Skype.prototype, {
         const id = profile.login + '~' + c.id
         const found = existing.find(x => id === x.id)
         const contact = {
+          type: Type.PERSON,
           id,
           account: profile.login,
           login: c.id,

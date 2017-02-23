@@ -22,8 +22,7 @@ export const routes = <Route path='/'>
   <Route component={App}>
     <Route path='accounts/login' component={SkypeLogin}/>
     <Route path='accounts' component={AccountList}/>
-    <Route path='delivery/:account' component={Delivery}/>
-    <Route path='delivery' component={Delivery}/>
+    <Route path='delivery/:type' component={Delivery}/>
     <Route path='invite/:account' component={Invite}/>
     <Route path='invite' component={Invite}/>
     <Route path='settings' component={Settings}/>
