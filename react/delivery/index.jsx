@@ -32,6 +32,7 @@ export default class Delivery extends SkypeComponent {
   unauthorized() {
     if ('chat' !== this.props.params.type) {
       return <Unauthorized
+        type={Type.PERSON}
         account={this.state.account}
         alert={this.alert}/>
     }
