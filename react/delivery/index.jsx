@@ -1,5 +1,5 @@
 import DeliveryList from './list.jsx'
-import DeliveryQueue from './queue.jsx'
+import Queue from '../base/queue.jsx'
 import Help from '../widget/help.jsx'
 import Message from './message.jsx'
 import React from 'react'
@@ -9,24 +9,28 @@ import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 import Unauthorized from '../widget/unauthorized.jsx'
 import Repeat from './repeat.jsx'
+import db from '../database.jsx'
 
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
   send = text => {
-    DeliveryQueue.execute(this.state.account, text, this.alert)
+    const queue = Queue.create(this, {
+      success: (i, count) => `Отправлено ${i} контактам из ${count}`,
+      work: async(skype, contact) => {
+        const anwser = await skype.sendMessage({
+          id: contact.id,
+          login: contact.login,
+          text
+        })
+        await db.contact.update(contact.id, {status: Status.CREATED})
+      }
+    })
     this.alert(false)
   }
 
   type() {
     return 'chat' === this.props.params.type ? Type.CHAT : Type.PERSON
-  }
-
-  componentWillMount() {
-    this.setup({
-      repeat: 1,
-      every: 0
-    })
   }
 
   unauthorized() {
