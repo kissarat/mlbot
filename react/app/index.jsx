@@ -89,8 +89,9 @@ export default class App extends SingletonComponent {
           content={'string' === typeof this.state.busy ? this.state.busy : ''}/>
       </Dimmer>
       <Menu icon="labeled" compact borderless>
-        <Menu.Item>
+        <Menu.Item className="logo">
           <Image src="images/menu-logo.png"/>
+          <span className="version">версия 1.2</span>
         </Menu.Item>
         <Menu.Menu position="right">
           <Menu.Item

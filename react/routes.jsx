@@ -1,7 +1,6 @@
 import AccountList from './app/account-list.jsx'
 import App from './app/index.jsx'
 import Delivery from './delivery/index.jsx'
-import Hello from './app/hello.jsx'
 import Invite from './invite/index.jsx'
 import Loader from './page/unavailable.jsx'
 import Login from './outdoor/login.jsx'
@@ -18,7 +17,6 @@ export const routes = <Route path='/'>
     <Route path='login' component={Login}/>
     <Route path='unavailable' component={Unavailable}/>
   </Route>
-  <Route path='app' component={App}/>
   <Route component={App}>
     <Route path='accounts/login' component={SkypeLogin}/>
     <Route path='accounts' component={AccountList}/>
@@ -26,7 +24,6 @@ export const routes = <Route path='/'>
     <Route path='invite/:account' component={Invite}/>
     <Route path='invite' component={Invite}/>
     <Route path='settings' component={Settings}/>
-    <Route path='hello' component={Hello}/>
   </Route>
 </Route>
 

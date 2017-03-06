@@ -23,6 +23,8 @@ export default class Editor extends Component {
   textarea(props) {
     return <Form.TextArea
       name="value"
+      autoHeight
+      className="editor"
       value={this.state.value}
       onChange={this.onChange}
       {...props}/>

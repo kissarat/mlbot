@@ -461,8 +461,13 @@ textarea {
 }
 
 .layout.app .content {
+  margin-top: 0;
   flex: 1;
   overflow-y: hidden;
+}
+
+.layout.app .content > * {
+  margin-top: 0;
 }
 
 .content .one.column.row > .column {
@@ -542,4 +547,17 @@ footer, textarea, input, .ui.menu {
 
 .loop .restart input {
   width: 55px;
+}
+
+.logo .version {
+  margin-top: -54px;
+  margin-left: 160px;
+}
+
+.delivery-message .editor {
+  margin-bottom: 4px !important;
+}
+
+.editor textarea {
+  min-height: 70px !important;
 }
