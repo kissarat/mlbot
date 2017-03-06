@@ -10,6 +10,9 @@ import Settings from './app/settings.jsx'
 import SkypeLogin from './skype/login.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
+import package_json from '../app/package.json'
+
+document.title = document.title.replace('Beta', `v${package_json.version} Beta`)
 
 export const routes = <Route path='/'>
   <IndexRoute component={Loader}/>

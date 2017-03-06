@@ -1,3 +1,5 @@
+import package_json from '../../app/package.json'
+
 const globalProperties = {
   isDevMode: 'dev',
   listLimit: 'limit_list',
@@ -91,7 +93,7 @@ export default class App extends SingletonComponent {
       <Menu icon="labeled" compact borderless>
         <Menu.Item className="logo">
           <Image src="images/menu-logo.png"/>
-          <span className="version">версия 1.2</span>
+          <span className="version">версия {package_json.version}</span>
         </Menu.Item>
         <Menu.Menu position="right">
           <Menu.Item

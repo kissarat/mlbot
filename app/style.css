@@ -1,5 +1,17 @@
 @charset "UTF-8";
 
+@font-face {
+  font-family: Panton;
+  src: url(images/Panton-Thin.otf) format(opentype);
+  font-weight: 100;
+}
+
+#back {
+  background-image: url("images/back.jpg");
+    opacity: 0.95;
+  /*transform: scaleX(-1);*/
+}
+
 .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field, .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field label {
   display: flex;
   flex-direction: column;
@@ -363,7 +375,7 @@ textarea {
 }
 
 .help-question .question.circle {
-  color: #3498db;
+  color: #aadcff;
   cursor: pointer;
   margin-left: 4px;
 }
@@ -551,7 +563,7 @@ footer, textarea, input, .ui.menu {
 
 .logo .version {
   margin-top: -54px;
-  margin-left: 160px;
+  margin-left: 150px;
 }
 
 .delivery-message .editor {
@@ -560,4 +572,14 @@ footer, textarea, input, .ui.menu {
 
 .editor textarea {
   min-height: 70px !important;
+}
+
+@media (max-width: 1024px) {
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .item.logo {
+    display: none !important;
+  }
 }

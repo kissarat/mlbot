@@ -13,7 +13,7 @@ const config = {
   reset: false,
   origin: 'http://app.inbisoft.com',
   window: {
-    minWidth: 1024,
+    minWidth: 960,
     minHeight: 768,
     width: 1080,
     height: 960,
