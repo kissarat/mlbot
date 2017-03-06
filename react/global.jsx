@@ -6,7 +6,6 @@ import db from './database.jsx'
 import api from './connect/api.jsx'
 import Dexie from 'dexie'
 import {remote} from 'electron'
-import Query from './store/query.jsx'
 import Queue from './base/queue.jsx'
 import {Registry} from './util/persistence.jsx'
 import Delivery from './delivery/index.jsx'
@@ -24,7 +23,6 @@ const Global = {
   Delivery,
   Dexie,
   go,
-  Query,
   Registry,
   Skype,
   Queue,

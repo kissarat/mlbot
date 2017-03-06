@@ -24,6 +24,10 @@ extend(sky, {
     return sky.fetch(`https://contacts.skype.com/contacts/v1/users/${username}/contacts`)
   },
 
+  // getConversations() {
+  //   return sky.fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations')
+  // },
+
   invite(username, greeting = '') {
     return fetch(`https://contacts.skype.com/contacts/v2/users/${this.profile.username}/contacts`, {
       method: 'POST',
@@ -88,7 +92,14 @@ XMLHttpRequest.prototype.open = function (method, url) {
     })
   }
 
-  if (sky.profile && sky.RegistrationToken && sky.token) {
+  if (url.indexOf('/users/ME/conversations?') > 0) {
+    this.addEventListener('load', function (e) {
+      const {conversations} = JSON.parse(e.target.responseText)
+      sky.conversations = conversations
+    })
+  }
+
+  if (sky.profile && sky.RegistrationToken && sky.token && sky.conversations) {
     sky.emit('token')
     sky.profile.token = sky.token
     sky.profile.token = sky.RegistrationToken
@@ -99,6 +110,7 @@ XMLHttpRequest.prototype.open = function (method, url) {
     sky.getContacts(sky.profile.username)
       .then(function ({contacts}) {
         sky.profile.contacts = contacts
+        sky.profile.conversations = sky.conversations
         sky.profile.type = 'contacts'
         sky.send(sky.profile)
       })

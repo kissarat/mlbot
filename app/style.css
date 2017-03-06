@@ -8,8 +8,8 @@
 
 #back {
   background-image: url("images/back.jpg");
-    opacity: 0.95;
-  /*transform: scaleX(-1);*/
+    opacity: 0.9;
+  transform: scaleX(-1);
 }
 
 .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field, .ui.horizontal.page.delivery.segments .ui.segment .ui.form > .field label {

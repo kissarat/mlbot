@@ -2,10 +2,11 @@ import db from '../database.jsx'
 import Skype from './static.jsx'
 import {clear} from '../util/index.jsx'
 import {EventEmitter} from 'events'
-import {extend, toArray, each} from 'lodash'
+import {extend, toArray, each, isObject} from 'lodash'
 import {Status, Type, start} from '../../app/config'
 import Contact from '../entity/contact.jsx'
 import {millisecondsId, isSkypeUsername} from '../util/index.jsx'
+import {AllHtmlEntities} from 'html-entities'
 
 extend(Skype.prototype, {
   login(username, password) {
@@ -42,14 +43,14 @@ extend(Skype.prototype, {
   },
 
   sendMessage(message) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       this.once('message', resolve)
       this.invoke('sendMessage', [message])
     })
   },
 
   invite(contact) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       this.invoke('invite', [contact])
       this.once('invite', resolve)
     })
@@ -90,6 +91,7 @@ extend(Skype.prototype, {
       .toArray()
     const g = millisecondsId()
     const contacts = []
+    const entities = new AllHtmlEntities()
     profile.contacts.forEach(function (c) {
       if (isSkypeUsername(c.id)) {
         const id = profile.login + '~' + c.id
@@ -108,6 +110,28 @@ extend(Skype.prototype, {
           contact.status = Status.CREATED
         }
         contacts.push(contact)
+      }
+    })
+    profile.conversations.forEach(function (c) {
+      const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
+      if (chatId && isObject(c.threadProperties) && c.threadProperties.topic) {
+        try {
+          const id = profile.login + '~' + chatId[1]
+          const found = existing.find(x => id === x.id)
+          const name = entities.decode(c.threadProperties.topic).trim()
+          contacts.push({
+            type: Type.CHAT,
+            id,
+            account: profile.login,
+            login: name,
+            authorized: 1,
+            status: found ? found.status : Status.CREATED,
+            time: found ? found.time : g.next().value
+          })
+        }
+        catch (ex) {
+          console.error(ex)
+        }
       }
     })
     const absent = contacts

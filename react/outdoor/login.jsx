@@ -13,8 +13,6 @@ export default class Login extends Component {
     loading: false
   }
 
-  // onChange = e => this.setState({[e.target.getAttribute('name')]: [e.target.value]})
-
   onSubmit = (e, {formData}) => {
     e.preventDefault()
     if (formData.email.length < 3) {

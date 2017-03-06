@@ -9,15 +9,14 @@ catch (ex) {
 }
 
 const config = {
-  dev: false,
+  dev: true,
   reset: false,
   origin: 'http://app.inbisoft.com',
   window: {
     minWidth: 960,
     minHeight: 768,
-    width: 1080,
-    height: 960,
-    x: 0
+    width: 1280,
+    height: 960
   },
 
   Status: {
