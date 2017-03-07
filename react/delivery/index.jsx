@@ -1,15 +1,15 @@
+import db from '../database.jsx'
 import DeliveryList from './list.jsx'
-import Queue from '../base/queue.jsx'
 import Help from '../widget/help.jsx'
 import Message from './message.jsx'
+import Queue from '../base/queue.jsx'
 import React from 'react'
+import Skype from '../skype/index.jsx'
 import SkypeComponent from '../base/skype-component.jsx'
+import Unauthorized from '../widget/unauthorized.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import Unauthorized from '../widget/unauthorized.jsx'
-// import Repeat from './repeat.jsx'
-import db from '../database.jsx'
 
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
@@ -44,6 +44,7 @@ export default class Delivery extends SkypeComponent {
       },
     })
     await queue.execute()
+    Skype.all().remove()
     this.alert('success', 'Рассылка завершена')
   }
 

@@ -56,6 +56,13 @@ extend(Skype.prototype, {
     })
   },
 
+  getMembers(chatId) {
+    return new Promise(resolve => {
+      this.once('getMembers', resolve)
+      this.invoke('getMembers', [chatId])
+    })
+  },
+
   openSettings() {
     this.invoke('openSettings')
   },

@@ -28,8 +28,8 @@ extend(sky, {
   //   return sky.fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations')
   // },
 
-  getMembers(login) {
-    return sky.fetch(`https://client-s.gateway.messenger.live.com/v1/threads/19:${login}@thread.skype?view=` + sky.view)
+  getMembers(chatId) {
+    return sky.fetch(`https://client-s.gateway.messenger.live.com/v1/threads/19:${chatId}@thread.skype?view=` + sky.view)
   },
 
   invite(username, greeting = '') {
@@ -64,6 +64,14 @@ extend(window, {
           username,
           status
         })
+      })
+  },
+
+  getMembers(chatId) {
+    sky.getMembers(chatId)
+      .then(function (r) {
+        r.type = 'getMembers'
+        sky.send(r)
       })
   },
 

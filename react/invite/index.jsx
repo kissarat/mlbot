@@ -1,13 +1,14 @@
+import Alert from '../widget/alert.jsx'
 import Help from '../widget/help.jsx'
 import InviteGreeting from './greeting.jsx'
 import InviteList from './list.jsx'
+import Queue from '../base/queue.jsx'
 import React from 'react'
 import SkypeComponent from '../base/skype-component.jsx'
 import TextContactEditor from './text-contact-editor.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults, keyBy, uniq} from 'lodash'
-import Alert from '../widget/alert.jsx'
 
 export default class Invite extends SkypeComponent {
   name = 'Invite'

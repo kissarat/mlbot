@@ -1,9 +1,11 @@
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
+import Skype from '../skype/index.jsx'
 import {Status, Type, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
+import App from '../app/index.jsx'
 
 export default class ContactList extends PureComponent {
   static propTypes = {
@@ -35,10 +37,6 @@ export default class ContactList extends PureComponent {
       this.initialize(props)
     }
   }
-
-  // shouldComponentUpdate(props, state) {
-  //   return !isEqual(this.state, state)
-  // }
 
   componentDidMount() {
     Contact.on('update', this.update)
@@ -145,13 +143,27 @@ export default class ContactList extends PureComponent {
     })
   }
 
+  async getMembers(chatId) {
+    const skype = await Skype.open(this.props.account, true)
+    const {members} = await skype.getMembers(chatId)
+    const usernames = []
+    members.forEach(function (member) {
+      const username = /8:(.*)/.exec(member.id)
+      if (username) {
+        usernames.push(username[1])
+      }
+    })
+    Contact.pushQueue(usernames)
+    App.setBusy(false)
+  }
+
   addUserIcon(contact) {
     if (Type.CHAT === this.props.type) {
       return <Icon
         name="add user"
         size="large"
       title={`Добавить контакты из чата «${contact.name}» в очередь приглашений`}
-      onClick={() => alert('Еще не работает')}/>
+      onClick={e => this.getMembers(contact.login)}/>
     }
   }
 
@@ -172,10 +184,9 @@ export default class ContactList extends PureComponent {
       }
       const isNew = Status.CREATED === c.status
       return <Table.Row
-        key={c.id} className={isNew ? 'add' : 'remove'}
-        onClick={() => this.changeStatus(c)}>
+        key={c.id} className={isNew ? 'add' : 'remove'}>
         <Table.Cell className="move">
-          {name}
+          <span onClick={() => this.changeStatus(c)}>{name}</span>
           {this.addUserIcon(c)}
         </Table.Cell>
       </Table.Row>
