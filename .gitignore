@@ -5,3 +5,5 @@ images
 local.js*
 node_modules
 app/js/
+rat/typings
+rat/dist
