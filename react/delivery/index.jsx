@@ -14,19 +14,32 @@ import db from '../database.jsx'
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
-  send = text => {
-    const queue = Queue.create(this, {
-      success: (i, count) => `Отправлено ${i} контактам из ${count}`,
+  send = async(text) => {
+    const queue = new Queue({
+      success: (i, count) => `Отправлено ${i} из ${count}`,
+      query: () => db.contact.where({
+        account: this.state.account,
+        authorized: 1,
+        status: Status.SELECTED
+      })
+        .filter(c => this.type() === c.type),
+      account: this.state.account,
+      inform: this.alert,
       work: async(skype, contact) => {
-        const anwser = await skype.sendMessage({
-          id: contact.id,
-          login: contact.login,
-          text
-        })
+        let cid
+        if (Type.PERSON === this.type()) {
+          cid = '8:' + contact.login
+        }
+        else {
+          cid = `19:${contact.login}@thread.skype`
+        }
+        const anwser = await skype.rat.sendMessage(cid, text)
+        console.log(anwser)
         await db.contact.update(contact.id, {status: Status.CREATED})
       }
     })
-    this.alert(false)
+    await queue.execute()
+    this.alert('success', 'Рассылка завершена')
   }
 
   type() {

@@ -1,7 +1,7 @@
 import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
-import {Status, dev} from '../../app/config'
+import {Status, Type, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
 
@@ -147,9 +147,15 @@ export default class ContactList extends PureComponent {
 
   rows() {
     return this.state.contacts.map(c => {
-      let name = c.login
-      if (c.name && name !== c.name) {
-        name += ` (${c.name})`
+      let name
+      if (Type.PERSON === c.type) {
+        name = c.login
+        if (c.name && name !== c.name) {
+          name += ` (${c.name})`
+        }
+      }
+      else {
+        name = c.name
       }
       if (name.length > 45) {
         name = name.slice(0, 45) + '…'

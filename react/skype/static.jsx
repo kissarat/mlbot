@@ -3,6 +3,7 @@ import Skype from './webview.jsx'
 import {operationTimeout} from '../util/index.jsx'
 import App from '../app/index.jsx'
 import Contact from '../entity/contact.jsx'
+import Skyweb from '../../rat/src/skyweb.ts'
 
 function all(array) {
   return new Proxy(array, {
@@ -109,12 +110,16 @@ extend(Skype, {
             skype.setProfile(profile)
               .then(function () {
                 emitStage('finishing')
-                // console.log(profile.login + ` updated contacts after ${(Date.now() - loaded) / 1000} seconds`)
-                clearTimeout(timer)
-                resolve(skype)
-                emitStage('finish')
-                Contact.emit('update')
-                skype.emit('updated')
+                skype.rat = new Skyweb()
+                skype.rat.login(data.login, data.password)
+                  .then(function () {
+                    clearTimeout(timer)
+                    resolve(skype)
+                    emitStage('finish')
+                    Contact.emit('update')
+                    skype.emit('updated')
+                  })
+                  .catch(reject)
               })
           })
         })

@@ -33,6 +33,7 @@ export class Poll {
                         .then(this.pollAll.bind(this, skypeAccount, messagesCallback));
                     return;
                 } else {
+                    console.error(response)
                     this.eventEmitter.fire('error', 'Failed to poll messages.' +
                         '.\n Error code: ' + (response && response.statusCode ? response.statusCode : 'none') +
                         '.\n Error: ' + error +

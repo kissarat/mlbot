@@ -9,6 +9,8 @@ webpack.externals = dirs
   .filter(x => x !== '.bin')
   .reduce((a, n) => (a[n] = 'commonjs ' + n) && a, {})
 
+webpack.resolve.extensions = ['.ts', '.tsx', '.js']
+
 webpack.module.loaders.push({
   test: /\.tsx?$/,
   loader: 'ts-loader'

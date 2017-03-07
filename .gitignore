@@ -7,3 +7,5 @@ node_modules
 app/js/
 rat/typings
 rat/dist
+package.json
+app/rat

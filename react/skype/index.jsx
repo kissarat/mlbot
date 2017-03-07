@@ -123,7 +123,8 @@ extend(Skype.prototype, {
             type: Type.CHAT,
             id,
             account: profile.login,
-            login: name,
+            login: chatId[1],
+            name,
             authorized: 1,
             status: found ? found.status : Status.CREATED,
             time: found ? found.time : g.next().value
