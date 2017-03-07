@@ -1,4 +1,5 @@
 import {EventEmitter} from 'events'
+import config from '../../app/config'
 import {extend, isObject, sample, shuffle, toArray} from 'lodash'
 window.isObject = function (obj) {
   console.error('Global isObject')
@@ -94,7 +95,7 @@ WebView.create = function (partition) {
   }
   WebView.call(webview)
   webview.addEventListener('did-stop-loading', function () {
-    if (isDevMode) {
+    if (config.dev) {
       this.openDevTools()
     }
     this.setAudioMuted(true)

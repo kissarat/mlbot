@@ -35,7 +35,6 @@ class Skyweb {
         this.messageService = new MessageService(this.cookieJar, this.eventEmitter);
         this.requestService = new RequestService(this.cookieJar, this.eventEmitter);
         this.statusService = new StatusService(this.cookieJar, this.eventEmitter);
-        this.requestService = new RequestService(this.cookieJar, this.eventEmitter);
         this.threadService = new ThreadService(this.cookieJar, this.eventEmitter);
     }
 

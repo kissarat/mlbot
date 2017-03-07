@@ -32,24 +32,34 @@ extend(Queue, {
 Queue.prototype = {
   __proto__: Timeout,
 
+  openSkype() {
+    return Skype.open(this.account, true)
+  },
+
   async execute() {
     this.timeoutDuration = skypeTimeout
-    const openSkype = () => Skype.open(this.account, true)
     const count = await this.query()
       .count()
 
     if (count > 0) {
-      this.inform('busy', 'Подготовка входа в скайп')
-      const skype = await openSkype()
+      this.inform('busy', 'Входа в скайп')
+      const skype = await this.openSkype()
       this.inform('busy', 'Получение списка контактов')
       this.setTimeout(() => {
         const seconds = Math.round(this.timeoutDuration / 1000)
         this.inform('error', `Skype не отвечает в течении ${seconds} секунд`)
-        skype.remove()
+        if (skype.remove instanceof Function) {
+          skype.remove()
+        }
       })
-      skype.openSettings()
+      if (skype.openSettings instanceof Function) {
+        skype.openSettings()
+      }
+      if (this.beforeIteration instanceof Function) {
+        this.beforeIteration(skype)
+      }
 
-      const informInvited = i => this.inform('busy', this.success(i, count))
+      const inform = i => this.inform('busy', this.success(i, count))
 
       let i = 0
       const pull = async() => {
@@ -58,19 +68,21 @@ Queue.prototype = {
           return
         }
         await this.work(skype, contact)
-        informInvited(++i)
+        inform(++i)
         this.updateTimeout()
-        Contact.emit('update')
+        // Contact.emit('update')
+        /*
         if ('number' === typeof this.every) {
           Skype.all().remove()
           await openSkype()
         }
+        */
         if (i < count) {
           await pull()
         }
       }
 
-      informInvited(0)
+      inform(0)
       await pull()
       this.clearTimeout()
     }

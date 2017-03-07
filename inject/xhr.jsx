@@ -28,6 +28,10 @@ extend(sky, {
   //   return sky.fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations')
   // },
 
+  getMembers(login) {
+    return sky.fetch(`https://client-s.gateway.messenger.live.com/v1/threads/19:${login}@thread.skype?view=` + sky.view)
+  },
+
   invite(username, greeting = '') {
     return fetch(`https://contacts.skype.com/contacts/v2/users/${this.profile.username}/contacts`, {
       method: 'POST',
@@ -92,7 +96,9 @@ XMLHttpRequest.prototype.open = function (method, url) {
     })
   }
 
-  if (url.indexOf('/users/ME/conversations?') > 0) {
+  const conversationsURL = /\/users\/ME\/conversations\?.*view=(\w+)/.exec(url)
+  if (conversationsURL) {
+    sky.view = conversationsURL[1]
     this.addEventListener('load', function (e) {
       const {conversations} = JSON.parse(e.target.responseText)
       sky.conversations = conversations

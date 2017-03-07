@@ -1,12 +1,12 @@
 import db from '../database.jsx'
 import Skype from './static.jsx'
 import {clear} from '../util/index.jsx'
-import {EventEmitter} from 'events'
 import {extend, toArray, each, isObject} from 'lodash'
 import {Status, Type, start} from '../../app/config'
 import Contact from '../entity/contact.jsx'
 import {millisecondsId, isSkypeUsername} from '../util/index.jsx'
 import {AllHtmlEntities} from 'html-entities'
+import striptags from 'striptags';
 
 extend(Skype.prototype, {
   login(username, password) {
@@ -118,7 +118,9 @@ extend(Skype.prototype, {
         try {
           const id = profile.login + '~' + chatId[1]
           const found = existing.find(x => id === x.id)
-          const name = entities.decode(c.threadProperties.topic).trim()
+          const name = striptags(entities.decode(c.threadProperties.topic))
+            .replace(/\s+/g, ' ')
+            .trim()
           contacts.push({
             type: Type.CHAT,
             id,

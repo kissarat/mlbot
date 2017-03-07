@@ -2,7 +2,7 @@ import Contact from '../entity/contact.jsx'
 import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
 import {Status, Type, dev} from '../../app/config'
-import {Table, Dimmer, Loader, Input} from 'semantic-ui-react'
+import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
 
 export default class ContactList extends PureComponent {
@@ -145,6 +145,16 @@ export default class ContactList extends PureComponent {
     })
   }
 
+  addUserIcon(contact) {
+    if (Type.CHAT === this.props.type) {
+      return <Icon
+        name="add user"
+        size="large"
+      title={`Добавить контакты из чата «${contact.name}» в очередь приглашений`}
+      onClick={() => alert('Еще не работает')}/>
+    }
+  }
+
   rows() {
     return this.state.contacts.map(c => {
       let name
@@ -166,6 +176,7 @@ export default class ContactList extends PureComponent {
         onClick={() => this.changeStatus(c)}>
         <Table.Cell className="move">
           {name}
+          {this.addUserIcon(c)}
         </Table.Cell>
       </Table.Row>
     })

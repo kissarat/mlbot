@@ -8,7 +8,7 @@ import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 import Unauthorized from '../widget/unauthorized.jsx'
-import Repeat from './repeat.jsx'
+// import Repeat from './repeat.jsx'
 import db from '../database.jsx'
 
 export default class Delivery extends SkypeComponent {
@@ -17,14 +17,20 @@ export default class Delivery extends SkypeComponent {
   send = async(text) => {
     const queue = new Queue({
       success: (i, count) => `Отправлено ${i} из ${count}`,
+      account: this.state.account,
+      inform: this.alert,
+
+      beforeIteration(skype) {
+        skype.blank()
+      },
+
       query: () => db.contact.where({
         account: this.state.account,
         authorized: 1,
         status: Status.SELECTED
       })
         .filter(c => this.type() === c.type),
-      account: this.state.account,
-      inform: this.alert,
+
       work: async(skype, contact) => {
         let cid
         if (Type.PERSON === this.type()) {
@@ -34,9 +40,8 @@ export default class Delivery extends SkypeComponent {
           cid = `19:${contact.login}@thread.skype`
         }
         const anwser = await skype.rat.sendMessage(cid, text)
-        console.log(anwser)
         await db.contact.update(contact.id, {status: Status.CREATED})
-      }
+      },
     })
     await queue.execute()
     this.alert('success', 'Рассылка завершена')
@@ -56,6 +61,7 @@ export default class Delivery extends SkypeComponent {
   }
 
   render() {
+    const isChat = Type.CHAT === this.type()
     return <Segment.Group horizontal className="page delivery">
       <Segment>
         {this.alertMessage()}
@@ -64,12 +70,11 @@ export default class Delivery extends SkypeComponent {
         <Message
           disabled={!this.state.account}
           submit={this.send}/>
-        <Repeat/>
       </Segment>
 
       <Segment className="contact-list-segment">
         <Help text="Нажмите, чтобы включить контакт в рассылку">
-          <Header textAlign="center" as="h2">Ваши контакты</Header>
+          <Header textAlign="center" as="h2">Ваши {isChat ? 'чаты' : 'контакты'}</Header>
         </Help>
         <DeliveryList
           authorized={1}
@@ -80,7 +85,7 @@ export default class Delivery extends SkypeComponent {
 
       <Segment className="contact-list-segment">
         <Help text="Нажмите, чтобы исключить контакт из рассылки">
-          <Header textAlign="center" as="h2">Выбранные контакты</Header>
+          <Header textAlign="center" as="h2">Выбранные {isChat ? 'чаты' : 'контакты'}</Header>
         </Help>
         <DeliveryList
           authorized={1}

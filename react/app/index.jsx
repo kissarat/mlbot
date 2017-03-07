@@ -1,40 +1,9 @@
+window.skypeTimeout = 90 * 1000
 import package_json from '../../app/package.json'
-
-const globalProperties = {
-  isDevMode: 'dev',
-  listLimit: 'limit_list',
-  skypeTimeout: 'skype_timeout',
-  openSkypeAfterChoose: 'open_skype_after_choose'
-}
-
-each(globalProperties, function (localStorageKey, key) {
-  globalProperties[key] = {
-    get() {
-      return +localStorage.getItem(localStorageKey)
-    },
-
-    set(value) {
-      if (!value) {
-        value = 0
-      }
-      if ('boolean' === typeof value) {
-        value = value ? 1 : 0
-      }
-      localStorage.setItem(localStorageKey, value)
-    }
-  }
-})
-
-Object.defineProperties(window, globalProperties)
-
-if (!window.skypeTimeout) {
-  window.skypeTimeout = 60 * 1000
-}
-
 import Footer from '../widget/footer.jsx'
 import React, {Component} from 'react'
 import {hashHistory} from 'react-router'
-import {Menu, Segment, Image, Dimmer, Loader, Icon} from 'semantic-ui-react'
+import {Menu, Segment, Image, Dimmer, Loader} from 'semantic-ui-react'
 import api from '../connect/api.jsx'
 import {each, defaults} from 'lodash'
 import SingletonComponent from '../base/singleton-component.jsx'
@@ -55,18 +24,6 @@ export default class App extends SingletonComponent {
 
   static setBusy(busy) {
     this.set({busy})
-  }
-
-  developerMode(value) {
-    each(document.querySelectorAll('webview'), function (webview) {
-      if (value) {
-        webview.openDevTools()
-      }
-      else {
-        webview.closeDevTools()
-      }
-    })
-    window.isDevMode = value
   }
 
   async logout() {
