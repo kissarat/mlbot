@@ -2,7 +2,7 @@ import {extend, each, uniq, pick, filter, identity} from 'lodash'
 import {EventEmitter} from 'events'
 import db from '../database.jsx'
 import {millisecondsId} from '../util/index.jsx'
-import {Status} from '../../app/config'
+import {Status, Type} from '../../app/config'
 
 function createTextSearchFilter(text) {
   if (text && (text = text.trim())) {
@@ -98,6 +98,7 @@ extend(Contact, {
         authorized: 0,
         status: Status.SELECTED
       })
+      .filter(c => Type.PERSON === c.type)
   },
 
   delete(id) {
@@ -123,9 +124,10 @@ extend(Contact, {
     usernames = filter(usernames).map(identity)
     if (usernames.length > 0) {
       contacts = usernames.map(login => ({
+        authorized: 0,
         login: login,
         status: Status.SELECTED,
-        authorized: 0,
+        type: Type.PERSON,
       }))
       contacts = this.setupMany(uniq(contacts))
       await db.contact.bulkAdd(contacts)

@@ -49,10 +49,10 @@ extend(Skype.prototype, {
     })
   },
 
-  invite(contact) {
+  invite(username, greeting) {
     return new Promise(resolve => {
-      this.invoke('invite', [contact])
       this.once('invite', resolve)
+      this.invoke('invite', [username, greeting])
     })
   },
 
@@ -153,13 +153,6 @@ extend(Skype.prototype, {
       this.reload()
       return this.getProfile()
     }
-  },
-
-  invite(username) {
-    return new Promise(resolve => {
-      this.once('invite', resolve)
-      this.invoke('invite', [username])
-    })
   },
 
   removeContact(username) {

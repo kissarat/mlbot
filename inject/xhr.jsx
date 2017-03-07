@@ -33,7 +33,7 @@ extend(sky, {
   },
 
   invite(username, greeting = '') {
-    return fetch(`https://contacts.skype.com/contacts/v2/users/${this.profile.username}/contacts`, {
+    return fetch(`https://contacts.skype.com/contacts/v2/users/${sky.profile.username}/contacts`, {
       method: 'POST',
       headers: merge(sky.fetchOptions.headers, {
         'content-type': 'application/json'
@@ -49,14 +49,14 @@ extend(sky, {
     const fetch = url => this.fetch(url + username, {
       method: 'DELETE'
     })
-    return fetch(`https://contacts.skype.com/contacts/v2/users/${this.profile.username}/contacts/8:`)
+    return fetch(`https://contacts.skype.com/contacts/v2/users/${sky.profile.username}/contacts/8:`)
       .then(() => fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/contacts/8:'))
   }
 })
 
 extend(window, {
-  invite(username) {
-    sky.invite(username)
+  invite(username, greeting) {
+    sky.invite(username, greeting)
       .then(function ({status}) {
         status = 404 === status ? Status.ABSENT : Status.INVITED
         sky.send({
@@ -90,6 +90,7 @@ XMLHttpRequest.prototype.open = function (method, url) {
   if ('https://api.skype.com/users/self/profile' === url && 'GET' === method && !sky.profile && sky.token) {
     this.addEventListener('load', function () {
       sky.profile = JSON.parse(this.responseText)
+      window.sky.profile = sky.profile
       sky.profile.v = 1
       sky.profile.type = 'profile'
       sky.send(sky.profile)

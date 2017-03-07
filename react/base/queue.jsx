@@ -70,13 +70,6 @@ Queue.prototype = {
         await this.work(skype, contact)
         inform(++i)
         this.updateTimeout()
-        // Contact.emit('update')
-        /*
-        if ('number' === typeof this.every) {
-          Skype.all().remove()
-          await openSkype()
-        }
-        */
         if (i < count) {
           await pull()
         }
@@ -85,6 +78,7 @@ Queue.prototype = {
       inform(0)
       await pull()
       this.clearTimeout()
+      Contact.emit('update')
     }
     else {
       this.inform('error', 'Не найдено ни одного котакта')

@@ -22,7 +22,6 @@ export default class TextContactEditor extends Editor {
     if (usernames.length > 0) {
       await Contact.pushQueue(usernames)
     }
-    Contact.emit('update')
     this.setState({
       value: '',
       busy: false

@@ -1,4 +1,4 @@
-window.skypeTimeout = 90 * 1000
+window.skypeTimeout = 180 * 1000
 import package_json from '../../app/package.json'
 import Footer from '../widget/footer.jsx'
 import React, {Component} from 'react'

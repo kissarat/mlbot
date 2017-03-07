@@ -106,7 +106,6 @@ extend(Skype, {
             profile.login = data.login
             profile.password = data.password
             profile.spend = spend
-            window.profile = profile
             skype.setProfile(profile)
               .then(function () {
                 emitStage('finishing')

@@ -1,20 +1,43 @@
 import Help from '../widget/help.jsx'
 import InviteGreeting from './greeting.jsx'
 import InviteList from './list.jsx'
-import InviteQueue from './queue.jsx'
 import React from 'react'
 import SkypeComponent from '../base/skype-component.jsx'
 import TextContactEditor from './text-contact-editor.jsx'
 import {Segment, Header} from 'semantic-ui-react'
-import {Status} from '../../app/config'
+import {Status, Type} from '../../app/config'
 import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Alert from '../widget/alert.jsx'
 
 export default class Invite extends SkypeComponent {
   name = 'Invite'
 
-  invite = greeting =>
-    InviteQueue.execute(this.state.account, greeting, this.alert)
+  invite = async(greeting) => {
+    const queue = new Queue({
+      success: (i, count) => `Приглашено ${i} контактов из ${count}`,
+      account: this.state.account,
+      inform: this.alert,
+
+      query: () => db.contact.where({
+        authorized: 0,
+        status: Status.SELECTED
+      })
+        .filter(c => Type.PERSON === c.type),
+
+      work: async(skype, contact) => {
+        const answer = await skype.invite(contact.login, 'string' === typeof greeting ? greeting.trim() : '')
+        if (Status.ABSENT === answer.status) {
+          this.alert('busy', `Контакт ${contact.login} не существует!`)
+          await db.contact.delete(contact.id)
+        }
+        else {
+          await db.contact.update(contact.id, {status: Status.CREATED})
+        }
+      },
+    })
+    await queue.execute()
+    this.alert('success', 'Приглашение завершено')
+  }
 
   render() {
     return <Segment.Group horizontal className="page invite">
@@ -44,7 +67,9 @@ export default class Invite extends SkypeComponent {
         <Help text="Список контактов, которые будут приглашатся, когда вы нажмете на кнопку Добавить">
           <Header as='h2'>Очередь приглашений</Header>
         </Help>
-        <InviteList/>
+        <InviteList
+          type={Type.PERSON}
+        />
       </Segment>
     </Segment.Group>
   }

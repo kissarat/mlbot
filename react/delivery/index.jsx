@@ -39,7 +39,7 @@ export default class Delivery extends SkypeComponent {
         else {
           cid = `19:${contact.login}@thread.skype`
         }
-        const anwser = await skype.rat.sendMessage(cid, text)
+        await skype.rat.sendMessage(cid, text)
         await db.contact.update(contact.id, {status: Status.CREATED})
       },
     })
