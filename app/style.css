@@ -625,3 +625,19 @@ footer, textarea, input, .ui.menu {
   margin-top: 8px;
   margin-bottom: 4px;
 }
+
+.widget.delivery-message .group.time {
+  display: flex;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.widget.delivery-message .group.time select {
+  margin: 0 4px;
+  width: 44px;
+  height: 20px;
+}
+
+.widget.delivery-message .duration {
+  margin-bottom: 8px;
+}

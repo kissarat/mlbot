@@ -20,8 +20,9 @@ export default class Editor extends Component {
     }, state || this.state)))
   }
 
-  onChange = (e, {name, value}) => {
-    this.setState({[name]: value})
+  onChange = e => {
+    const name = e.target.getAttribute('name')
+    this.setState({[name]: e.target.value})
   }
 
   textarea(props) {

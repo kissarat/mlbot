@@ -41,16 +41,18 @@ module.exports = function (name) {
         //   test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         //   loader: "file-loader"
         // },
-        // {
-        //   test: /\.scss$/,
-          // loaders: [{
-          //   loader: "style-loader" // creates style nodes from JS strings
-          // }, {
-          //   loader: "css-loader" // translates CSS into CommonJS
-          // }, {
+        {
+          test: /\.css$/,
+          loaders: [{
+            loader: "style-loader" // creates style nodes from JS strings
+          }, {
+            loader: "css-loader" // translates CSS into CommonJS
+          },
+            // {
           //   loader: "sass-loader" // compiles Sass to CSS
-          // }]
-        // }
+          // }
+          ]
+        }
       ]
     },
     resolve: {
