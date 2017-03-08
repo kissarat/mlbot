@@ -42,21 +42,23 @@ Queue.prototype = {
       .count()
 
     if (count > 0) {
-      this.inform('busy', 'Входа в скайп')
-      const skype = await this.openSkype()
-      this.inform('busy', 'Получение списка контактов')
-      this.setTimeout(() => {
-        const seconds = Math.round(this.timeoutDuration / 1000)
-        this.inform('error', `Skype не отвечает в течении ${seconds} секунд`)
-        if (skype.remove instanceof Function) {
-          skype.remove()
-        }
-      })
-      if (skype.openSettings instanceof Function) {
-        skype.openSettings()
+      if (!this.skype) {
+        this.inform('busy', 'Входа в скайп')
+        this.skype = await this.openSkype()
+        this.inform('busy', 'Получение списка контактов')
+        this.setTimeout(() => {
+          const seconds = Math.round(this.timeoutDuration / 1000)
+          this.inform('error', `Skype не отвечает в течении ${seconds} секунд`)
+          if (this.skype.remove instanceof Function) {
+            this.skype.remove()
+          }
+        })
+      }
+      if (this.skype.openSettings instanceof Function) {
+        this.skype.openSettings()
       }
       if (this.beforeIteration instanceof Function) {
-        this.beforeIteration(skype)
+        this.beforeIteration(this.skype)
       }
 
       const inform = i => this.inform('busy', this.success(i, count))
@@ -67,7 +69,7 @@ Queue.prototype = {
         if (!contact) {
           return
         }
-        await this.work(skype, contact)
+        await this.work(this.skype, contact)
         inform(++i)
         this.updateTimeout()
         if (i < count) {

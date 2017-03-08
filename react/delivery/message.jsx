@@ -1,9 +1,9 @@
+import api from '../connect/api.jsx'
+import Editor from '../base/editor.jsx'
+import Help from '../widget/help.jsx'
 import React, {Component, PropTypes} from 'react'
 import {Form} from 'semantic-ui-react'
 import {toArray, defaults, keyBy, uniq, isObject} from 'lodash'
-import Editor from '../base/editor.jsx'
-import api from '../connect/api.jsx'
-import Help from '../widget/help.jsx'
 
 export default class Message extends Editor {
   name = 'Message'
@@ -11,7 +11,7 @@ export default class Message extends Editor {
 
   state = {
     sign: true,
-    signature: 'https://club-leader.com/'
+    // signature: 'https://club-leader.com/'
   }
 
   static propTypes = {
@@ -19,7 +19,7 @@ export default class Message extends Editor {
   }
 
   componentWillMount() {
-    this.setState({
+    this.setup({
       signature: 'Сообщение отправлено с помощью программы: https://club-leader.com/?r='
       + api.config.user.nick
     })
@@ -50,6 +50,7 @@ export default class Message extends Editor {
           checked={this.state.sign}
           onChange={this.onCheckboxChange}/>
       </Help>
+      <div className="container">{this.props.children}</div>
 
       {this.submitButton({
         content: 'Разослать',

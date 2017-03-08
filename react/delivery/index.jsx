@@ -10,28 +10,41 @@ import Unauthorized from '../widget/unauthorized.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
+import Repeat from './repeat.jsx'
 
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
-  send = async(text) => {
-    const options = {
-      success: (i, count) => `Отправлено ${i} из ${count}`,
-      account: this.state.account,
+  send = async(template) => {
+    const repeatAmount = +Repeat.state.repeat
+    const type = this.type()
+    const account = this.state.account
+    const query = () => db.contact.where({
+      account,
+      authorized: 1,
+      status: Status.SELECTED
+    })
+      .filter(c => type === c.type)
+    const current = (await query().toArray()).map(c => c.id)
+
+    const queue = new Queue({
+      account,
+      query,
       inform: this.alert,
 
       beforeIteration(skype) {
         skype.blank()
-      },
+      }
+    })
 
-      query: () => db.contact.where({
-        account: this.state.account,
-        authorized: 1,
-        status: Status.SELECTED
-      })
-        .filter(c => this.type() === c.type),
+    for (let cycle = 1; cycle <= repeatAmount; cycle++) {
+      let text = template.replace(/\{cycle}/g, cycle)
 
-      work: async(skype, contact) => {
+      queue.success = (i, count) => repeatAmount > 1
+        ? `Рассылка №${cycle}: Отправлено ${i} из ${count}`
+        : `Отправлено ${i} из ${count}`
+
+      queue.work = async(skype, contact) => {
         let cid
         if (Type.PERSON === this.type()) {
           cid = '8:' + contact.login
@@ -39,16 +52,18 @@ export default class Delivery extends SkypeComponent {
         else {
           cid = `19:${contact.login}@thread.skype`
         }
-        await skype.rat.sendMessage(cid, text)
+        await skype.rat.sendMessage(cid, text.replace(/\{name}/g, contact.name))
         await db.contact.update(contact.id, {status: Status.CREATED})
-      },
+      }
+
+      await queue.execute()
+      if (cycle < repeatAmount) {
+        await db.contact
+          .filter(c => current.indexOf(c.id) >= 0)
+          .modify({status: Status.SELECTED})
+      }
     }
-    const count = await options.query().count()
-    const queue = new Queue(options)
-    await queue.execute()
-    if (count > 30) {
-      Skype.all().remove()
-    }
+    Skype.all().remove()
     this.alert('success', 'Рассылка завершена')
   }
 
@@ -65,6 +80,12 @@ export default class Delivery extends SkypeComponent {
     }
   }
 
+  repeat() {
+    if (Type.CHAT === this.type()) {
+      return <Repeat/>
+    }
+  }
+
   render() {
     const isChat = Type.CHAT === this.type()
     return <Segment.Group horizontal className="page delivery">
@@ -74,7 +95,9 @@ export default class Delivery extends SkypeComponent {
         {this.unauthorized()}
         <Message
           disabled={!this.state.account}
-          submit={this.send}/>
+          submit={this.send}>
+          {this.repeat()}
+        </Message>
       </Segment>
 
       <Segment className="contact-list-segment">
