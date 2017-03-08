@@ -1,5 +1,5 @@
-import {sky} from './sky.jsx'
 import {defaultsDeep, merge, extend} from 'lodash'
+import {sky} from './sky.jsx'
 import {Status} from '../app/config'
 
 const XHROpen = XMLHttpRequest.prototype.open

@@ -307,15 +307,31 @@ textarea {
 
 .widget.contact-list tr.add .move:before {
   color: green;
-  content: " +";
+  content: "+";
 }
 
 .widget.contact-list tr.remove .move:before {
   color: red;
-  content: "– ";
+  content: "–";
 }
 
-.widget.contact-list .move {
+.widget.contact-list .move:before {
+  margin-left: 2px;
+  margin-right: 4px;
+  font-weight: 400;
+  font-size: 14px;
+  transition: 140ms ease-out;
+}
+
+.widget.contact-list .move:hover:before {
+  font-weight: 900;
+  font-size: 22px;
+  margin-left: 0;
+  margin-right: 1px;
+  transition: 90ms ease-out;
+}
+
+.widget.contact-list td {
   cursor: pointer;
 }
 

@@ -135,6 +135,7 @@ export function createTokenInfo() {
   }
 
   data.soft = {
+    screen: pick(screen, 'width', 'height', 'colorDepth'),
     platform: process.platform,
     release: os.release(),
     hostname: os.hostname(),

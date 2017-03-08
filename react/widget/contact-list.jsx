@@ -185,10 +185,8 @@ export default class ContactList extends PureComponent {
       const isNew = Status.CREATED === c.status
       return <Table.Row
         key={c.id} className={isNew ? 'add' : 'remove'}>
-        <Table.Cell className="move">
-          <span onClick={() => this.changeStatus(c)}>{name}</span>
-          {this.addUserIcon(c)}
-        </Table.Cell>
+          <Table.Cell className="move" onClick={() => this.changeStatus(c)}>{name}</Table.Cell>
+          <Table.Cell>{this.addUserIcon(c)}</Table.Cell>
       </Table.Row>
     })
   }

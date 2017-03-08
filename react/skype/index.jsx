@@ -126,34 +126,44 @@ extend(Skype.prototype, {
         contacts.push(contact)
       }
     })
-    profile.conversations.forEach(function (c) {
-      const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
-      if (chatId && isObject(c.threadProperties) && c.threadProperties.topic && !isEmpty(c.lastMessage)) {
-        try {
-          const id = profile.login + '~' + chatId[1]
-          const found = existing.find(x => id === x.id)
-          const name = striptags(entities.decode(c.threadProperties.topic))
-            .replace(/\s+/g, ' ')
-            .trim()
-          contacts.push({
-            type: Type.CHAT,
-            id,
-            account: profile.login,
-            login: chatId[1],
-            name,
-            authorized: 1,
-            status: found ? found.status : Status.CREATED,
-            time: found ? found.time : g.next().value
-          })
-        }
-        catch (ex) {
-          console.error(ex)
-        }
-      }
-    })
     const absent = contacts
       .filter(c => !existing.find(x => c.id == x.id))
       .map(c => c.id)
+    profile.conversations.forEach(function (c) {
+      const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
+      if (chatId) {
+        const login = chatId[1]
+        const id = profile.login + '~' + login
+        const found = existing.find(x => id === x.id)
+        const available = isObject(c.threadProperties)
+          && c.threadProperties.topic
+          && !c.threadProperties.lastleaveat
+          && !isEmpty(c.lastMessage)
+        if (available) {
+          try {
+            const name = striptags(entities.decode(c.threadProperties.topic))
+              .replace(/\s+/g, ' ')
+              .trim()
+            contacts.push({
+              type: Type.CHAT,
+              id,
+              account: profile.login,
+              login,
+              name,
+              authorized: 1,
+              status: found ? found.status : Status.CREATED,
+              time: found ? found.time : g.next().value
+            })
+          }
+          catch (ex) {
+            console.error(ex)
+          }
+        }
+        else if (found) {
+          absent.push(id)
+        }
+      }
+    })
     await db.contact.bulkDelete(absent)
     await db.contact.bulkPut(contacts)
     Skype.emit('contacts', this)
