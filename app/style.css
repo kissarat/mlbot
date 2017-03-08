@@ -615,3 +615,13 @@ footer, textarea, input, .ui.menu {
   transform: scale(1.2);
   transition: 180ms ease-out;
 }
+
+.page.settings article ul {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.page.settings article h5 {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}

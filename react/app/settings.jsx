@@ -137,7 +137,7 @@ export default class Settings extends Component {
         </div>
       </Segment>
 
-      <Segment>
+      <Segment className="about">
         <h2>Резервное копирования</h2>
         <Button
           loading={this.state.fileExport}
@@ -154,10 +154,31 @@ export default class Settings extends Component {
           onClick={this.fileImport}
         />
         <Message color="teal">
-          <Icon size="huge" name="question circle outline" />
+          <Icon size="huge" name="question circle outline"/>
           Сайт программы с описанием, инструкцией по работе, помощью и поддержкой от разработчиков
           <BrowserLink href="http://mlbot.inbisoft.com">Перейти →</BrowserLink>
         </Message>
+        <h2>Что нового в версии 1.2</h2>
+        <article>
+          <h5>Возможности</h5>
+          <ul>
+            <li>рассылка по чатам</li>
+            <li>получение всех контактов с чатов</li>
+            <li>возможность работать в 20 аккаунтах скайпа без запущенной версии на компьютере</li>
+            <li>таймер для планировки рассылки</li>
+          </ul>
+          и еще несколько мелких надстроек в программе...
+
+          <h5>Исправлены ошибки</h5>
+          <ul>
+            <li>Скайпы с более чем 4000 контактами работают!</li>
+            <li>Сообщение отправляется быстрее и без обрыва через каждые 150-300 смс.
+              Теперь на одно сообщение уходит в среднем 1 секунда, и отправляет более 1000 сообщений по одном нажатии
+              кнопки;
+            </li>
+            <li>уменьшены окна и поля в программе, что позволит комфортно работать с программой с нетбуков;</li>
+          </ul>
+        </article>
       </Segment>
     </Segment.Group>
   }

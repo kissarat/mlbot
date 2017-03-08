@@ -17,15 +17,6 @@ extend(Queue, {
       status: Status.CREATED
     })
       .filter(c => type === c.type)
-  },
-
-  create(component, options) {
-    const query = () => Queue.query(component.props.account, component.props.type)
-    return new Queue(merge({
-      inform: component.props.alert,
-      account: component.props.account,
-      query
-    }, options))
   }
 })
 

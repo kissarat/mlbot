@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react'
 import {Button} from 'semantic-ui-react'
-import {Status} from '../../app/config'
+import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 import Queue from '../base/queue.jsx'
 import db from '../database.jsx'
@@ -16,8 +16,19 @@ export default class Unauthorized extends PureComponent {
   }
 
   clear = async() => {
-    const queue = Queue.create(this, {
+    const account = this.props.account
+    const queue = new Queue({
+      inform: this.props.alert,
+      account: account,
       success: (i, count) => `Удалено ${i} из ${count} контактов`,
+
+      query: () => db.contact.where({
+        account,
+        authorized: 0,
+        status: Status.CREATED
+      })
+        .filter(c => Type.PERSON === c.type),
+
       work: async(skype, contact) => {
         const {username} = await skype.removeContact(contact.login)
         return this.query().filter(c => username === c.login).delete()
