@@ -1,4 +1,5 @@
 import api from '../connect/api.jsx'
+import BrowserLink from '../widget/browser-link.jsx'
 import Contact from '../entity/contact.jsx'
 import db from '../database.jsx'
 import fs from 'fs-promise'
@@ -8,7 +9,6 @@ import {Button, Segment, Message, Icon} from 'semantic-ui-react'
 import {createTokenInfo} from '../util/index.jsx'
 import {merge, defaults, omit, map, pick} from 'lodash'
 import {remote} from 'electron'
-import BrowserLink from '../widget/browser-link.jsx'
 
 export default class Settings extends Component {
   state = {
@@ -149,7 +149,7 @@ export default class Settings extends Component {
         <Button
           loading={this.state.fileImport}
           type="button"
-          icon="download"
+          icon="upload"
           content="Импорт"
           onClick={this.fileImport}
         />

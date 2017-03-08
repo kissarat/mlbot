@@ -1,11 +1,14 @@
+import App from '../app/index.jsx'
 import Contact from '../entity/contact.jsx'
+import fs from 'fs-promise'
+import {filterSkypeUsernames} from '../util/index.jsx'
 import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
 import Skype from '../skype/index.jsx'
+import {remote} from 'electron'
 import {Status, Type, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
-import App from '../app/index.jsx'
 
 export default class ContactList extends PureComponent {
   static propTypes = {
@@ -143,7 +146,7 @@ export default class ContactList extends PureComponent {
     })
   }
 
-  async getMembers(chatId) {
+  async extractMembers(chatId, toFile) {
     const skype = await Skype.open(this.props.account, true)
     const {members} = await skype.getMembers(chatId)
     const usernames = []
@@ -153,17 +156,37 @@ export default class ContactList extends PureComponent {
         usernames.push(username[1])
       }
     })
-    Contact.pushQueue(usernames)
-    App.setBusy(false)
+    if (toFile) {
+      const data = filterSkypeUsernames(usernames).join('\n')
+      remote.dialog.showSaveDialog(async path => {
+        await fs.outputFile(path, data)
+        App.setBusy(false)
+      })
+    }
+    else {
+      Contact.pushQueue(usernames)
+      App.setBusy(false)
+    }
   }
 
-  addUserIcon(contact) {
+  actions(contact) {
     if (Type.CHAT === this.props.type) {
-      return <Icon
-        name="add user"
-        size="large"
-      title={`Добавить контакты из чата «${contact.name}» в очередь приглашений`}
-      onClick={e => this.getMembers(contact.login)}/>
+      return [
+        <Table.Cell key="members" className="action">
+          <Icon
+            name="add user"
+            size="large"
+            title={`Добавить контакты из чата «${contact.name}» в очередь приглашений`}
+            onClick={e => this.extractMembers(contact.login)}/>
+        </Table.Cell>,
+        <Table.Cell key="export" className="action">
+          <Icon
+            name="download"
+            size="large"
+            title={`Экспорт контактов из чата «${contact.name}»`}
+            onClick={e => this.extractMembers(contact.login, true)}/>
+        </Table.Cell>
+      ]
     }
   }
 
@@ -179,14 +202,15 @@ export default class ContactList extends PureComponent {
       else {
         name = c.name
       }
-      if (name.length > 45) {
-        name = name.slice(0, 45) + '…'
+      const stringSize = Type.CHAT === c.type ? 38 : 45
+      if (name.length > stringSize) {
+        name = name.slice(0, stringSize) + '…'
       }
       const isNew = Status.CREATED === c.status
       return <Table.Row
         key={c.id} className={isNew ? 'add' : 'remove'}>
-          <Table.Cell className="move" onClick={() => this.changeStatus(c)}>{name}</Table.Cell>
-          <Table.Cell>{this.addUserIcon(c)}</Table.Cell>
+        <Table.Cell className="move" onClick={() => this.changeStatus(c)}>{name}</Table.Cell>
+        {this.actions(c)}
       </Table.Row>
     })
   }

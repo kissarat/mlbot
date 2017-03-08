@@ -297,8 +297,12 @@ textarea {
   width: 100%;
 }
 
-.widget.contact-list td {
-  padding: 4px 7px;
+.widget.contact-list .move {
+  padding: 4px 6px;
+}
+
+.widget.contact-list .action {
+  padding: 2px;
 }
 
 .widget.contact-list tr {
@@ -601,14 +605,13 @@ footer, textarea, input, .ui.menu {
   }
 }
 
-.icon.add.user {
-  float: right;
+.contact-list .icon {
   color: grey;
   transform: scale(1);
 }
 
-.icon.add.user:hover {
+.contact-list .icon:hover {
   color: black;
-  transform: scale(1.3);
+  transform: scale(1.2);
   transition: 180ms ease-out;
 }
