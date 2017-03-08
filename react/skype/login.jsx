@@ -9,31 +9,33 @@ import Alert from '../widget/alert.jsx'
 export default class SkypeLogin extends Component {
   state = {loading: false}
 
-  onSubmit = (e, {formData}) => {
+  onSubmit = async(e, {formData}) => {
     e.preventDefault()
-    Skype.open(formData, true)
-      .then(() => {
-        App.setBusy(false)
+    try {
+      await Skype.open(formData, true)
+      App.setBusy(false)
+      this.setState({
+        error: false
+      })
+      hashHistory.push('/accounts')
+    }
+    catch (err) {
+      console.error(err)
+      App.setBusy(false)
+      if ('username' === err.kind || 'password' === err.kind) {
+        this.setState({error: 'Неверный логин или пароль'})
+      }
+      else if ('confirm' === err.kind) {
         this.setState({
-          error: false
+          error: `Ваш Skype-аккаунт нуждается в проверке.
+          Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
         })
-        hashHistory.push('/accounts')
-      })
-      .catch(err => {
-        console.error(err)
-        App.setBusy(false)
-        if ('username' === err.kind || 'password' === err.kind) {
-          this.setState({error: 'Неверный логин или пароль'})
-        }
-        else if ('confirm' === err.kind) {
-          this.setState({error: `Ваш Skype-аккаунт нуждается в проверке.
-          Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`})
-        }
-        else {
-          this.setState({error: 'Неизвестная ошибка'})
-        }
-        // Skype.all().remove()
-      })
+      }
+      else {
+        this.setState({error: 'Неизвестная ошибка'})
+      }
+    }
+    Skype.all().remove()
   }
 
   render() {
@@ -46,7 +48,7 @@ export default class SkypeLogin extends Component {
         </Link>
       </div>
       <Form onSubmit={this.onSubmit} error={!!this.state.error}>
-        {this.state.error ? <Alert error content={this.state.error} /> : ''}
+        {this.state.error ? <Alert error content={this.state.error}/> : ''}
         <Form.Field name="login" placeholder="Введите логин Skype" control="input" type="text"/>
         <Form.Field name="password" placeholder="Введите пароль Skype" control="input" type="password"/>
         <Button type="submit">Добавить</Button>

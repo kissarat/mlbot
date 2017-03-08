@@ -87,7 +87,15 @@ function login(nick, password) {
         type: 'login.error',
         kind: 'password'
       })
+    },
+/*
+    '.serviceAbusePageContainer' () {
+      sky.send({
+        type: 'login.error',
+        kind: 'abuse'
+      })
     }
+    */
   })
 }
 

@@ -38,6 +38,9 @@ extend(Skype, {
               if (0 === skype.src.indexOf('https://login.live.com/ppsecure/')) {
                 reject({kind: 'password'})
               }
+              else if (/account\.live\.com\/Abuse/.test(skype.src)) {
+                reject({kind: 'abuse'})
+              }
               else {
                 skype.confirmIdentity()
                   .then(() => reject({kind: 'confirm'}))

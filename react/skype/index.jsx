@@ -138,7 +138,7 @@ extend(Skype.prototype, {
         const available = isObject(c.threadProperties)
           && c.threadProperties.topic
           && !c.threadProperties.lastleaveat
-          && !isEmpty(c.lastMessage)
+          // && !isEmpty(c.lastMessage)
         if (available) {
           try {
             const name = striptags(entities.decode(c.threadProperties.topic))
