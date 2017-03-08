@@ -55,7 +55,7 @@ export function stringify(object, sep = '&', eq = '=') {
 }
 
 export function isSkypeUsername(string) {
-  return string && !/^\+?\d+/.test(string) && !string.includes('facebook:')
+  return string && !/^(\+?\d+|facebook:|guest:)/.test(string)
 }
 
 export function filterSkypeUsernames(value) {

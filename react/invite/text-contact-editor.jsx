@@ -1,9 +1,9 @@
-import React, {Component, PropTypes} from 'react'
 import BrowseFile from '../widget/browse-file.jsx'
-import {filterSkypeUsernames} from '../util/index.jsx'
-import {Form, Segment} from 'semantic-ui-react'
 import Contact from '../entity/contact.jsx'
 import Editor from '../base/editor.jsx'
+import React, {Component, PropTypes} from 'react'
+import {filterSkypeUsernames} from '../util/index.jsx'
+import {Form, Segment} from 'semantic-ui-react'
 
 export default class TextContactEditor extends Editor {
   name = 'TextContactEditor'
@@ -17,11 +17,7 @@ export default class TextContactEditor extends Editor {
 
   async submit(text) {
     this.setState({busy: true})
-    let usernames = filterSkypeUsernames(text)
-    console.log(usernames.length)
-    if (usernames.length > 0) {
-      await Contact.pushQueue(usernames)
-    }
+    await Contact.pushQueue(text)
     this.setState({
       value: '',
       busy: false

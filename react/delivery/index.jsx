@@ -15,7 +15,7 @@ export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
   send = async(text) => {
-    const queue = new Queue({
+    const options = {
       success: (i, count) => `Отправлено ${i} из ${count}`,
       account: this.state.account,
       inform: this.alert,
@@ -42,9 +42,13 @@ export default class Delivery extends SkypeComponent {
         await skype.rat.sendMessage(cid, text)
         await db.contact.update(contact.id, {status: Status.CREATED})
       },
-    })
+    }
+    const count = await options.query().count()
+    const queue = new Queue(options)
     await queue.execute()
-    Skype.all().remove()
+    if (count > 30) {
+      Skype.all().remove()
+    }
     this.alert('success', 'Рассылка завершена')
   }
 

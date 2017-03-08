@@ -1,12 +1,12 @@
+import Contact from '../entity/contact.jsx'
 import db from '../database.jsx'
 import Skype from './static.jsx'
-import {clear} from '../util/index.jsx'
-import {extend, toArray, each, isObject} from 'lodash'
-import {Status, Type, start} from '../../app/config'
-import Contact from '../entity/contact.jsx'
-import {millisecondsId, isSkypeUsername} from '../util/index.jsx'
+import striptags from 'striptags'
 import {AllHtmlEntities} from 'html-entities'
-import striptags from 'striptags';
+import {clear} from '../util/index.jsx'
+import {extend, toArray, each, isObject, isEmpty} from 'lodash'
+import {millisecondsId, isSkypeUsername} from '../util/index.jsx'
+import {Status, Type, start} from '../../app/config'
 
 extend(Skype.prototype, {
   login(username, password) {
@@ -60,6 +60,13 @@ extend(Skype.prototype, {
     return new Promise(resolve => {
       this.once('getMembers', resolve)
       this.invoke('getMembers', [chatId])
+    })
+  },
+
+  getChatConversations() {
+    return new Promise(resolve => {
+      this.once('getChatConversations', resolve)
+      this.invoke('getChatConversations')
     })
   },
 
@@ -121,7 +128,7 @@ extend(Skype.prototype, {
     })
     profile.conversations.forEach(function (c) {
       const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
-      if (chatId && isObject(c.threadProperties) && c.threadProperties.topic) {
+      if (chatId && isObject(c.threadProperties) && c.threadProperties.topic && !isEmpty(c.lastMessage)) {
         try {
           const id = profile.login + '~' + chatId[1]
           const found = existing.find(x => id === x.id)

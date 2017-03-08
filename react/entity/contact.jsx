@@ -1,6 +1,7 @@
-import {extend, each, uniq, pick, filter, identity} from 'lodash'
-import {EventEmitter} from 'events'
 import db from '../database.jsx'
+import {EventEmitter} from 'events'
+import {extend, each, uniq, pick, filter, identity} from 'lodash'
+import {filterSkypeUsernames} from '../util/index.jsx'
 import {millisecondsId} from '../util/index.jsx'
 import {Status, Type} from '../../app/config'
 
@@ -115,25 +116,28 @@ extend(Contact, {
 
   async pushQueue(usernames) {
     let contacts = []
-    usernames = usernames.reduce((a, n) => (a[n] = n) && a, {})
-    await db.contact.each(function ({login}) {
-      if (usernames[login]) {
-        usernames[login] = false
-      }
-    })
-    usernames = filter(usernames).map(identity)
+    usernames = filterSkypeUsernames(usernames)
     if (usernames.length > 0) {
-      contacts = usernames.map(login => ({
-        authorized: 0,
-        login: login,
-        status: Status.SELECTED,
-        type: Type.PERSON,
-      }))
-      contacts = this.setupMany(uniq(contacts))
-      await db.contact.bulkAdd(contacts)
-      Contact.emit('update')
+      usernames = usernames.reduce((a, n) => (a[n] = n) && a, {})
+      await db.contact.each(function ({login}) {
+        if (usernames[login]) {
+          usernames[login] = false
+        }
+      })
+      usernames = filter(usernames).map(identity)
+      if (usernames.length > 0) {
+        contacts = usernames.map(login => ({
+          authorized: 0,
+          login: login,
+          status: Status.SELECTED,
+          type: Type.PERSON,
+        }))
+        contacts = this.setupMany(uniq(contacts))
+        await db.contact.bulkAdd(contacts)
+        Contact.emit('update')
+      }
+      return contacts
     }
-    return contacts
   }
 });
 

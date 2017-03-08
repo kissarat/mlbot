@@ -572,7 +572,7 @@ footer, textarea, input, .ui.menu {
 
 .editor textarea {
   min-height: 70px !important;
-  max-height: 400px;
+  max-height: 320px;
 }
 
 @media (max-width: 1024px) {

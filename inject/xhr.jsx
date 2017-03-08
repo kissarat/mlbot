@@ -24,12 +24,12 @@ extend(sky, {
     return sky.fetch(`https://contacts.skype.com/contacts/v1/users/${username}/contacts`)
   },
 
-  // getConversations() {
-  //   return sky.fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations')
-  // },
+  getChatConversations() {
+    return sky.fetch('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations?view=msnp24Equivalent&targetType=Thread')
+  },
 
   getMembers(chatId) {
-    return sky.fetch(`https://client-s.gateway.messenger.live.com/v1/threads/19:${chatId}@thread.skype?view=` + sky.view)
+    return sky.fetch(`https://client-s.gateway.messenger.live.com/v1/threads/19:${chatId}@thread.skype?view=msnp24Equivalent`)
   },
 
   invite(username, greeting = '') {
@@ -75,6 +75,14 @@ extend(window, {
       })
   },
 
+  getChatConversations() {
+    sky.getChatConversations()
+      .then(function (r) {
+        r.type = 'getChatConversations'
+        sky.send(r)
+      })
+  },
+
   removeContact(username) {
     sky.removeContact(username)
       .then(() => sky.send({
@@ -84,7 +92,7 @@ extend(window, {
   }
 })
 
-XMLHttpRequest.prototype.open = function (method, url) {
+XMLHttpRequest.prototype.open = function (method, url, async) {
   this.setRequestHeader = function (key, value) {
     if ('X-Skypetoken' === key) {
       sky.token = value
@@ -105,16 +113,19 @@ XMLHttpRequest.prototype.open = function (method, url) {
     })
   }
 
+  /*
   const conversationsURL = /\/users\/ME\/conversations\?.*view=(\w+)/.exec(url)
   if (conversationsURL) {
+    url = url.replace(/&pageSize=\d+/, '')
     sky.view = conversationsURL[1]
     this.addEventListener('load', function (e) {
       const {conversations} = JSON.parse(e.target.responseText)
       sky.conversations = conversations
     })
   }
+  */
 
-  if (sky.profile && sky.RegistrationToken && sky.token && sky.conversations) {
+  if (sky.profile && sky.RegistrationToken && sky.token) {
     sky.emit('token')
     sky.profile.token = sky.token
     sky.profile.token = sky.RegistrationToken
@@ -122,13 +133,13 @@ XMLHttpRequest.prototype.open = function (method, url) {
     sky.fetchOptions.headers.RegistrationToken = sky.RegistrationToken
     XMLHttpRequest.prototype.open = XHROpen
 
-    sky.getContacts(sky.profile.username)
-      .then(function ({contacts}) {
+    Promise.all([sky.getContacts(sky.profile.username), sky.getChatConversations()])
+      .then(function ([{contacts}, {conversations}]) {
         sky.profile.contacts = contacts
-        sky.profile.conversations = sky.conversations
+        sky.profile.conversations = conversations
         sky.profile.type = 'contacts'
         sky.send(sky.profile)
       })
   }
-  XHROpen.apply(this, arguments)
+  XHROpen.call(this, method, url, async)
 }
