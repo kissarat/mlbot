@@ -1,7 +1,8 @@
-import React, {PureComponent} from 'react'
 import BrowserLink from '../widget/browser-link.jsx'
-import {Grid, Image, Icon} from 'semantic-ui-react'
+import config from '../../app/config'
 import Persistence from '../util/persistence.jsx'
+import React, {PureComponent} from 'react'
+import {Grid, Image, Icon} from 'semantic-ui-react'
 
 export default class Footer extends PureComponent {
   name = 'Footer'
@@ -20,20 +21,20 @@ export default class Footer extends PureComponent {
       <Grid className="advertise">
         <Grid.Row columns={2}>
           <Grid.Column>
-            <Image src="images/logo-leader.png"/>
+            {'club-leader' === config.vendor ? <Image src="images/logo-leader.png"/> : ''}
             <Image src="images/logo-inbisoft.png"/>
           </Grid.Column>
-          <Grid.Column>
+          <Grid.Column className="logos">
             <div className="copyright">&copy; 2017 Все права защищены.</div>
             <p className="inbisoft">
               MLBot принадлежит IT-компании&nbsp;
               <BrowserLink href="http://inbisoft.com/">«INBISOFT»</BrowserLink>.
             </p>
-            <p>
+            {'club-leader' === config.vendor ? <p>
               MLBot Skype разработан для поддержки участников&nbsp;
               <BrowserLink href="https://club-leader.com/">«CLUB LEADER»</BrowserLink>
               &nbsp;от компании «BEST CHOICE»
-            </p>
+            </p> : ''}
             <BrowserLink href="https://join.skype.com/bcrFbzFEnVzI" target="_blank">
               <Icon name="skype" size="big"/>
               Чат Skype-поддержки

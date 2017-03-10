@@ -158,7 +158,7 @@ export default class Settings extends Component {
             Сайт программы с описанием, инструкцией по работе, помощью и поддержкой от разработчиков
             <BrowserLink href="http://mlbot.inbisoft.com">Перейти →</BrowserLink>
           </Message>
-        <Segment className="description">
+        <Segment className="text-back">
           <h2>Что нового в версии 1.2</h2>
           <article>
             <h5>Возможности</h5>

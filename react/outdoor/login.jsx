@@ -1,11 +1,11 @@
 import api from '../connect/api.jsx'
+import BrowserLink from '../widget/browser-link.jsx'
+import config from '../../app/config'
+import Invalid from '../page/invalid.jsx'
 import React, {Component} from 'react'
 import {Button, Form, Grid, Image, Header, Icon, Message} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
-import BrowserLink from '../widget/browser-link.jsx'
 import {pick} from 'lodash'
-import Invalid from '../page/invalid.jsx'
-import Persistent from '../util/persistence.jsx'
 
 export default class Login extends Component {
   persist = ['email']
@@ -88,16 +88,21 @@ export default class Login extends Component {
         <Grid.Column>
           <Header as="h2">Как пользоваться?</Header>
           <div>
-            <p>
+            {'club-leader' === config.vendor ?
+              <p>
               Для входа в программу MLBot Skype используйте почту и пароль проекта&nbsp;
               <BrowserLink href="https://club-leader.com/">club-leader.com</BrowserLink>
             </p>
-            <p>
+              : <p>
+                Восстановить пароль вы можете на сайте&nbsp;
+                <BrowserLink href="http://my.inbisoft.com/password/recovery">my.inbisoft.com</BrowserLink>
+              </p>}
+            {'club-leader' === config.vendor ? <p>
               MLBot заработает при наличии открытой матрицы Silver в самом прибыльном
               матричном проекте 2017 года Club Leader.
-            </p>
+            </p> : ''}
           </div>
-          <BrowserLink href="http://mlbot.inbisoft.com/">
+          <BrowserLink href={'club-leader' === config.vendor ? "http://mlbot.inbisoft.com/" : "http://inbisoft.com/mlbot/"}>
             <Icon name="question circle" size="large"/> Описание программы
           </BrowserLink>
         </Grid.Column>

@@ -19,6 +19,8 @@ const config = {
     height: 960
   },
 
+  vendor: 'club-leader',
+
   Status: {
     FORBIDDEN: -2,
     ABSENT: -1,

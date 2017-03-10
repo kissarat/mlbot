@@ -1,10 +1,11 @@
 import api from '../connect/api.jsx'
+import config from '../../app/config'
 import Editor from '../base/editor.jsx'
 import Help from '../widget/help.jsx'
+import moment from 'moment'
 import React, {Component, PropTypes} from 'react'
 import {Form} from 'semantic-ui-react'
 import {range, toArray, map, defaults, keyBy, uniq, isObject} from 'lodash'
-import moment from 'moment'
 
 function toOptions(array) {
   return map(array, function (value) {
@@ -17,11 +18,11 @@ const minutes = toOptions(range(0, 60))
 
 export default class Message extends Editor {
   name = 'Message'
-  persist = ['value', 'signature', 'sign']
+  persist = ['value', 'sign']
 
   state = {
     sign: true,
-    // signature: 'https://club-leader.com/'
+    signature: 'https://club-leader.com/'
   }
 
   static propTypes = {
@@ -30,9 +31,9 @@ export default class Message extends Editor {
 
   componentWillMount() {
     const now = new Date()
+    const refURL = 'club-leader' === config.vendor ? 'https://club-leader.com/?r=' : 'http://inbisoft.com/mlbot/ref/'
     this.setup({
-      signature: 'Сообщение отправлено с помощью программы: https://club-leader.com/?r='
-      + api.config.user.nick,
+      signature: 'Сообщение отправлено с помощью программы: ' + refURL + api.config.user.nick,
       hour: (1 + now.getHours()) % 24,
       minute: (5 + now.getMinutes()) % 60,
       schedule: false
@@ -49,7 +50,6 @@ export default class Message extends Editor {
     }
     else if (this.state.schedule) {
       const time = this.getScheduleTime()
-      console.log('SCHEDULE', time.toLocaleString())
       this.setState({
         timer: setTimeout(() => this.clearTimer() && this.props.submit(value), time.getTime() - Date.now()),
         interval: setInterval(() => this.setState({left: Date.now()}), 980)

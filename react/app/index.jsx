@@ -86,8 +86,7 @@ export default class App extends SingletonComponent {
           <Menu.Item
             name="Выход"
             icon="sign out"
-            onClick={this.logout}
-            title="Забыли пароль? Восстановите его в кабинете kab.club-leader.com"/>
+            onClick={this.logout}/>
           <Menu.Item
             name="Перезапуск"
             icon="refresh"

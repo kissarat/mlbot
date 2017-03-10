@@ -1,0 +1,21 @@
+#back {
+    background-image: url("images/leader-back.jpg");
+}
+
+.layout.outdoor .two.column.row p a.browser-link {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.menu a.item {
+    color: #0d5b81 !important;
+}
+
+.menu .chat-delivery {
+    background-position: right top !important;
+    background-repeat: no-repeat !important;
+    background-image: url("images/new.png") !important;
+}
+
+.ui.segment.text-back {
+    background-color: rgba(80, 180, 219, 0.4);
+}
