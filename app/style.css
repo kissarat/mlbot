@@ -639,6 +639,7 @@ footer, textarea, input, .ui.menu {
 
 .widget.delivery-message .group.time select {
     margin: 0 4px;
+    padding: 1px 2px;
     width: 44px;
     height: 20px;
 }
@@ -649,4 +650,10 @@ footer, textarea, input, .ui.menu {
 
 .menu a.item {
     color: #0d5b81 !important;
+}
+
+.menu .chat-delivery {
+    background-position: right top !important;
+    background-repeat: no-repeat !important;
+    background-image: url("images/new.png") !important;
 }

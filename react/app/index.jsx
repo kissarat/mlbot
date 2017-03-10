@@ -1,12 +1,13 @@
 window.skypeTimeout = 180 * 1000
-import package_json from '../../app/package.json'
+
+import api from '../connect/api.jsx'
 import Footer from '../widget/footer.jsx'
+import package_json from '../../app/package.json'
 import React, {Component} from 'react'
+import SingletonComponent from '../base/singleton-component.jsx'
+import {each, defaults} from 'lodash'
 import {hashHistory} from 'react-router'
 import {Menu, Segment, Image, Dimmer, Loader} from 'semantic-ui-react'
-import api from '../connect/api.jsx'
-import {each, defaults} from 'lodash'
-import SingletonComponent from '../base/singleton-component.jsx'
 
 function itemUrl(url) {
   return {
@@ -68,6 +69,7 @@ export default class App extends SingletonComponent {
             при следующем запуске с места окончания рассылки"/>
           <Menu.Item
             name="Чат-рассылка"
+            className="chat-delivery"
             icon="comments" {...itemUrl('/delivery/chat')}
             title="Рассылайте рекламу по чатам, задав необходимое количество циклов"/>
           <Menu.Item

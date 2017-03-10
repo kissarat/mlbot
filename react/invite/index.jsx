@@ -18,6 +18,7 @@ export default class Invite extends SkypeComponent {
       success: (i, count) => `Приглашено ${i} контактов из ${count}`,
       account: this.state.account,
       inform: this.alert,
+      max: 40,
 
       query: () => db.contact.where({
         authorized: 0,

@@ -31,8 +31,9 @@ Queue.prototype = {
     this.timeoutDuration = skypeTimeout
     const count = await this.query()
       .count()
-
+    
     if (count > 0) {
+      const max = this.max < count ? this.max : count
       if (!this.skype) {
         this.inform('busy', 'Входа в скайп')
         this.skype = await this.openSkype()
@@ -63,7 +64,7 @@ Queue.prototype = {
         await this.work(this.skype, contact)
         inform(++i)
         this.updateTimeout()
-        if (i < count) {
+        if (i < max) {
           await pull()
         }
       }

@@ -1,6 +1,6 @@
 {
   "name": "mlbot",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "main.js",
   "scripts": {},
   "author": "Taras Labiak <kissarat@gmail.com>",
@@ -50,6 +50,7 @@
     "request-promise": "^4.1.1",
     "semantic-ui-css": "^2.2.4",
     "semantic-ui-react": "^0.63.5",
+    "skyweb": "^0.3.0",
     "striptags": "^3.0.1",
     "tough-cookie": "^2.0.0"
   },

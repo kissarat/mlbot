@@ -3,7 +3,7 @@ import Skype from './webview.jsx'
 import {operationTimeout} from '../util/index.jsx'
 import App from '../app/index.jsx'
 import Contact from '../entity/contact.jsx'
-import Skyweb from '../../rat/src/skyweb.ts'
+import Skyweb from 'skyweb'
 
 function all(array) {
   return new Proxy(array, {

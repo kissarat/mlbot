@@ -16,8 +16,8 @@ export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
   send = async(template) => {
-    const repeatAmount = +Repeat.state.repeat
     const type = this.type()
+    const repeatAmount = Type.CHAT === type ? +Repeat.state.repeat : 1
     const account = this.state.account
     const query = () => db.contact.where({
       account,
@@ -46,7 +46,7 @@ export default class Delivery extends SkypeComponent {
 
       queue.work = async(skype, contact) => {
         let cid
-        if (Type.PERSON === this.type()) {
+        if (Type.PERSON === type) {
           cid = '8:' + contact.login
         }
         else {
