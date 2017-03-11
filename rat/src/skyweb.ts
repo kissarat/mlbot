@@ -26,7 +26,7 @@ class Skyweb {
     /**
      * CookieJar that is used for this Skyweb instance
      */
-    private cookieJar: CookieJar;
+    public cookieJar: CookieJar;
 
     constructor() {
         this.cookieJar = request.jar();

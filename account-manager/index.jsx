@@ -26,6 +26,7 @@ export default class AccountManager {
     console.profile(profileName)
     const account = await AccountManager.get(login)
     await account.login()
+    await account.loadContacts()
     await account.saveContacts()
     console.profileEnd(profileName)
   }

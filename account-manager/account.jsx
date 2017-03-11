@@ -1,10 +1,10 @@
 import db from '../react/database.jsx'
-import api from '../react/connect/api.jsx'
 import Skype from '../react/skype/index.jsx'
 import Skyweb from '../rat/src/skyweb.ts'
+import SkypeAccount from '../rat/src/skype_account.ts'
 import {extend} from 'lodash'
-import {Type, Status} from '../app/config'
 import {isSkypeUsername, millisecondsId} from '../react/util/index.jsx'
+import {Type, Status} from '../app/config'
 
 export default class Account {
   constructor(options) {
@@ -21,10 +21,19 @@ export default class Account {
         console.error(ex)
         const skype = await Skype.load(this.info)
         this.info.headers = skype.headers
+        this.info.headers.Cookie.split(/;\s+/g).forEach(s => this.internal.cookieJar.setCookie(s))
+        this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
+        this.internal.skypeAccount.selfInfo = {username: this.info.login}
+        this.internal.skypeAccount.skypeToken = skype.headers['X-Skypetoken']
         console.log('Headers received!')
       }
     }
     return Promise.resolve(this.internal.skypeAccount)
+  }
+
+  loadContacts() {
+    return new Promise((resolve, reject) =>
+      this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, reject))
   }
 
   async saveContacts() {

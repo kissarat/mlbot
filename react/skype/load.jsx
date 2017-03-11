@@ -77,7 +77,6 @@ export default function load(data) {
       skype.headers = headers
       // timeout.clearTimeout()
       // timeout.clearTimeout()
-      console.log('headers received')
       resolve(skype)
     })
 

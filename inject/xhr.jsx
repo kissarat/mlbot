@@ -111,7 +111,7 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     })
   }
 
-  console.log('url', sky.fetchOptions.headers)
+  // console.log('url', sky.fetchOptions.headers)
   if (neededHeaders.every(h => (h = sky.fetchOptions.headers[h]) && h.length > 0)) {
     const headers = merge(sky.fetchOptions.headers, {
       Cookie: document.cookie,
