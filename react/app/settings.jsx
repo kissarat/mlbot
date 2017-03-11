@@ -27,7 +27,7 @@ export default class Settings extends Component {
 
   async countContacts() {
     this.setState({contactsCount: await Contact.countAll()})
-    Skype.all().remove()
+    Skype.removeAll()
   }
 
   async countAccounts() {

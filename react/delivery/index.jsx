@@ -63,7 +63,7 @@ export default class Delivery extends SkypeComponent {
           .modify({status: Status.SELECTED})
       }
     }
-    Skype.all().remove()
+    Skype.removeAll()
     this.alert('success', 'Рассылка завершена')
   }
 

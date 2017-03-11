@@ -19,6 +19,8 @@ const config = {
     height: 960
   },
 
+  exlude: ['echo123', 'kissarat', 'taradox89'],
+
   // vendor: 'inbisoft',
   vendor: 'club-leader',
 

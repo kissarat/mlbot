@@ -35,7 +35,7 @@ export default class SkypeLogin extends Component {
         this.setState({error: 'Неизвестная ошибка'})
       }
     }
-    Skype.all().remove()
+    Skype.removeAll()
   }
 
   render() {

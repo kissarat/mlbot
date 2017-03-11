@@ -3,7 +3,6 @@ import Skype from './webview.jsx'
 import {operationTimeout} from '../util/index.jsx'
 import App from '../app/index.jsx'
 import Contact from '../entity/contact.jsx'
-import Skyweb from 'skyweb'
 
 function all(array) {
   return new Proxy(array, {
@@ -26,6 +25,11 @@ extend(Skype, {
   all(proxy = true) {
     const items = document.querySelectorAll(`#dark [partition]`)
     return proxy ? all(items) : items
+  },
+
+  removeAll() {
+    // console.log('no Skype.all().remove()')
+    Skype.all().remove()
   },
 
   load(data, busy) {
@@ -112,16 +116,12 @@ extend(Skype, {
             skype.setProfile(profile)
               .then(function () {
                 emitStage('finishing')
-                skype.rat = new Skyweb()
-                skype.rat.login(data.login, data.password)
-                  .then(function () {
-                    clearTimeout(timer)
-                    resolve(skype)
-                    emitStage('finish')
-                    Contact.emit('update')
-                    skype.emit('updated')
-                  })
-                  .catch(reject)
+                // console.log(profile.login + ` updated contacts after ${(Date.now() - loaded) / 1000} seconds`)
+                clearTimeout(timer)
+                resolve(skype)
+                emitStage('finish')
+                Contact.emit('update')
+                skype.emit('updated')
               })
           })
         })
@@ -180,7 +180,7 @@ extend(Skype, {
 
   closeAll() {
     console.log('Skype.closeAll')
-    Skype.all().remove()
+    Skype.removeAll()
   },
 
   show(visible) {
