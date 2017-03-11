@@ -1,3 +1,5 @@
+// const webpack = require('webpack')
+
 const _mode = (process.env.MLBOT || '').split(',')
 function mode(name) {
   return _mode.indexOf(name) >= 0
@@ -52,13 +54,17 @@ module.exports = function (name) {
           //   loader: "sass-loader" // compiles Sass to CSS
           // }
           ]
-        }
+        },
       ]
     },
     resolve: {
       modulesDirectories: [__dirname + '/app/node_modules']
     },
-    plugins: []
+    plugins: [
+    //   new webpack.DefinePlugin({
+    //     MLBOT_VENDOR: JSON.stringify(process.env.MLBOT_VENDOR || 'club-leader')
+    //   })
+    ]
   }
 
   if (mode('dev')) {

@@ -19,6 +19,7 @@ const config = {
     height: 960
   },
 
+  // vendor: 'inbisoft',
   vendor: 'club-leader',
 
   Status: {
