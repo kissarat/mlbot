@@ -27,7 +27,8 @@ module.exports = function (name) {
             presets: ['es2017', 'es2015', 'react'],
             plugins: [
               'transform-regenerator',
-              'transform-class-properties'
+              'transform-class-properties',
+              'transform-object-rest-spread'
             ]
           }
         },

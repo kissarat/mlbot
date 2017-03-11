@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
-import {toArray, merge, defaults, isObject} from 'lodash'
-import {Status} from '../../app/config'
-import SelectAccount from '../app/select-account.jsx'
 import Alert from '../widget/alert.jsx'
-import Persistent from '../util/persistence.jsx'
-import Skype from '../skype/index.jsx'
 import App from '../app/index.jsx'
+import Persistent from '../util/persistence.jsx'
+import React, {Component} from 'react'
+import SelectAccount from '../app/select-account.jsx'
+import AccountManager from '../../account-manager/index.jsx'
+import {Status} from '../../app/config'
+import {toArray, merge, defaults, isObject} from 'lodash'
 
 export default class SkypeComponent extends Component {
   persist = ['account']
@@ -23,18 +23,13 @@ export default class SkypeComponent extends Component {
   }
 
   componentDidMount() {
-    this.checkSkype()
+    void this.checkSkype()
   }
 
-  checkSkype() {
-    if (this.state.account) {
-      Skype.getAccount(this.state.account).then(account => {
-        if (!account) {
-          this.setState({account: ''})
-        }
-      })
+  async checkSkype() {
+    if (this.state.account && !await AccountManager.get(this.state.account)) {
+      this.setState({account: ''})
     }
-    return !!this.state.account
   }
 
   changeAccount(account) {
@@ -45,11 +40,11 @@ export default class SkypeComponent extends Component {
     }
   }
 
-  selectAccount(login) {
+  accountSelect(refresh) {
     return <SelectAccount
       value={this.state.account}
       select={account => this.changeAccount(account)}
-      login={login}/>
+      refresh={refresh}/>
   }
 
   alertMessage() {

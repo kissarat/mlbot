@@ -1,38 +1,31 @@
 import Alert from '../widget/alert.jsx'
 import api from '../connect/api.jsx'
 import React, {Component} from 'react'
-import Skype from '../skype/index.jsx'
 import {Link} from 'react-router'
 import {List, Loader, Icon, Segment} from 'semantic-ui-react'
+import AccountManager from '../../account-manager/index.jsx'
 
 export default class AccountList extends Component {
   state = {
     accounts: false,
   }
 
-  componentWillReceiveProps() {
-    // this.setState({accounts: false})
-    Skype.getAccountList()
-      .then(accounts => this.setState({accounts}))
-      .catch(function (err) {
-        console.error(err)
-      })
+  async load() {
+    const accounts = await AccountManager.getList()
+    this.setState({accounts})
   }
 
   componentWillMount() {
-    this.componentWillReceiveProps()
+    void this.load()
   }
 
-  remove({login}) {
-    api.del('skype/remove', {login})
-      .then(() => this.componentWillReceiveProps())
-      .catch(function (err) {
-        console.error(err)
-      })
+  async remove({login}) {
+    await api.del('skype/remove', {login})
+    await this.load()
   }
 
   addSkype() {
-    if (this.state.accounts) {
+    if (this.state.accounts instanceof Array) {
       if (this.state.accounts.length >= 20) {
         return <Alert
           warning
@@ -45,10 +38,10 @@ export default class AccountList extends Component {
   }
 
   accounts() {
-    if (this.state.accounts) {
-      const accounts = this.state.accounts.map(a => <List.Item key={a.login}>
-        <List.Content floated="left">{a.login}</List.Content>
-        <List.Content floated="right"><Icon name="remove" onClick={() => this.remove(a)}/></List.Content>
+    if (this.state.accounts instanceof Array) {
+      const accounts = this.state.accounts.map(({info}) => <List.Item key={info.login}>
+        <List.Content floated="left">{info.login}</List.Content>
+        <List.Content floated="right"><Icon name="remove" onClick={() => this.remove(info)}/></List.Content>
       </List.Item>)
       return <List>{accounts}</List>
     }

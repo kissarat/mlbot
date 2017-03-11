@@ -1,7 +1,6 @@
+import AccountManager from '../../account-manager/index.jsx'
 import React, {Component} from 'react'
-import {Select, Button, Icon} from 'semantic-ui-react'
-import Skype from '../skype/index.jsx'
-import {toArray} from 'lodash'
+import {Select, Icon, Message} from 'semantic-ui-react'
 
 export default class SelectAccount extends Component {
   state = {
@@ -9,49 +8,66 @@ export default class SelectAccount extends Component {
     busy: false
   }
 
-  componentDidMount() {
-    Skype.getAccountList(false)
-      .then(accounts => this.setState({accounts}))
+  async componentDidMount() {
+    const accounts = (await AccountManager.getList()).map(a => a.info)
+    this.setState({accounts})
   }
 
-  onChange = (e, {value}) => {
-    Skype.getAccount(value).then(account => this.props.select(account))
+  onChange = async(e, {value}) => {
+    const account = await AccountManager.get(value)
+    this.props.select(account.info)
   }
 
   options() {
-    return this.state.accounts.map(account => ({
-      value: account.login,
-      text: account.login,
+    return this.state.accounts.map(({login}) => ({
+      key: login,
+      value: login,
+      text: login,
     }))
   }
 
-  openSkype = async() => {
+  async refresh() {
     this.setState({busy: true})
-    await Skype.open(this.props.value)
+    try {
+      await AccountManager.refresh(this.props.value)
+    }
+    catch (ex) {
+      console.error(ex)
+      this.setState({
+        alert: {
+          error: true,
+          content: ex.toString(),
+          onDismiss: () => this.setState({alert: false})
+        }
+      })
+    }
     this.setState({busy: false})
   }
 
-  loginButton(selectedAccount) {
+  refreshButton() {
     return <Icon
       name="refresh"
       loading={this.state.busy}
       size="big"
       title="Обновить список контактов"
-      disabled={!selectedAccount}
-      onClick={this.openSkype}/>
+      disabled={!this.props.value}
+      onClick={() => this.refresh()}/>
   }
 
   render() {
     return <div className="widget select-account">
-      <Select
-        id="select-skype"
-        name="account"
-        onChange={this.onChange}
-        options={this.options()}
-        placeholder="Выберите Skype"
-        value={this.props.value}
-      />
-      {this.props.login ? this.loginButton(this.props.value) : ''}
+      {this.state.alert ? <Message {...this.state.alert} /> : ''}
+      <div>
+        <Select
+          id="select-skype"
+          name="account"
+          onChange={this.onChange}
+          options={this.options()}
+          placeholder="Выберите Skype"
+          value={this.props.value}
+        />
+        {this.props.refresh ? this.refreshButton() : ''}
+      </div>
     </div>
   }
 }

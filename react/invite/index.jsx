@@ -50,7 +50,7 @@ export default class Invite extends SkypeComponent {
             <TextContactEditor/>
             <Segment>
               <h2>Выберите Skype</h2>
-              {this.selectAccount()}
+              {this.accountSelect()}
               <InviteGreeting
                 disabled={!this.state.account}
                 submit={this.invite}/>

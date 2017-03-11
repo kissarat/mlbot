@@ -91,7 +91,7 @@ export default class Delivery extends SkypeComponent {
     return <Segment.Group horizontal className="page delivery">
       <Segment>
         {this.alertMessage()}
-        {this.selectAccount(true)}
+        {this.accountSelect(true)}
         {this.unauthorized()}
         <Message
           disabled={!this.state.account}
