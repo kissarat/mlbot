@@ -14,6 +14,13 @@ export default class AccountManager {
     return (await this.getList()).find(a => login === a.info.login)
   }
 
+  static async login(options) {
+    const account = new Account(options)
+    const skype = await account.login()
+    options.contacts = []
+    await api.send('skype/profile', {id: options.login}, account.info)
+  }
+
   static async refresh(login) {
     const profileName = 'refresh ' + login
     console.profile(profileName)

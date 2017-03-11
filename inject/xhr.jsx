@@ -92,54 +92,44 @@ extend(window, {
   }
 })
 
+const neededHeaders = ['X-Skypetoken', 'RegistrationToken']
+
 XMLHttpRequest.prototype.open = function (method, url, async) {
   this.setRequestHeader = function (key, value) {
-    if ('X-Skypetoken' === key) {
-      sky.token = value
-    }
-    if ('RegistrationToken' === key) {
-      sky.RegistrationToken = value
+    if (neededHeaders.indexOf(key) >= 0) {
+      sky.fetchOptions.headers[key] = value
     }
     XMLHttpRequest.prototype.setRequestHeader.call(this, key, value)
   }
 
-  if ('https://api.skype.com/users/self/profile' === url && 'GET' === method && !sky.profile && sky.token) {
+  if ('https://api.skype.com/users/self/profile' === url && 'GET' === method && !sky.profile && sky.fetchOptions.headers['X-Skypetoken']) {
     this.addEventListener('load', function () {
       sky.profile = JSON.parse(this.responseText)
-      window.sky.profile = sky.profile
       sky.profile.v = 1
       sky.profile.type = 'profile'
       sky.send(sky.profile)
     })
   }
 
-  /*
-  const conversationsURL = /\/users\/ME\/conversations\?.*view=(\w+)/.exec(url)
-  if (conversationsURL) {
-    url = url.replace(/&pageSize=\d+/, '')
-    sky.view = conversationsURL[1]
-    this.addEventListener('load', function (e) {
-      const {conversations} = JSON.parse(e.target.responseText)
-      sky.conversations = conversations
+  console.log('url', sky.fetchOptions.headers)
+  if (neededHeaders.every(h => (h = sky.fetchOptions.headers[h]) && h.length > 0)) {
+    const headers = merge(sky.fetchOptions.headers, {
+      Cookie: document.cookie,
+      'User-Agent': navigator.userAgent
     })
-  }
-  */
-
-  if (sky.profile && sky.RegistrationToken && sky.token) {
-    sky.emit('token')
-    sky.profile.token = sky.token
-    sky.profile.token = sky.RegistrationToken
-    sky.fetchOptions.headers['X-Skypetoken'] = sky.token
-    sky.fetchOptions.headers.RegistrationToken = sky.RegistrationToken
+    sky.send({type: 'token', headers})
+    sky.profile.headers = headers
     XMLHttpRequest.prototype.open = XHROpen
 
-    Promise.all([sky.getContacts(sky.profile.username), sky.getChatConversations()])
-      .then(function ([{contacts}, {conversations}]) {
-        sky.profile.contacts = contacts
-        sky.profile.conversations = conversations
-        sky.profile.type = 'contacts'
-        sky.send(sky.profile)
-      })
+    /*
+     sky.getContacts(sky.profile.username)
+     .then(({contacts}) => {
+     sky.profile.contacts = contacts
+     sky.profile.conversations = conversations
+     sky.profile.type = 'contacts'
+     sky.send(sky.profile)
+     })
+     */
   }
   XHROpen.call(this, method, url, async)
 }

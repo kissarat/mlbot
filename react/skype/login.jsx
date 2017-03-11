@@ -1,10 +1,10 @@
+import Alert from '../widget/alert.jsx'
+import App from '../app/index.jsx'
+import AccountManager from '../../account-manager/index.jsx'
 import React, {Component} from 'react'
-import Skype from './index.jsx'
 import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {Link} from 'react-router'
-import App from '../app/index.jsx'
-import Alert from '../widget/alert.jsx'
 
 export default class SkypeLogin extends Component {
   state = {loading: false}
@@ -12,7 +12,8 @@ export default class SkypeLogin extends Component {
   onSubmit = async(e, {formData}) => {
     e.preventDefault()
     try {
-      await Skype.open(formData, true)
+      formData.busy = true
+      await AccountManager.login(formData)
       App.setBusy(false)
       this.setState({
         error: false

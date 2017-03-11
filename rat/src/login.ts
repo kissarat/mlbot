@@ -21,7 +21,12 @@ export class Login {
 
     constructor(cookieJar:CookieJar, eventEmitter: EventEmitter) {
         this.cookieJar = cookieJar;
-        this.requestWithJar = request.defaults({jar: cookieJar});
+        this.requestWithJar = request.defaults({
+            jar: cookieJar,
+            // headers: {
+            //     'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:50.0) Gecko/20100101 Firefox/50.0"
+            // }
+        });
         this.eventEmitter = eventEmitter;
     }
 

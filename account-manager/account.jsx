@@ -1,4 +1,6 @@
 import db from '../react/database.jsx'
+import api from '../react/connect/api.jsx'
+import Skype from '../react/skype/index.jsx'
 import Skyweb from '../rat/src/skyweb.ts'
 import {extend} from 'lodash'
 import {Type, Status} from '../app/config'
@@ -12,7 +14,15 @@ export default class Account {
   async login() {
     if (!this.internal) {
       this.internal = new Skyweb()
-      await this.internal.login(this.info.login, this.info.password)
+      try {
+        await this.internal.login(this.info.login, this.info.password)
+      }
+      catch (ex) {
+        console.error(ex)
+        const skype = await Skype.load(this.info)
+        this.info.headers = skype.headers
+        console.log('Headers received!')
+      }
     }
     return Promise.resolve(this.internal.skypeAccount)
   }

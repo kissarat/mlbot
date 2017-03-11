@@ -23,6 +23,13 @@ if ('club-leader' !== config.vendor) {
   document.getElementById('club-leader').remove()
 }
 
+try {
+  // require('request-debug')(require('request'))
+}
+catch (ex) {
+
+}
+
 export const routes = <Route path='/'>
   <IndexRoute component={Loader}/>
   <Route component={Outdoor}>
