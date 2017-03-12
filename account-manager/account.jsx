@@ -2,7 +2,7 @@ import db from '../react/database.jsx'
 import Skype from '../react/skype/index.jsx'
 import Skyweb from '../rat/src/skyweb.ts'
 import SkypeAccount from '../rat/src/skype_account.ts'
-import {extend} from 'lodash'
+import {extend, isObject, isEmpty} from 'lodash'
 import {isSkypeUsername, millisecondsId} from '../react/util/index.jsx'
 import {Type, Status} from '../app/config'
 
@@ -23,8 +23,15 @@ export default class Account {
         this.info.headers = skype.headers
         this.info.headers.Cookie.split(/;\s+/g).forEach(s => this.internal.cookieJar.setCookie(s))
         this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
-        this.internal.skypeAccount.selfInfo = {username: this.info.login}
-        this.internal.skypeAccount.skypeToken = skype.headers['X-Skypetoken']
+        extend(this.internal.skypeAccount, {
+          skypeToken: skype.headers['X-Skypetoken'],
+          selfInfo: {
+            username: this.info.login
+          },
+          registrationTokenParams: {
+            raw: skype.headers.RegistrationToken
+          }
+        })
         console.log('Headers received!')
       }
     }
@@ -42,23 +49,45 @@ export default class Account {
       .filter(c => this.info.login === c.account)
       .toArray()
     const g = millisecondsId()
+    // const keyed = {}
     this.internal.contactsService.contacts.forEach(c => {
-      if (isSkypeUsername(c.id)) {
-        const id = this.info.login + '~' + c.id
+      const match = /^8:(.*)$/.exec(c.mri)
+      if (match && !c.blocked && isSkypeUsername(match[1])) {
+        const login = match[1]
+        const id = this.info.login + '~' + login
         const found = existing.find(x => id === x.id)
         const contact = {
           type: Type.PERSON,
           id,
+          login,
           account: this.info.login,
-          login: c.id,
           name: c.display_name,
           authorized: c.authorized ? 1 : 0,
+          favorite: c.favorite ? 1 : 0,
           status: found ? found.status : Status.CREATED,
+          created: new Date(c.creation_time).getTime(),
           time: found ? found.time : g.next().value
+        }
+        if (isObject(c.profile.phones) && isEmpty(c.profile.phones)) {
+          contact.phones = {}
+          c.profile.phones.forEach(p => contact.phones[p.type] = p.number)
+        }
+        if (c.locations instanceof Array && c.locations.length > 0) {
+          ['country', 'city'].forEach(name => contact[name] = c.locations[0][name])
+        }
+        if ('string' === typeof c.profile.language) {
+          contact.language = c.profile.language
+        }
+        if ('string' === typeof c.profile.gender) {
+          contact.sex = c.profile.gender
+        }
+        if ('string' === typeof c.profile.nick) {
+          contact.nick = c.profile.nick
         }
         if (c.authorized && db.INVITED === contact.status) {
           contact.status = Status.CREATED
         }
+        // keyed[c.mri] = contact
         contacts.push(contact)
       }
     })
@@ -70,6 +99,9 @@ export default class Account {
   }
 
   async send(message) {
-
+    const cid = Type.CHAT === message.type
+      ? `19:${message.login}@thread.skype`
+      : '8:' + message.login
+    return this.internal.sendMessage(cid, message.text)
   }
 }

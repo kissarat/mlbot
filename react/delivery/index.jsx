@@ -45,14 +45,10 @@ export default class Delivery extends SkypeComponent {
         : `Отправлено ${i} из ${count}`
 
       queue.work = async(skype, contact) => {
-        let cid
-        if (Type.PERSON === type) {
-          cid = '8:' + contact.login
-        }
-        else {
-          cid = `19:${contact.login}@thread.skype`
-        }
-        await skype.rat.sendMessage(cid, text.replace(/\{name}/g, contact.name))
+        await skype.send({
+          text,
+          ...contact
+        })
         await db.contact.update(contact.id, {status: Status.CREATED})
       }
 

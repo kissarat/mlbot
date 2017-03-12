@@ -1,13 +1,16 @@
 import Dexie from 'dexie'
 import {extend} from 'lodash'
-import package_json from '../app/package.json'
 
 const DBNAME = 'mlbot'
-const VERSION = 'version'
 const db = new Dexie(DBNAME)
 
 const schema = {
-  contact: ["&id", "login", "name", "&time", "[status+authorized]", "[account+authorized+status]"]
+  contact: ["&id", "login", "name", "&time", "[status+authorized]", "[account+authorized+status]"],
+  __proto__: {
+    extend(name, fields) {
+      return (this[name] = this[name].concat(fields)).join(',')
+    }
+  }
 }
 
 const Database = {
@@ -16,11 +19,17 @@ const Database = {
       .stores({
         contact: schema.contact.join(',')
       })
+
     db.version(2)
       .stores({
-        contact: schema.contact.concat(['type']).join(',')
+        contact: schema.extend('contact', ['type'])
       })
       .upgrade(db => db.contact.toCollection().modify(content => content.type = 0))
+
+    db.version(3)
+      .stores({
+        contact: schema.extend('contact', ['favorite', 'created', 'country', 'city', 'phones', 'language', 'avatar', 'sex', 'site'])
+      })
   },
 
   async reset() {
