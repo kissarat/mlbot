@@ -26,10 +26,9 @@ export default class AccountManager {
     console.profile(profileName)
     const account = await AccountManager.get(login)
     await account.login()
-    // await account.internal.setStatus('Busy')
     await account.loadContacts()
     await account.saveContacts()
-    // await account.internal.setStatus('Hidden')
+    await account.saveGroups()
     console.profileEnd(profileName)
   }
 }

@@ -2,7 +2,7 @@ import db from '../react/database.jsx'
 import Skype from '../react/skype/index.jsx'
 import Skyweb from '../rat/src/skyweb.ts'
 import SkypeAccount from '../rat/src/skype_account.ts'
-import {extend, isObject, isEmpty} from 'lodash'
+import {pick, xtend, isObject, isEmpty, identity} from 'lodash'
 import {isSkypeUsername, millisecondsId} from '../react/util/index.jsx'
 import {Type, Status} from '../app/config'
 
@@ -49,7 +49,6 @@ export default class Account {
       .filter(c => this.info.login === c.account)
       .toArray()
     const g = millisecondsId()
-    // const keyed = {}
     this.internal.contactsService.contacts.forEach(c => {
       const match = /^8:(.*)$/.exec(c.mri)
       if (match && !c.blocked && isSkypeUsername(match[1])) {
@@ -87,7 +86,6 @@ export default class Account {
         if (c.authorized && db.INVITED === contact.status) {
           contact.status = Status.CREATED
         }
-        // keyed[c.mri] = contact
         contacts.push(contact)
       }
     })
@@ -96,6 +94,29 @@ export default class Account {
       .map(c => c.id)
     await db.contact.bulkDelete(absent)
     await db.contact.bulkPut(contacts)
+  }
+
+  async saveGroups() {
+    const account = this.info.login
+    const existing = await db.group
+      .filter(c => account === c.account)
+      .toArray()
+    const contacts = (await db.contact.filter(c => account === c.account).toArray())
+      .map(({id, login}) => ({login, mri: '8:' + login}))
+    //  || 'Favorites' !== g.name
+    const groups = this.internal.contactsService.groups
+      // .filter(g => !g.is_favorite)
+      .map(g => ({
+        account,
+        id: g.id,
+        name: g.name,
+        contacts: g.contacts.map(mri => contacts.find(c => mri === c.mri)).filter(identity).map(c => c.login),
+      }))
+    const absent = groups
+      .filter(c => !existing.find(x => c.id == x.id))
+      .map(c => c.id)
+    await db.group.bulkDelete(absent)
+    await db.group.bulkPut(groups)
   }
 
   async send(message) {

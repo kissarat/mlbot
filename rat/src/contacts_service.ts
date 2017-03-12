@@ -8,6 +8,7 @@ import {EventEmitter} from "./utils";
 
 export class ContactsService {
     public contacts: Array<{}>;
+    public groups: Array<{}>;
     private requestWithJar: any;
     private eventEmitter: EventEmitter;
 
@@ -24,7 +25,9 @@ export class ContactsService {
             }
         }, (error: any, response: http.IncomingMessage, body: any) => {
             if (!error && response.statusCode === 200) {
-                this.contacts = JSON.parse(body).contacts;
+                const data = JSON.parse(body)
+                this.contacts = data.contacts;
+                this.groups = data.groups;
                 resolve(skypeAccount, this.contacts);
             } else {
                 this.eventEmitter.fire('error', 'Failed to load contacts.');

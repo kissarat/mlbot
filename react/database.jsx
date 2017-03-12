@@ -6,6 +6,7 @@ const db = new Dexie(DBNAME)
 
 const schema = {
   contact: ["&id", "login", "name", "&time", "[status+authorized]", "[account+authorized+status]"],
+  group: ["&id", "account", "name", "contacts"],
   __proto__: {
     extend(name, fields) {
       return (this[name] = this[name].concat(fields)).join(',')
@@ -28,7 +29,9 @@ const Database = {
 
     db.version(3)
       .stores({
-        contact: schema.extend('contact', ['favorite', 'created', 'country', 'city', 'phones', 'language', 'avatar', 'sex', 'site'])
+        contact: schema.extend('contact', ['favorite', 'created', 'country', 'city', 'phones', 'language', 'avatar',
+          'sex', 'site']),
+        group: schema.group.join(',')
       })
   },
 
