@@ -1,4 +1,4 @@
-import api from '../react/connect/api.jsx'
+import api from '../connect/api.jsx'
 import Account from './account.jsx'
 
 export default class AccountManager {

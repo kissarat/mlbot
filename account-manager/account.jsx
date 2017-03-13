@@ -1,9 +1,9 @@
-import db from '../react/database.jsx'
-import Skype from '../react/skype/index.jsx'
+import db from '../store/database.jsx'
+import Skype from '../skype/index.jsx'
 import Skyweb from '../rat/src/skyweb.ts'
 import SkypeAccount from '../rat/src/skype_account.ts'
 import {pick, xtend, isObject, isEmpty, identity} from 'lodash'
-import {isSkypeUsername, millisecondsId} from '../react/util/index.jsx'
+import {isSkypeUsername, millisecondsId} from '../util/index.jsx'
 import {exclude, Type, Status} from '../app/config'
 
 export default class Account {
