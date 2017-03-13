@@ -31,10 +31,6 @@ export default class Delivery extends SkypeComponent {
       account,
       query,
       inform: this.alert,
-
-      beforeIteration(skype) {
-        skype.blank()
-      }
     })
 
     for (let cycle = 1; cycle <= repeatAmount; cycle++) {

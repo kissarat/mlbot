@@ -636,6 +636,26 @@ footer, textarea, input, .ui.menu {
     background-color: rgba(255, 255, 255, 0.85);
 }
 
+.page.settings .message {
+    margin-bottom: 16px;
+}
+
+.page.settings .message .browser-link {
+    min-width: 75px;
+}
+
+.page.settings .segment.backup {
+    min-width: 340px;
+}
+
+.page.settings .about {
+    max-width: calc(100vw - 440px);
+}
+
+.page.settings .ui.tab.segment {
+    background-color: white;
+}
+
 .widget.delivery-message .group.time {
     display: flex;
     margin-top: 4px;

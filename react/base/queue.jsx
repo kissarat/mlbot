@@ -31,14 +31,11 @@ Queue.prototype = {
     if (count > 0) {
       const max = this.max < count ? this.max : count
       this.inform('busy', 'Входа в скайп')
-      const skype = (await AccountManager.get(this.account)).login()
+      const skype = await AccountManager.get(this.account)
       this.inform('busy', 'Получение списка контактов')
       this.setTimeout(() => {
         const seconds = Math.round(this.timeoutDuration / 1000)
         this.inform('error', `Skype не отвечает в течении ${seconds} секунд`)
-        if (skype.remove instanceof Function) {
-          skype.remove()
-        }
       })
       if (this.beforeIteration instanceof Function) {
         console.warn('beforeIteration')

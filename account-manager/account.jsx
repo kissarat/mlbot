@@ -4,7 +4,7 @@ import Skyweb from '../rat/src/skyweb.ts'
 import SkypeAccount from '../rat/src/skype_account.ts'
 import {pick, xtend, isObject, isEmpty, identity} from 'lodash'
 import {isSkypeUsername, millisecondsId} from '../react/util/index.jsx'
-import {Type, Status} from '../app/config'
+import {exclude, Type, Status} from '../app/config'
 
 export default class Account {
   constructor(options) {
@@ -34,8 +34,11 @@ export default class Account {
         })
         console.log('Headers received!')
       }
+      if (this.internal.skypeAccount) {
+        return Promise.resolve(this.internal.skypeAccount)
+      }
+      return Promise.reject()
     }
-    return Promise.resolve(this.internal.skypeAccount)
   }
 
   loadContacts() {
@@ -51,7 +54,7 @@ export default class Account {
     const g = millisecondsId()
     this.internal.contactsService.contacts.forEach(c => {
       const match = /^8:(.*)$/.exec(c.mri)
-      if (match && !c.blocked && isSkypeUsername(match[1])) {
+      if (match && !c.blocked && isSkypeUsername(match[1]) && exclude.indexOf(match[1])) {
         const login = match[1]
         const id = this.info.login + '~' + login
         const found = existing.find(x => id === x.id)
@@ -83,6 +86,9 @@ export default class Account {
         if ('string' === typeof c.profile.nick) {
           contact.nick = c.profile.nick
         }
+        if ('string' === typeof c.profile.avatar_url) {
+          contact.avatar = c.profile.avatar_url
+        }
         if (c.authorized && db.INVITED === contact.status) {
           contact.status = Status.CREATED
         }
@@ -105,7 +111,7 @@ export default class Account {
       .map(({id, login}) => ({login, mri: '8:' + login}))
     //  || 'Favorites' !== g.name
     const groups = this.internal.contactsService.groups
-      // .filter(g => !g.is_favorite)
+    // .filter(g => !g.is_favorite)
       .map(g => ({
         account,
         id: g.id,
@@ -120,6 +126,7 @@ export default class Account {
   }
 
   async send(message) {
+    await this.login()
     const cid = Type.CHAT === message.type
       ? `19:${message.login}@thread.skype`
       : '8:' + message.login

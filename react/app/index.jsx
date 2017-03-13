@@ -5,7 +5,7 @@ import Footer from '../widget/footer.jsx'
 import package_json from '../../app/package.json'
 import React, {Component} from 'react'
 import SingletonComponent from '../base/singleton-component.jsx'
-import {each, defaults} from 'lodash'
+import {each, defaults, isObject} from 'lodash'
 import {hashHistory} from 'react-router'
 import {Menu, Segment, Image, Dimmer, Loader} from 'semantic-ui-react'
 
