@@ -71,7 +71,7 @@ export default class DeliveryList extends Component {
   className() {
     let className = (this.props.className || '') + ' delivery-list '
     className += this.props.status ? 'selected' : 'other'
-    if (this.state.groups) {
+    if (this.hasGroupSelection()) {
       className += ' select-group'
     }
     return className
@@ -91,6 +91,10 @@ export default class DeliveryList extends Component {
     }
   }
 
+  hasGroupSelection() {
+    return this.state.groups && Type.PERSON === this.props.type && Status.CREATED === this.props.status
+  }
+
   controls() {
     const button = <Button
       key="button"
@@ -101,7 +105,7 @@ export default class DeliveryList extends Component {
       content={Status.SELECTED === this.props.status ? 'Никому' : 'Разослать всем'}
       title="Кому отправить сообщение?"/>
 
-    if (this.state.groups && Type.PERSON === this.props.type && Status.CREATED === this.props.status) {
+    if (this.hasGroupSelection()) {
       return <div className="button-and-group">
         {button}
         {this.groupsSelect()}

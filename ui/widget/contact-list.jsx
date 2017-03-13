@@ -3,12 +3,12 @@ import Contact from '../../store/contact.jsx'
 import fs from 'fs-promise'
 import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
-import Skype from '../../skype/index.jsx'
 import {filterSkypeUsernames} from '../../util/index.jsx'
 import {remote} from 'electron'
 import {Status, Type, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
+import AccountManager from '../../account-manager/index.jsx'
 
 export default class ContactList extends PureComponent {
   static propTypes = {
@@ -104,7 +104,7 @@ export default class ContactList extends PureComponent {
       const target = table.getBoundingClientRect()
       const box = container.getBoundingClientRect()
       const hasGroupSelection = Type.PERSON === this.props.type && Status.CREATED == this.props.status
-      const delta = Math.floor((box.height - target.height - (hasGroupSelection ? 140 : 100)) / unit.height)
+      const delta = Math.floor((box.height - target.height - (hasGroupSelection ? 130 : 100)) / unit.height)
       if (delta) {
         this.load({limit: this.state.limit + delta - 1})
         return true
@@ -133,8 +133,14 @@ export default class ContactList extends PureComponent {
   }
 
   async extractMembers(chatId, toFile) {
-    const skype = await Skype.open(this.props.account, true)
-    const {members} = await skype.getMembers(chatId)
+    const skype = await AccountManager.get(this.props.account)
+    console.log(skype.internal)
+    if (!skype.isAuthenticated) {
+      App.setBusy('Вход в скайп')
+      await skype.login()
+    }
+    App.setBusy('Подождите...')
+    const {members} = await skype.getMembers({login: chatId})
     const usernames = []
     members.forEach(function (member) {
       const username = /8:(.*)/.exec(member.id)
@@ -143,7 +149,7 @@ export default class ContactList extends PureComponent {
       }
     })
     if (toFile) {
-      const data = filterSkypeUsernames(usernames).join('\n')
+      const data = filterSkypeUsernames(usernames).filter(u => u !== this.props.account).join('\n')
       remote.dialog.showSaveDialog(async path => {
         await fs.outputFile(path, data)
         App.setBusy(false)

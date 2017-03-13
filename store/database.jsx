@@ -43,7 +43,7 @@ extend(db, {
       console.error('close', ex)
     }
     try {
-      await db.delete()
+      await Dexie.delete(DBNAME)
     }
     catch (ex) {
       console.error('delete', ex)

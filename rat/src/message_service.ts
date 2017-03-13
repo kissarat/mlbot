@@ -23,7 +23,9 @@ export class MessageService {
             'messagetype': messagetype || 'RichText',
             'contenttype': contenttype || 'text'
         });
-        this.requestWithJar.post(Consts.SKYPEWEB_HTTPS + skypeAccount.messagesHost + '/v1/users/ME/conversations/' + conversationId + '/messages', {
+        const url = Consts.SKYPEWEB_HTTPS + skypeAccount.messagesHost + '/v1/users/ME/conversations/' + conversationId + '/messages'
+        // console.log(url)
+        this.requestWithJar.post(url, {
             body: requestBody,
             headers: {
                 'RegistrationToken': skypeAccount.registrationTokenParams.raw

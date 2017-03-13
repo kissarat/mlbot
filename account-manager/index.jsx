@@ -2,7 +2,14 @@ import api from '../connect/api.jsx'
 import Account from './account.jsx'
 import Contact from '../store/contact.jsx'
 
+/**
+ * @property Promise.<Account[]> list
+ */
 export default class AccountManager {
+
+  /**
+   * @returns {Promise.<Account[]>}
+   */
   static async getList(refresh = true) {
     if (refresh || !this.list) {
       this.list = (await api.get('skype/accounts'))
@@ -11,6 +18,9 @@ export default class AccountManager {
     return this.list
   }
 
+  /**
+   * @returns {Promise.<Account>}
+   */
   static async get(login) {
     return (await this.getList()).find(a => login === a.info.login)
   }

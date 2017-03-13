@@ -1,4 +1,5 @@
 import db from '../store/database.jsx'
+import config from '../app/config'
 import request from 'request'
 import Skype from '../skype/index.jsx'
 import SkypeAccount from '../rat/src/skype_account.ts'
@@ -8,12 +9,30 @@ import UserAgent from '../util/user-agent.jsx'
 import {AllHtmlEntities} from 'html-entities'
 import {exclude, Type, Status} from '../app/config'
 import {isSkypeUsername, getMri} from '../util/index.jsx'
+import BareCookieJar from './bare-cookie-jar.jsx'
 import {pick, extend, isObject, isEmpty, identity} from 'lodash'
 
+/**
+ * @property Skyweb internal
+ */
 export default class Account {
   constructor(options) {
     this.info = options
     this._lastId = Date.now()
+    if (config.dev) {
+      ['send'].forEach(name => {
+        const original = this[name]
+        this[name] = async contact => {
+          const data = await original.call(this, contact)
+          console.log(data)
+          return data
+        }
+      })
+    }
+  }
+
+  get isAuthenticated() {
+    return !!this.internal
   }
 
   async login() {
@@ -24,20 +43,27 @@ export default class Account {
       }
       catch (ex) {
         console.error(ex)
-        const skype = await Skype.load(this.info)
-        this.info.headers = skype.headers
-        this.agent = this.info.headers['User-Agent']
-        this.info.headers.Cookie.split(/;\s+/g).forEach(s => this.internal.cookieJar.setCookie(s))
-        this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
-        extend(this.internal.skypeAccount, {
-          skypeToken: skype.headers['X-Skypetoken'],
-          selfInfo: {
-            username: this.info.login
-          },
-          registrationTokenParams: {
-            raw: skype.headers.RegistrationToken
-          }
-        })
+        try {
+          const skype = await Skype.load(this.info)
+          this.info.headers = skype.headers
+          Skype.removeAll()
+          this.agent = this.info.headers['User-Agent']
+          // this.info.headers.Cookie.split(/;\s+/g).forEach(s => this.internal.cookieJar.setCookie(s))
+          this.internal.cookieJar = new BareCookieJar(this.info.headers.Cookie)
+          this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
+          extend(this.internal.skypeAccount, {
+            skypeToken: this.info.headers['X-Skypetoken'],
+            selfInfo: {
+              username: this.info.login
+            },
+            registrationTokenParams: {
+              raw: this.info.headers.RegistrationToken
+            }
+          })
+        }
+        catch (ex) {
+          console.error('CANNOT LOGIN', this.info.login, ex)
+        }
       }
       if ('string' !== typeof this.agent) {
         this.agent = UserAgent.random()
@@ -79,6 +105,9 @@ export default class Account {
         if (err) {
           reject(err)
         }
+        else if (403 === res.statusCode) {
+          reject(res)
+        }
         else {
           resolve(res)
         }
@@ -88,7 +117,10 @@ export default class Account {
 
   loadContacts() {
     return new Promise((resolve, reject) =>
-      this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, reject))
+      this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, err => {
+        console.error('CANNOT LOAD CONTACTS', this.info.login, err)
+        reject(err)
+      }))
   }
 
   nextId() {
@@ -174,10 +206,17 @@ export default class Account {
       }
       g.contacts.forEach(function (mri) {
         const contact = contacts.find(c => mri === c.mri)
-        contact.groups.push(g.id)
-        return contact.login
+        if (!contact) {
+          return console.error('Contact is not found', mri)
+        }
+        if (contact.groups instanceof Array) {
+          contact.groups.push(g.id)
+        }
+        else {
+          console.error('Contact groups is not initialized', contact.login)
+        }
+        group.contacts.push(contact.login)
       })
-      group.contacts.push(g)
       return group
     })
     const absent = groups
@@ -190,7 +229,19 @@ export default class Account {
 
   async send(message) {
     await this.login()
-    return this.internal.sendMessage(getMri(message), message.text)
+    const mri = getMri(message)
+    // return this.internal.sendMessage(getMri(message), message.text)
+    const r = await this.request('POST', `https://client-s.gateway.messenger.live.com/v1/users/ME/conversations/${mri}/messages`, {
+      content: message.text,
+      messagetype: 'RichText',
+      contenttype: 'text'
+    })
+    if (r.statusCode < 400) {
+      return r
+    }
+    else {
+      console.error(r)
+    }
   }
 
   async invite(contact) {
@@ -214,20 +265,27 @@ export default class Account {
   async loadChats() {
     const url = 'https://client-s.gateway.messenger.live.com/v1/users/ME/conversations?' +
       'startTime=0&pageSize=200&view=msnp24Equivalent&targetType=Thread'
-    const {conversations} = JSON.parse((await this.request('GET', url)).body)
-    if (conversations instanceof Array) {
-      this.info.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
+    const r = await this.request('GET', url)
+    if (r.statusCode < 400 && r.body) {
+      const {conversations} = JSON.parse(r.body)
+      if (conversations instanceof Array) {
+        this.info.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
+      }
+    }
+    else {
+      console.log(r)
+      throw new Error('Невозможно загрузить чаты: ' + r.statusMessage)
     }
   }
 
   async saveChats() {
-    const existing = (await db.contact
-      .filter(c => this.info.login === c.account && Type.CHAT === c.type)
-      .toArray()).map(c => c.id)
+    const account = this.info.login
+    const existing = await db.contact
+      .filter(c => account === this.info.login && Type.CHAT === c.type)
+      .toArray()
     const contacts = []
     const absent = []
 
-    const account = this.info.login
     const entities = new AllHtmlEntities()
     this.info.conversations.forEach(c => {
       const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
@@ -267,5 +325,11 @@ export default class Account {
 
     await db.contact.bulkDelete(absent)
     await db.contact.bulkPut(contacts)
+  }
+
+  async getMembers({login}) {
+    // await this.login()
+    const r = await this.request('GET', `https://client-s.gateway.messenger.live.com/v1/threads/19:${login}@thread.skype?view=msnp24Equivalent`)
+    return JSON.parse(r.body)
   }
 }

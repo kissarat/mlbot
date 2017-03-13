@@ -435,6 +435,7 @@ textarea {
 
 .contact-list.select-group .control {
     flex-direction: column;
+    min-height: 70px;
 }
 
 .contact-list.select-group .control .button-and-group {

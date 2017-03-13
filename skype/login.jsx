@@ -46,7 +46,7 @@ export default class SkypeLogin extends FormComponent {
           Вернуться к списку аккаунтов
         </Link>
       </div>
-      <Form onSubmit={this.onSubmit} error={!!this.state.error} loading={this.busy}>
+      <Form onSubmit={this.onSubmit} error={!!this.state.error} loading={this.state.busy}>
         {this.state.error ? <Alert error content={this.state.error}/> : ''}
         <Form.Field
           name="login" placeholder="Введите логин Skype" control="input" type="text"

@@ -92,9 +92,7 @@ extend(Skype.prototype, {
     catch (ex) {
       console.error(ex)
     }
-  },
-
-
+  }
 })
 
 export default Skype
