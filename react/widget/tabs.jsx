@@ -2,21 +2,20 @@ import React, {Component} from 'react'
 import {omit} from 'lodash'
 
 export default class Tabs extends Component {
-  active(key, children) {
-    const active = children.find(a => key === a.key) || children[0]
-    this.setState({active: active.key})
-  }
-
   componentWillMount() {
-    this.active(this.props.active, this.props.children)
+    if (!this.state) {
+      this.setState({active: this.props.children.find(a => a.props.active).key})
+    }
   }
 
   componentWillReceiveProps(props) {
-    this.active(props.active, props.children)
+    if (this.props.active !== props.active) {
+      this.setState({active: props.children.find(a => a.props.active).key})
+    }
   }
 
   open(key) {
-    this.active(key, this.props.children)
+    this.setState({active: (this.props.children.find(a => a.key === key) || this.props.children[0]).key})
   }
 
   buttons(active) {
