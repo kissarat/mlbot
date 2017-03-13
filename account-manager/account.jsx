@@ -76,7 +76,6 @@ export default class Account {
     // console.log(options)
     return new Promise(function (resolve, reject) {
       request(options, function (err, res) {
-        console.log(err, res)
         if (err) {
           reject(err)
         }
@@ -119,12 +118,14 @@ export default class Account {
           id,
           login,
           account: this.info.login,
+          mri: c.mri,
           name: c.display_name,
           authorized: c.authorized ? 1 : 0,
           favorite: c.favorite ? 1 : 0,
           status: found ? found.status : Status.CREATED,
           created: new Date(c.creation_time).getTime(),
-          time: found ? found.time : this.nextId()
+          time: found ? found.time : this.nextId(),
+          groups: []
         }
         if (isObject(c.profile.phones) && isEmpty(c.profile.phones)) {
           contact.phones = {}
@@ -163,22 +164,28 @@ export default class Account {
     const existing = await db.group
       .filter(c => account === c.account)
       .toArray()
-    const contacts = (await db.contact.filter(c => account === c.account).toArray())
-      .map(({id, login}) => ({login, mri: '8:' + login}))
-    //  || 'Favorites' !== g.name
-    const groups = this.internal.contactsService.groups
-    // .filter(g => !g.is_favorite)
-      .map(g => ({
+    let contacts = await db.contact.filter(c => account === c.account).toArray()
+    const groups = this.internal.contactsService.groups.map(function (g) {
+      const group = {
         account,
         id: g.id,
         name: g.name,
-        contacts: g.contacts.map(mri => contacts.find(c => mri === c.mri)).filter(identity).map(c => c.login),
-      }))
+        contacts: []
+      }
+      g.contacts.forEach(function (mri) {
+        const contact = contacts.find(c => mri === c.mri)
+        contact.groups.push(g.id)
+        return contact.login
+      })
+      group.contacts.push(g)
+      return group
+    })
     const absent = groups
       .filter(c => !existing.find(x => c.id == x.id))
       .map(c => c.id)
     await db.group.bulkDelete(absent)
     await db.group.bulkPut(groups)
+    await db.contact.bulkPut(contacts)
   }
 
   async send(message) {
@@ -231,6 +238,7 @@ export default class Account {
         const available = isObject(c.threadProperties)
           && c.threadProperties.topic
           && !c.threadProperties.lastleaveat
+          && !isEmpty(c.lastMessage)
         if (available) {
           try {
             const name = striptags(entities.decode(c.threadProperties.topic))
@@ -259,6 +267,5 @@ export default class Account {
 
     await db.contact.bulkDelete(absent)
     await db.contact.bulkPut(contacts)
-    console.log(absent, contacts)
   }
 }

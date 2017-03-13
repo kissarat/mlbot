@@ -433,6 +433,14 @@ textarea {
     display: flex;
 }
 
+.contact-list.select-group .control {
+    flex-direction: column;
+}
+
+.contact-list.select-group .control .button-and-group {
+    display: flex;
+}
+
 .contact-list [type=button] {
     min-width: 160px;
 }

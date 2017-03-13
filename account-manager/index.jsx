@@ -27,17 +27,17 @@ export default class AccountManager {
     console.profile(profileName)
     const account = await AccountManager.get(login)
     await account.login()
-    // await Promise.all([
-    //   async function () {
+    await Promise.all([
+      async function () {
         await account.loadContacts()
         await account.saveContacts()
         await account.saveGroups()
-      // },
-      // async function () {
+      },
+      async function () {
         await account.loadChats()
         await account.saveChats()
-      // },
-    // ])
+      },
+    ].map(a => a()))
     await Contact.emit('update')
     console.profileEnd(profileName)
   }

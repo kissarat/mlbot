@@ -30,7 +30,7 @@ extend(db, {
     db.version(3)
       .stores({
         contact: schema.extend('contact', ['favorite', 'created', 'country', 'city', 'phones', 'language', 'avatar',
-          'sex', 'site']),
+          'sex', 'site', 'groups']),
         group: schema.group.join(',')
       })
   },

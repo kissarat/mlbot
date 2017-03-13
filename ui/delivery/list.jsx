@@ -2,7 +2,7 @@ import Contact from '../../store/contact.jsx'
 import ContactList from '../widget/contact-list.jsx'
 import db from '../../store/database.jsx'
 import React, {Component, PropTypes} from 'react'
-import {Button} from 'semantic-ui-react'
+import {Button, Select} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults, keyBy, uniq, values} from 'lodash'
 
@@ -17,7 +17,33 @@ export default class DeliveryList extends Component {
   }
 
   state = {
+    group: false,
     busy: false
+  }
+
+  componentDidMount() {
+    void this.load(this.props)
+  }
+
+  componentWillReceiveProps(props) {
+    if (this.props.account !== props.account || this.props.type !== props.type) {
+      void this.load(props)
+    }
+  }
+
+  async load(props) {
+    if (Type.PERSON === props.type && Status.CREATED === props.status) {
+      const groups = [{id: '', text: 'Все группы'}].concat(
+        await db.group.filter(g => props.account === g.account).toArray()
+      )
+      this.setState({
+        group: this.state.group || '',
+        groups: groups.map(g => ({key: g.id, value: g.id, text: g.name}))
+      })
+    }
+    else {
+      this.setState({group: false})
+    }
   }
 
   changeStatusAll = async() => {
@@ -25,14 +51,18 @@ export default class DeliveryList extends Component {
       this.setState({busy: true})
       const where = {
         account: this.props.account,
+        authorized: 1,
         status: this.props.status,
-        authorized: 1
       }
       const mods = {
         status: Status.CREATED === this.props.status ? Status.SELECTED : Status.CREATED
       }
-      // console.log(where, mods)
-      await db.contact.where(where).modify(mods)
+      const q = db.contact.where(where)
+      if (this.state.group) {
+        q.filter(c => Type.PERSON === c.type && c.groups.indexOf(this.state.group) >= 0)
+      }
+      await q.modify(mods)
+      // console.log(where, this.state.group, mods)
       Contact.emit('update')
       this.setState({busy: false})
     }
@@ -41,25 +71,54 @@ export default class DeliveryList extends Component {
   className() {
     let className = (this.props.className || '') + ' delivery-list '
     className += this.props.status ? 'selected' : 'other'
+    if (this.state.groups) {
+      className += ' select-group'
+    }
     return className
   }
 
-  button() {
-    return <Button
+  onChange = (e, {value}) => {
+    this.setState({group: value})
+  }
+
+  groupsSelect() {
+    if (this.state.groups instanceof Array) {
+      return <Select
+        key="select"
+        value={this.state.group || ''}
+        options={this.state.groups}
+        onChange={this.onChange}/>
+    }
+  }
+
+  controls() {
+    const button = <Button
+      key="button"
       disabled={!this.props.account}
       loading={this.state.busy}
       type="button"
       onClick={this.changeStatusAll}
       content={Status.SELECTED === this.props.status ? 'Никому' : 'Разослать всем'}
       title="Кому отправить сообщение?"/>
+
+    if (this.state.groups && Type.PERSON === this.props.type && Status.CREATED === this.props.status) {
+      return <div className="button-and-group">
+        {button}
+        {this.groupsSelect()}
+      </div>
+    }
+    else {
+      return button
+    }
   }
 
   render() {
     return <ContactList
       {...this.props}
       disabled={!this.props.account}
-      className={this.className()}>
-      {this.button()}
+      className={this.className()}
+      group={this.state.group}>
+      {this.controls()}
     </ContactList>
   }
 }

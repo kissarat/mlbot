@@ -15,6 +15,7 @@ export default class ContactList extends PureComponent {
     account: PropTypes.string,
     authorized: PropTypes.oneOf([0, 1]).isRequired,
     disabled: PropTypes.bool,
+    // group: PropTypes.string,
     sort: PropTypes.string,
     status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
   }
@@ -47,26 +48,7 @@ export default class ContactList extends PureComponent {
     this.initialize(this.props)
   }
 
-  setupDev(clear) {
-    if (dev) {
-      const self = clear ? null : this
-
-      if (this.props.authorized) {
-        if (this.props.status) {
-          window.otherContacts = self
-        }
-        else if (this.props.status) {
-          window.selectedContacts = self
-        }
-      }
-      else {
-        window.queueContacts = self
-      }
-    }
-  }
-
   componentWillUnmount() {
-    this.setupDev(true)
     removeEventListener('resize', this.resizeDebounced)
     Contact.removeListener('update', this.update)
   }
@@ -76,12 +58,14 @@ export default class ContactList extends PureComponent {
       setTimeout(this.resize, 300)
       this.setState({resized: true})
     }
-    this.setupDev(false)
   }
 
   initialize(props) {
     if (!props.authorized || props.account) {
       const params = pick(props, 'type', 'account', 'status', 'authorized')
+      if (props.group) {
+        params.group = props.group
+      }
       if (1 === props.online) {
         params.online = 1
       }
@@ -94,11 +78,12 @@ export default class ContactList extends PureComponent {
     }
   }
 
-  update = () => {
-    this.load(this.state)
-  }
+  update = () => this.load(this.state)
 
   async load(state) {
+    if (!state.group) {
+      this.state.group = false
+    }
     defaults(state, this.state)
     const result = await Contact.request(state)
     defaults(result, state)
@@ -118,7 +103,8 @@ export default class ContactList extends PureComponent {
       const unit = td.getBoundingClientRect()
       const target = table.getBoundingClientRect()
       const box = container.getBoundingClientRect()
-      const delta = Math.floor((box.height - target.height - 100) / unit.height)
+      const hasGroupSelection = Type.PERSON === this.props.type && Status.CREATED == this.props.status
+      const delta = Math.floor((box.height - target.height - (hasGroupSelection ? 140 : 100)) / unit.height)
       if (delta) {
         this.load({limit: this.state.limit + delta - 1})
         return true

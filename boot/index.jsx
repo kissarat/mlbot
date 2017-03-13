@@ -1,5 +1,6 @@
 import 'babel-polyfill'
 import api from '../connect/api.jsx'
+import config from '../app/config'
 import db from '../store/database.jsx'
 import Global from './global.jsx'
 import handshake from './handshake.jsx'
@@ -12,7 +13,9 @@ import {Loader} from 'semantic-ui-react'
 import {pick, each, isEqual, extend} from 'lodash'
 import {render} from 'react-dom'
 
-extend(window, Global)
+if (config.dev) {
+  extend(window, Global)
+}
 
 const appRoot = document.getElementById('app')
 render(<Loader active size='huge'>Подключение к серверу</Loader>, appRoot)

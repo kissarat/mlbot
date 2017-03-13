@@ -6,6 +6,7 @@ import Delivery from '../ui/delivery/index.jsx'
 import Dexie from 'dexie'
 import Queue from '../ui/base/queue.jsx'
 import Skype from '../skype/index.jsx'
+import AccountManager from '../account-manager/index.jsx'
 import {hashHistory} from 'react-router'
 import {Registry} from '../util/persistence.jsx'
 import {remote} from 'electron'
@@ -16,6 +17,7 @@ function go() {
 
 const Global = {
   _,
+  AccountManager,
   api,
   app: remote.app,
   Contact,
@@ -23,9 +25,9 @@ const Global = {
   Delivery,
   Dexie,
   go,
+  Queue,
   Registry,
   Skype,
-  Queue,
 }
 
 export default Global

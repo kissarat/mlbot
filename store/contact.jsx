@@ -33,12 +33,15 @@ extend(Contact, {
 
     const searchTextFilter = createTextSearchFilter(params.search)
 
-    // console.log(params)
     const q = db.contact
       .where(pick(params, 'account', 'status', 'authorized'))
 
     if ('number' === typeof params.type) {
       q.filter(c => params.type === c.type)
+    }
+
+    if (params.group) {
+      q.filter(c => c.groups.indexOf(params.group) >= 0)
     }
 
     if (searchTextFilter) {
