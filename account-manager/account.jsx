@@ -182,4 +182,12 @@ export default class Account {
     contact.status = 200 === statusCode ? Status.CREATED : Status.ABSENT
     return contact
   }
+
+  async remove(contact) {
+    await this.login()
+    const url = `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts/` + getMri(contact)
+    const {statusCode} = await this.request('DELETE', url)
+    contact.status = 200 === statusCode ? Status.CREATED : Status.ABSENT
+    return contact
+  }
 }

@@ -9,17 +9,6 @@ function Queue(options) {
   extend(this, options)
 }
 
-extend(Queue, {
-  query(account, type) {
-    return db.contact.where({
-      account,
-      authorized: 0,
-      status: Status.CREATED
-    })
-      .filter(c => type === c.type)
-  }
-})
-
 Queue.prototype = {
   __proto__: Timeout,
 

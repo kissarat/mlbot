@@ -1,10 +1,10 @@
+import Contact from '../../store/contact.jsx'
+import db from '../../store/database.jsx'
+import Queue from '../base/queue.jsx'
 import React, {PureComponent} from 'react'
 import {Button} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import Queue from '../base/queue.jsx'
-import db from '../../store/database.jsx'
-import Skype from '../../skype/index.jsx'
 
 export default class Unauthorized extends PureComponent {
   state = {
@@ -12,7 +12,12 @@ export default class Unauthorized extends PureComponent {
   }
 
   query() {
-    return Queue.query(this.props.account, this.props.type)
+    return db.contact.where({
+      account: this.props.account,
+      authorized: 0,
+      status: Status.CREATED
+    })
+      .filter(c => Type.PERSON === c.type)
   }
 
   clear = async() => {
@@ -22,16 +27,11 @@ export default class Unauthorized extends PureComponent {
       account: account,
       success: (i, count) => `Удалено ${i} из ${count} контактов`,
 
-      query: () => db.contact.where({
-        account,
-        authorized: 0,
-        status: Status.CREATED
-      })
-        .filter(c => Type.PERSON === c.type),
+      query: () => this.query(),
 
       work: async(skype, contact) => {
-        const {username} = await skype.removeContact(contact.login)
-        return this.query().filter(c => username === c.login).delete()
+        const {id} = await skype.remove(contact)
+        return this.query().filter(c => id === c.id).delete()
       }
     })
     await queue.execute()
@@ -54,13 +54,13 @@ export default class Unauthorized extends PureComponent {
     if (this.props.account) {
       await this.count()
     }
-    Skype.on('open', this.count)
-    Skype.on('contacts', this.count)
+    // Skype.on('open', this.count)
+    Contact.on('update', this.count)
   }
 
   componentWillUnmount() {
-    Skype.removeListener('contacts', this.count)
-    Skype.removeListener('open', this.count)
+    Contact.removeListener('update', this.count)
+    // Skype.removeListener('open', this.count)
   }
 
   render() {

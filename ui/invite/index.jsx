@@ -1,4 +1,5 @@
 import Alert from '../widget/alert.jsx'
+import db from '../../store/database.jsx'
 import Help from '../widget/help.jsx'
 import InviteGreeting from './greeting.jsx'
 import InviteList from './list.jsx'
@@ -14,9 +15,10 @@ export default class Invite extends SkypeComponent {
   name = 'Invite'
 
   invite = async text => {
+    const account = this.state.account
     const queue = new Queue({
       success: (i, count) => `Приглашено ${i} контактов из ${count}`,
-      account: this.state.account,
+      account,
       inform: this.alert,
       max: 40,
 
@@ -33,7 +35,11 @@ export default class Invite extends SkypeComponent {
           await db.contact.delete(contact.id)
         }
         else {
-          await db.contact.update(contact.id, {status: Status.CREATED})
+          await db.contact.update(contact.id, {
+            id: account + '~' + contact.login,
+            account,
+            status: Status.CREATED
+          })
         }
       },
     })
