@@ -1,6 +1,7 @@
 import load from './load.jsx'
 import Skype from './webview.jsx'
 import {extend, each} from 'lodash'
+import Timeout from '../util/timeout.jsx'
 
 function all(array) {
   return new Proxy(array, {
@@ -39,6 +40,13 @@ extend(Skype, {
     let skype = Skype.get(data.login)
     if (!skype) {
       skype = await Skype.load(data, busy)
+    }
+    if (data.timeout && !(skype.setTimeout instanceof Function)) {
+      extend(skype, Timeout)
+      skype.timeoutDuration = data.timeout
+      skype.setTimeout(function () {
+        skype.remove()
+      })
     }
     Skype.emit('open', {busy, skype, ...data})
     return skype

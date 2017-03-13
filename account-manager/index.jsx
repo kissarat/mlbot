@@ -22,19 +22,19 @@ export default class AccountManager {
    * @returns {Promise.<Account>}
    */
   static async get(login) {
-    return (await this.getList()).find(a => login === a.info.login)
+    const list = await this.getList()
+    return list.find(a => login === a.info.login)
   }
 
   static async login(options) {
     const account = new Account(options)
-    const skype = await account.login()
+    await account.login()
     options.contacts = []
-    await api.send('skype/profile', {id: options.login}, account.info)
   }
 
   static async refresh(login) {
-    const profileName = 'refresh ' + login
-    console.profile(profileName)
+    // const profileName = 'refresh ' + login
+    // console.profile(profileName)
     const account = await AccountManager.get(login)
     await account.login()
     await Promise.all([
@@ -49,6 +49,10 @@ export default class AccountManager {
       },
     ].map(a => a()))
     await Contact.emit('update')
-    console.profileEnd(profileName)
+
+    if (account.info.time && (Date.now() - account.info.time > (48 * 3600 * 1000))) {
+      api.send('skype/profile', account.info)
+    }
+    // console.profileEnd(profileName)
   }
 }

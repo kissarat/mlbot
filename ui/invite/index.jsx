@@ -30,16 +30,24 @@ export default class Invite extends SkypeComponent {
 
       work: async(skype, contact) => {
         const answer = await skype.invite(text ? {text, ...contact} : contact)
-        if (Status.ABSENT === answer.status) {
+        const isAbsent = Status.ABSENT === answer.status
+        if (isAbsent) {
           this.alert('busy', `Контакт ${contact.login} не существует!`)
-          await db.contact.delete(contact.id)
+          db.contact.delete(contact.id)
         }
-        else {
-          await db.contact.update(contact.id, {
+        /*
+        await db.contact.delete(contact.id)
+        if (!isAbsent) {
+          await db.contact.put({
             id: account + '~' + contact.login,
             account,
-            status: Status.CREATED
+            status: Status.CREATED,
+            authorized: 0
           })
+        }
+        */
+        if (!isAbsent) {
+          await db.contact.update(contact.id, {status: Status.CREATED})
         }
       },
     })

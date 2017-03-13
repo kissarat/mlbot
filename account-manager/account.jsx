@@ -19,16 +19,16 @@ export default class Account {
   constructor(options) {
     this.info = options
     this._lastId = Date.now()
-    if (config.dev) {
-      ['send'].forEach(name => {
-        const original = this[name]
-        this[name] = async contact => {
-          const data = await original.call(this, contact)
-          console.log(data)
-          return data
-        }
-      })
-    }
+    // if (config.dev) {
+    //   ['send'].forEach(name => {
+    //     const original = this[name]
+    //     this[name] = async contact => {
+    //       const data = await original.call(this, contact)
+    //       console.log(data)
+    //       return data
+    //     }
+    //   })
+    // }
   }
 
   get isAuthenticated() {
@@ -44,11 +44,13 @@ export default class Account {
       catch (ex) {
         console.error(ex)
         try {
-          const skype = await Skype.load(this.info)
+          this.info.timeout = api.config.skype && api.config.skype.timeout || 180000
+          const skype = await Skype.open(this.info)
           this.info.headers = skype.headers
-          Skype.removeAll()
+          if (skype.updateTimeout instanceof Function) {
+            skype.updateTimeout()
+          }
           this.agent = this.info.headers['User-Agent']
-          // this.info.headers.Cookie.split(/;\s+/g).forEach(s => this.internal.cookieJar.setCookie(s))
           this.internal.cookieJar = new BareCookieJar(this.info.headers.Cookie)
           this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
           extend(this.internal.skypeAccount, {
