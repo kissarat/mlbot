@@ -3,14 +3,17 @@ import request from 'request'
 import Skype from '../skype/index.jsx'
 import SkypeAccount from '../rat/src/skype_account.ts'
 import Skyweb from '../rat/src/skyweb.ts'
+import striptags from 'striptags'
 import UserAgent from '../util/user-agent.jsx'
+import {AllHtmlEntities} from 'html-entities'
 import {exclude, Type, Status} from '../app/config'
-import {isSkypeUsername, millisecondsId, getMri} from '../util/index.jsx'
+import {isSkypeUsername, getMri} from '../util/index.jsx'
 import {pick, extend, isObject, isEmpty, identity} from 'lodash'
 
 export default class Account {
   constructor(options) {
     this.info = options
+    this._lastId = Date.now()
   }
 
   async login() {
@@ -89,12 +92,22 @@ export default class Account {
       this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, reject))
   }
 
+  nextId() {
+    const now = Date.now()
+    if (now > this._lastId) {
+      this._lastId = now
+    }
+    else {
+      this._lastId++
+    }
+    return this._lastId
+  }
+
   async saveContacts() {
     const contacts = []
     const existing = await db.contact
-      .filter(c => this.info.login === c.account)
+      .filter(c => this.info.login === c.account && Type.PERSON === c.type)
       .toArray()
-    const g = millisecondsId()
     this.internal.contactsService.contacts.forEach(c => {
       const match = /^8:(.*)$/.exec(c.mri)
       if (match && !c.blocked && isSkypeUsername(match[1]) && exclude.indexOf(match[1])) {
@@ -111,7 +124,7 @@ export default class Account {
           favorite: c.favorite ? 1 : 0,
           status: found ? found.status : Status.CREATED,
           created: new Date(c.creation_time).getTime(),
-          time: found ? found.time : g.next().value
+          time: found ? found.time : this.nextId()
         }
         if (isObject(c.profile.phones) && isEmpty(c.profile.phones)) {
           contact.phones = {}
@@ -189,5 +202,63 @@ export default class Account {
     const {statusCode} = await this.request('DELETE', url)
     contact.status = 200 === statusCode ? Status.CREATED : Status.ABSENT
     return contact
+  }
+
+  async loadChats() {
+    const url = 'https://client-s.gateway.messenger.live.com/v1/users/ME/conversations?' +
+      'startTime=0&pageSize=200&view=msnp24Equivalent&targetType=Thread'
+    const {conversations} = JSON.parse((await this.request('GET', url)).body)
+    if (conversations instanceof Array) {
+      this.info.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
+    }
+  }
+
+  async saveChats() {
+    const existing = (await db.contact
+      .filter(c => this.info.login === c.account && Type.CHAT === c.type)
+      .toArray()).map(c => c.id)
+    const contacts = []
+    const absent = []
+
+    const account = this.info.login
+    const entities = new AllHtmlEntities()
+    this.info.conversations.forEach(c => {
+      const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
+      if (chatId) {
+        const login = chatId[1]
+        const id = account + '~' + login
+        const found = existing.find(x => id === x.id)
+        const available = isObject(c.threadProperties)
+          && c.threadProperties.topic
+          && !c.threadProperties.lastleaveat
+        if (available) {
+          try {
+            const name = striptags(entities.decode(c.threadProperties.topic))
+              .replace(/\s+/g, ' ')
+              .trim()
+            contacts.push({
+              type: Type.CHAT,
+              id,
+              account,
+              login,
+              name,
+              authorized: 1,
+              status: found ? found.status : Status.CREATED,
+              time: found ? found.time : this.nextId()
+            })
+          }
+          catch (ex) {
+            console.error(ex)
+          }
+        }
+        else if (found) {
+          absent.push(id)
+        }
+      }
+    })
+
+    await db.contact.bulkDelete(absent)
+    await db.contact.bulkPut(contacts)
+    console.log(absent, contacts)
   }
 }
