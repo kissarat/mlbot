@@ -1,42 +1,40 @@
-import Alert from '../widget/alert.jsx'
-import App from '../app/index.jsx'
 import AccountManager from '../../account-manager/index.jsx'
+import Alert from '../widget/alert.jsx'
+import FormComponent from '../base/form-component.jsx'
 import React, {Component} from 'react'
 import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {Link} from 'react-router'
+import {pick} from 'lodash'
 
-export default class SkypeLogin extends Component {
-  state = {loading: false}
+export default class SkypeLogin extends FormComponent {
+  state = {busy: false}
 
-  onSubmit = async(e, {formData}) => {
+  onSubmit = async e => {
     e.preventDefault()
+    let error = false
+    this.setState({busy: true})
     try {
-      formData.busy = true
-      await AccountManager.login(formData)
-      App.setBusy(false)
-      this.setState({
-        error: false
-      })
-      hashHistory.push('/accounts')
+      await AccountManager.login(pick(this.state, 'login', 'password'))
+      return void hashHistory.push('/accounts')
     }
     catch (err) {
       console.error(err)
-      App.setBusy(false)
       if ('username' === err.kind || 'password' === err.kind) {
-        this.setState({error: 'Неверный логин или пароль'})
+        error = 'Неверный логин или пароль'
       }
       else if ('confirm' === err.kind) {
-        this.setState({
-          error: `Ваш Skype-аккаунт нуждается в проверке.
+        error = `Ваш Skype-аккаунт нуждается в проверке.
           Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
-        })
       }
       else {
-        this.setState({error: 'Неизвестная ошибка'})
+        error = 'Неизвестная ошибка'
       }
     }
-    Skype.removeAll()
+    this.setState({
+      error,
+      busy: false
+    })
   }
 
   render() {
@@ -48,10 +46,14 @@ export default class SkypeLogin extends Component {
           Вернуться к списку аккаунтов
         </Link>
       </div>
-      <Form onSubmit={this.onSubmit} error={!!this.state.error}>
+      <Form onSubmit={this.onSubmit} error={!!this.state.error} loading={this.busy}>
         {this.state.error ? <Alert error content={this.state.error}/> : ''}
-        <Form.Field name="login" placeholder="Введите логин Skype" control="input" type="text"/>
-        <Form.Field name="password" placeholder="Введите пароль Skype" control="input" type="password"/>
+        <Form.Field
+          name="login" placeholder="Введите логин Skype" control="input" type="text"
+          onChange={this.onChange}/>
+        <Form.Field
+          name="password" placeholder="Введите пароль Skype" control="input" type="password"
+          onChange={this.onChange}/>
         <Button type="submit">Добавить</Button>
       </Form>
     </Segment>

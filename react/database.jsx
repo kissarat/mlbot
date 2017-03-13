@@ -14,7 +14,7 @@ const schema = {
   }
 }
 
-const Database = {
+extend(db, {
   create() {
     db.version(1)
       .stores({
@@ -55,18 +55,7 @@ const Database = {
   async setup() {
     await db.create()
     return db.open()
-    // const appVersion = localStorage.getItem(VERSION)
-    // localStorage.setItem(VERSION, package_json.version)
-    // if (!appVersion || appVersion === package_json.version) {
-    //   await db.create()
-    //   return db.open()
-    // }
-    // else {
-    //   await db.reset()
-    // }
   }
-}
-
-extend(db, Database)
+})
 
 export default db
