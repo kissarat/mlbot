@@ -1,5 +1,6 @@
 import api from '../connect/api.jsx'
 import Account from './account.jsx'
+import Contact from '../store/contact.jsx'
 
 export default class AccountManager {
   static async getList(refresh = true) {
@@ -29,6 +30,7 @@ export default class AccountManager {
     await account.loadContacts()
     await account.saveContacts()
     await account.saveGroups()
+    await Contact.emit('update')
     console.profileEnd(profileName)
   }
 }

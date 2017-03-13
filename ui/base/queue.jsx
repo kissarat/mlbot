@@ -37,9 +37,6 @@ Queue.prototype = {
         const seconds = Math.round(this.timeoutDuration / 1000)
         this.inform('error', `Skype не отвечает в течении ${seconds} секунд`)
       })
-      if (this.beforeIteration instanceof Function) {
-        console.warn('beforeIteration')
-      }
 
       const inform = i => this.inform('busy', this.success(i, count))
 

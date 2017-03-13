@@ -13,7 +13,7 @@ import {toArray, defaults, keyBy, uniq} from 'lodash'
 export default class Invite extends SkypeComponent {
   name = 'Invite'
 
-  invite = async(greeting) => {
+  invite = async text => {
     const queue = new Queue({
       success: (i, count) => `Приглашено ${i} контактов из ${count}`,
       account: this.state.account,
@@ -27,7 +27,7 @@ export default class Invite extends SkypeComponent {
         .filter(c => Type.PERSON === c.type),
 
       work: async(skype, contact) => {
-        const answer = await skype.invite(contact.login, 'string' === typeof greeting ? greeting.trim() : '')
+        const answer = await skype.invite(text ? {text, ...contact} : contact)
         if (Status.ABSENT === answer.status) {
           this.alert('busy', `Контакт ${contact.login} не существует!`)
           await db.contact.delete(contact.id)

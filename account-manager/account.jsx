@@ -1,10 +1,12 @@
 import db from '../store/database.jsx'
+import request from 'request'
 import Skype from '../skype/index.jsx'
-import Skyweb from '../rat/src/skyweb.ts'
 import SkypeAccount from '../rat/src/skype_account.ts'
-import {pick, xtend, isObject, isEmpty, identity} from 'lodash'
-import {isSkypeUsername, millisecondsId} from '../util/index.jsx'
+import Skyweb from '../rat/src/skyweb.ts'
+import UserAgent from '../util/user-agent.jsx'
 import {exclude, Type, Status} from '../app/config'
+import {isSkypeUsername, millisecondsId, getMri} from '../util/index.jsx'
+import {pick, extend, isObject, isEmpty, identity} from 'lodash'
 
 export default class Account {
   constructor(options) {
@@ -21,6 +23,7 @@ export default class Account {
         console.error(ex)
         const skype = await Skype.load(this.info)
         this.info.headers = skype.headers
+        this.agent = this.info.headers['User-Agent']
         this.info.headers.Cookie.split(/;\s+/g).forEach(s => this.internal.cookieJar.setCookie(s))
         this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
         extend(this.internal.skypeAccount, {
@@ -32,13 +35,53 @@ export default class Account {
             raw: skype.headers.RegistrationToken
           }
         })
-        console.log('Headers received!')
+      }
+      if ('string' !== typeof this.agent) {
+        this.agent = UserAgent.random()
       }
       if (this.internal.skypeAccount) {
-        return Promise.resolve(this.internal.skypeAccount)
+        return this.internal.skypeAccount
       }
+
       return Promise.reject()
     }
+  }
+
+  get username() {
+    return this.internal.skypeAccount.username || this.info.login
+  }
+
+  getHeaders() {
+    return {
+      'X-Skypetoken': this.internal.skypeAccount.skypeToken,
+      RegistrationToken: this.internal.skypeAccount.registrationTokenParams.raw,
+      'User-Agent': this.agent
+    }
+  }
+
+  request(method, uri, body) {
+    const options = {
+      method,
+      uri,
+      jar: this.internal.cookieJar,
+      headers: this.getHeaders()
+    }
+    if (isObject(body)) {
+      options.body = JSON.stringify(body)
+      options.headers['Content-Type'] = 'application/json'
+    }
+    // console.log(options)
+    return new Promise(function (resolve, reject) {
+      request(options, function (err, res) {
+        console.log(err, res)
+        if (err) {
+          reject(err)
+        }
+        else {
+          resolve(res)
+        }
+      })
+    })
   }
 
   loadContacts() {
@@ -127,9 +170,16 @@ export default class Account {
 
   async send(message) {
     await this.login()
-    const cid = Type.CHAT === message.type
-      ? `19:${message.login}@thread.skype`
-      : '8:' + message.login
-    return this.internal.sendMessage(cid, message.text)
+    return this.internal.sendMessage(getMri(message), message.text)
+  }
+
+  async invite(contact) {
+    await this.login()
+    const {statusCode} = await this.request('POST', `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts`, {
+      mri: getMri(contact),
+      greeting: (contact.text && contact.text.trim()) || ''
+    })
+    contact.status = 200 === statusCode ? Status.CREATED : Status.ABSENT
+    return contact
   }
 }

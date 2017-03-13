@@ -1,5 +1,6 @@
 #back {
     background-image: url("images/leader-back.jpg");
+    opacity: 0.7;
 }
 
 .layout.outdoor .two.column.row p a.browser-link {
@@ -17,5 +18,5 @@
 }
 
 .ui.segment.text-back {
-    background-color: rgba(80, 180, 219, 0.4);
+    /*background-color: rgba(80, 180, 219, 0.4);*/
 }

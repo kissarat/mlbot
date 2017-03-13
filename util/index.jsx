@@ -1,5 +1,6 @@
-import {isObject, omit, defaults, slice, uniq, each, pick} from 'lodash'
 import os from 'os'
+import {Type} from '../app/config'
+import {isObject, omit, defaults, slice, uniq, each, pick} from 'lodash'
 
 export const start = new Date()
 
@@ -153,4 +154,10 @@ export function* millisecondsId(max = 1000000) {
   while (i < max) {
     yield now + i++
   }
+}
+
+export function getMri(contact) {
+  return Type.CHAT === contact.type
+    ? `19:${contact.login}@thread.skype`
+    : '8:' + contact.login
 }
