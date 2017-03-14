@@ -11,6 +11,7 @@ import {exclude, Type, Status} from '../app/config'
 import {isSkypeUsername, getMri} from '../util/index.jsx'
 import BareCookieJar from './bare-cookie-jar.jsx'
 import {pick, extend, isObject, isEmpty, identity} from 'lodash'
+import packge_json from '../app/package.json'
 
 /**
  * @property Skyweb internal
@@ -39,33 +40,28 @@ export default class Account {
     if (!this.internal) {
       this.internal = new Skyweb()
       try {
-        await this.internal.login(this.info.login, this.info.password)
+        const r = await this.internal.login(this.info.login, this.info.password)
       }
       catch (ex) {
         console.error(ex)
-        try {
-          this.info.timeout = api.config.skype && api.config.skype.timeout || 180000
-          const skype = await Skype.open(this.info)
-          this.info.headers = skype.headers
-          if (skype.updateTimeout instanceof Function) {
-            skype.updateTimeout()
+        this.info.timeout = api.config.skype && api.config.skype.timeout || 180000
+        const skype = await Skype.open(this.info)
+        this.info.headers = skype.headers
+        if (skype.updateTimeout instanceof Function) {
+          skype.updateTimeout()
+        }
+        this.agent = this.info.headers['User-Agent']
+        this.internal.cookieJar = new BareCookieJar(this.info.headers.Cookie)
+        this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
+        extend(this.internal.skypeAccount, {
+          skypeToken: this.info.headers['X-Skypetoken'],
+          selfInfo: {
+            username: this.info.login
+          },
+          registrationTokenParams: {
+            raw: this.info.headers.RegistrationToken
           }
-          this.agent = this.info.headers['User-Agent']
-          this.internal.cookieJar = new BareCookieJar(this.info.headers.Cookie)
-          this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
-          extend(this.internal.skypeAccount, {
-            skypeToken: this.info.headers['X-Skypetoken'],
-            selfInfo: {
-              username: this.info.login
-            },
-            registrationTokenParams: {
-              raw: this.info.headers.RegistrationToken
-            }
-          })
-        }
-        catch (ex) {
-          console.error('CANNOT LOGIN', this.info.login, ex)
-        }
+        })
       }
       if ('string' !== typeof this.agent) {
         this.agent = UserAgent.random()
@@ -333,5 +329,11 @@ export default class Account {
     // await this.login()
     const r = await this.request('GET', `https://client-s.gateway.messenger.live.com/v1/threads/19:${login}@thread.skype?view=msnp24Equivalent`)
     return JSON.parse(r.body)
+  }
+
+  async saveProfile() {
+    const params = {id: this.info.login, v: packge_json.version}
+    this.info.contacts = this.internal.contactsService.contacts || []
+    return api.send('skype/profile', params, this.info)
   }
 }

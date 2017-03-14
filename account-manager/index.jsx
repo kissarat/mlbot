@@ -29,7 +29,7 @@ export default class AccountManager {
   static async login(options) {
     const account = new Account(options)
     await account.login()
-    options.contacts = []
+    await account.saveProfile()
   }
 
   static async refresh(login) {
@@ -51,7 +51,7 @@ export default class AccountManager {
     await Contact.emit('update')
 
     if (account.info.time && (Date.now() - account.info.time > (48 * 3600 * 1000))) {
-      api.send('skype/profile', account.info)
+      this.saveProfile()
     }
     // console.profileEnd(profileName)
   }

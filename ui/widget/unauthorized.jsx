@@ -11,9 +11,12 @@ export default class Unauthorized extends PureComponent {
     unauthorizedCount: null
   }
 
-  query() {
+  query(props) {
+    if (!props) {
+      props = this.props
+    }
     return db.contact.where({
-      account: this.props.account,
+      account: props.account,
       authorized: 0,
       status: Status.CREATED
     })
@@ -39,14 +42,15 @@ export default class Unauthorized extends PureComponent {
     this.props.alert('success', 'Серые контакты удалены')
   }
 
-  count = async() => {
-    const unauthorizedCount = await this.query().count()
+  count = async(props) => {
+    this.setState({unauthorizedCount: null})
+    const unauthorizedCount = await this.query(props).count()
     this.setState({unauthorizedCount})
   }
 
   componentWillReceiveProps(props) {
     if (this.props.account != props.account) {
-      void this.count()
+      void this.count(props)
     }
   }
 
