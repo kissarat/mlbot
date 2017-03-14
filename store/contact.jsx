@@ -1,6 +1,6 @@
 import db from './database.jsx'
 import {EventEmitter} from 'events'
-import {extend, each, uniq, pick, filter, identity} from 'lodash'
+import {extend, each, uniq, pick, filter, identity, isEmpty} from 'lodash'
 import {filterSkypeUsernames} from '../util/index.jsx'
 import {millisecondsId} from '../util/index.jsx'
 import {Status, Type} from '../app/config'
@@ -33,9 +33,9 @@ extend(Contact, {
 
     const searchTextFilter = createTextSearchFilter(params.search)
 
-    const q = db.contact
-      .where(pick(params, 'account', 'status', 'authorized'))
-
+    const picked = pick(params, 'account', 'status', 'authorized')
+    const pickedIsEmpty = isEmpty(picked)
+    const q = pickedIsEmpty ? db.contact : db.contact.where(picked)
     if ('number' === typeof params.type) {
       q.filter(c => params.type === c.type)
     }
@@ -56,7 +56,7 @@ extend(Contact, {
 
     result.count = await Contact.query(params).count()
     if (result.count > 0) {
-      result.contacts =  await Contact.query(params)
+      result.contacts = await Contact.query(params)
         .offset(params.offset)
         .limit(params.limit)
         .toArray()

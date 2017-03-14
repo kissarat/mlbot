@@ -7,7 +7,7 @@ import {filterSkypeUsernames} from '../../util/index.jsx'
 import {remote} from 'electron'
 import {Status, Type, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
-import {toArray, defaults, debounce, pick, omit, isEqual, isObject, merge} from 'lodash'
+import {toArray, defaults, debounce, pick, omit, isEqual, isEmpty, isObject, merge} from 'lodash'
 import AccountManager from '../../account-manager/index.jsx'
 
 export default class ContactList extends PureComponent {
@@ -85,10 +85,15 @@ export default class ContactList extends PureComponent {
       this.state.group = false
     }
     defaults(state, this.state)
-    const result = await Contact.request(state)
-    defaults(result, state)
-    result.loading = false
-    this.setState(result)
+    if (isEmpty(pick(state, 'account', 'status', 'authorized'))) {
+      console.warn('Empty query in contact list')
+    }
+    else {
+      const result = await Contact.request(state)
+      defaults(result, state)
+      result.loading = false
+      this.setState(result)
+    }
   }
 
   softLoad(state) {

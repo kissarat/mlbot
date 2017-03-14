@@ -5,19 +5,23 @@ import Message from './message.jsx'
 import Queue from '../base/queue.jsx'
 import React from 'react'
 import Repeat from './repeat.jsx'
-import Skype from '../../skype/index.jsx'
 import SkypeComponent from '../base/skype-component.jsx'
 import Unauthorized from '../widget/unauthorized.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
+import {wait} from '../../util/index.jsx'
 
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
-  send = async(template) => {
+  send = async(template, state) => {
     const type = this.type()
     const repeatAmount = Type.CHAT === type ? +Repeat.state.repeat : 1
+    let delay = +state.delay
+    if (!(delay > 0)) {
+      delay = 0
+    }
     const account = this.state.account
     const query = () => db.contact.where({
       account,
@@ -53,6 +57,10 @@ export default class Delivery extends SkypeComponent {
         await db.contact
           .filter(c => current.indexOf(c.id) >= 0)
           .modify({status: Status.SELECTED})
+        if (delay > 0) {
+          this.alert('busy', `Ожидание между рассылками ${delay} секунд`)
+          await wait(delay * 1000)
+        }
       }
     }
     this.alert('success', 'Рассылка завершена')
@@ -63,7 +71,7 @@ export default class Delivery extends SkypeComponent {
   }
 
   unauthorized() {
-    if ('chat' !== this.props.params.type) {
+    if (Type.PERSON === this.type()) {
       return <Unauthorized
         type={Type.PERSON}
         account={this.state.account}
@@ -78,7 +86,8 @@ export default class Delivery extends SkypeComponent {
   }
 
   render() {
-    const isChat = Type.CHAT === this.type()
+    const type = this.type()
+    const isChat = Type.CHAT === type
     return <Segment.Group horizontal className="page delivery">
       <Segment>
         {this.alertMessage()}
@@ -86,6 +95,7 @@ export default class Delivery extends SkypeComponent {
         {this.unauthorized()}
         <Message
           disabled={!this.state.account}
+          type={type}
           submit={this.send}>
           {this.repeat()}
         </Message>
@@ -97,7 +107,7 @@ export default class Delivery extends SkypeComponent {
         </Help>
         <DeliveryList
           authorized={1}
-          type={this.type()}
+          type={type}
           account={this.state.account}
           status={Status.CREATED}/>
       </Segment>

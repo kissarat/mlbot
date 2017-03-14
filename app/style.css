@@ -665,13 +665,14 @@ footer, textarea, input, .ui.menu {
     background-color: white;
 }
 
-.widget.delivery-message .group.time {
+.widget.delivery-message .group {
     display: flex;
     margin-top: 4px;
     margin-bottom: 8px;
 }
 
-.widget.delivery-message .group.time select {
+.widget.delivery-message .group select,
+.widget.delivery-message .group input {
     margin: 0 4px;
     padding: 1px 2px;
     width: 44px;

@@ -22,7 +22,8 @@ export default class Message extends Editor {
 
   state = {
     sign: true,
-    signature: 'https://club-leader.com/'
+    signature: 'https://club-leader.com/',
+    delay: 10,
   }
 
   static propTypes = {
@@ -40,7 +41,7 @@ export default class Message extends Editor {
     })
   }
 
-  submit(value) {
+  submit(value, state) {
     if (this.state.sign) {
       value += '\n▁▁▁▁▁▁▁▁▁▁▁▁▁\n' + this.state.signature
     }
@@ -51,12 +52,12 @@ export default class Message extends Editor {
     else if (this.state.schedule) {
       const time = this.getScheduleTime()
       this.setState({
-        timer: setTimeout(() => this.clearTimer() && this.props.submit(value), time.getTime() - Date.now()),
+        timer: setTimeout(() => this.clearTimer() && this.props.submit(value, state), time.getTime() - Date.now()),
         interval: setInterval(() => this.setState({left: Date.now()}), 980)
       })
     }
     else {
-      this.props.submit(value)
+      this.props.submit(value, state)
     }
   }
 
@@ -102,12 +103,16 @@ export default class Message extends Editor {
     return 'минут'
   }
 
+  timeOpacity() {
+    return {opacity: this.state.schedule ? 1 : 0.3}
+  }
+
   select(name, options) {
     options = map(options, o => <option key={o.key} value={o.value}>{o.text}</option>)
     return <select
       name={name}
       disabled={!this.state.schedule}
-      style={{opacity: this.state.schedule ? 1 : 0.3}}
+      style={this.timeOpacity()}
       onChange={this.onChange}
       value={this.state[name]}>
       {options}
@@ -142,17 +147,27 @@ export default class Message extends Editor {
       </div>
     }
     else {
-      return <div className="group time">
-        <Form.Checkbox
-          name="schedule"
-          label="Запустить в "
-          checked={this.state.schedule}
-          onChange={this.onCheckboxChange}
-        />
-        {this.select('hour', hours)}
-        <span>{this.hourPostfix()}</span>
-        {this.select('minute', minutes)}
-        <span>{this.minutePostfix()}</span>
+      return <div>
+        <div className="group time">
+          <Form.Checkbox
+            name="schedule"
+            label="Запустить в "
+            checked={this.state.schedule}
+            onChange={this.onCheckboxChange}
+          />
+          {this.select('hour', hours)}
+          <span>{this.hourPostfix()}</span>
+          {this.select('minute', minutes)}
+          <span>{this.minutePostfix()}</span>
+        </div>
+        {config.Type.CHAT === this.props.type ? <div className="group">
+            с задежкой
+            <input
+              name="delay"
+              value={this.state.delay}
+              onChange={this.onChange}/>
+            секунд между рассылками
+          </div> : ''}
       </div>
     }
   }
