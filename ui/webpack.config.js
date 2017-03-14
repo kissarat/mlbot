@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const webpack = require('../webpack-common')('react')
+const webpack = require('../webpack-common')('ui')
 webpack.entry = __dirname + '/../boot/index.jsx'
 webpack.target = 'node'
 

@@ -24,7 +24,7 @@ if ('club-leader' !== config.vendor) {
 }
 
 try {
-  require('request-debug')(require('request'))
+  // require('request-debug')(require('request'))
 }
 catch (ex) {
 

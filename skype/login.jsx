@@ -1,6 +1,7 @@
 import AccountManager from '../account-manager/index.jsx'
 import Alert from '../ui/widget/alert.jsx'
 import FormComponent from '../ui/base/form-component.jsx'
+import Skype from '../skype/index.jsx'
 import React, {Component} from 'react'
 import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
@@ -28,12 +29,13 @@ export default class SkypeLogin extends FormComponent {
           Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
       }
       else if ('abuse' === err.kind) {
-        error = `Ваш аккаунт заблокирован
+        error = `Ваш аккаунт заблокирован.
           Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
       }
       else {
         error = 'Неизвестная ошибка'
       }
+      Skype.removeAll()
     }
     this.setState({
       error,

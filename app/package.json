@@ -76,6 +76,7 @@
     "ts-loader": "^2.0.1",
     "typescript": "^2.2.1",
     "uglify-js": "git+https://github.com/mishoo/UglifyJS2.git#harmony",
-    "webpack": "^1.14.0"
+    "webpack": "^1.14.0",
+    "webpack-uglify-js-plugin": "^1.1.9"
   }
 }

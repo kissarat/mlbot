@@ -34,9 +34,9 @@ extend(Skype, {
   },
 
   async open(data, busy) {
-    if ('string' === typeof data) {
-      data = await Skype.getAccount(data)
-    }
+    // if ('string' === typeof data) {
+    //   data = await Skype.getAccount(data)
+    // }
     let skype = Skype.get(data.login)
     if (!skype) {
       skype = await Skype.load(data, busy)

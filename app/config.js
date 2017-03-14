@@ -9,7 +9,7 @@ catch (ex) {
 }
 
 const config = {
-  dev: true,
+  dev: false,
   reset: false,
   origin: 'http://app.inbisoft.com',
   window: {

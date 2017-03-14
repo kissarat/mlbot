@@ -1,5 +1,6 @@
 import Contact from '../../store/contact.jsx'
 import ContactList from '../widget/contact-list.jsx'
+import db from '../../store/database.jsx'
 import React, {Component, PropTypes} from 'react'
 import {Button} from 'semantic-ui-react'
 import {Status} from '../../app/config'

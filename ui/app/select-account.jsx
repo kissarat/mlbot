@@ -1,5 +1,6 @@
 import AccountManager from '../../account-manager/index.jsx'
 import React, {Component} from 'react'
+import Skype from '../../skype/index.jsx'
 import {Select, Icon, Message} from 'semantic-ui-react'
 
 export default class SelectAccount extends Component {
@@ -59,6 +60,7 @@ export default class SelectAccount extends Component {
           onDismiss: () => this.setState({alert: false})
         }
       })
+      Skype.removeAll()
     }
     this.setState({busy: false})
   }

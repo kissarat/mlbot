@@ -1,5 +1,7 @@
+import AccountManager from '../../account-manager/index.jsx'
 import App from '../app/index.jsx'
 import Contact from '../../store/contact.jsx'
+import db from '../../store/database.jsx'
 import fs from 'fs-promise'
 import Paginator from './paginator.jsx'
 import React, {PureComponent, PropTypes} from 'react'
@@ -8,7 +10,6 @@ import {remote} from 'electron'
 import {Status, Type, dev} from '../../app/config'
 import {Table, Dimmer, Loader, Input, Icon} from 'semantic-ui-react'
 import {toArray, defaults, debounce, pick, omit, isEqual, isEmpty, isObject, merge} from 'lodash'
-import AccountManager from '../../account-manager/index.jsx'
 
 export default class ContactList extends PureComponent {
   static propTypes = {

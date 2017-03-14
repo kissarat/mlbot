@@ -52,8 +52,8 @@ module.exports = function (name) {
             loader: "css-loader" // translates CSS into CommonJS
           },
             // {
-          //   loader: "sass-loader" // compiles Sass to CSS
-          // }
+            //   loader: "sass-loader" // compiles Sass to CSS
+            // }
           ]
         },
       ]
@@ -62,9 +62,9 @@ module.exports = function (name) {
       modulesDirectories: [__dirname + '/app/node_modules']
     },
     plugins: [
-    //   new webpack.DefinePlugin({
-    //     MLBOT_VENDOR: JSON.stringify(process.env.MLBOT_VENDOR || 'club-leader')
-    //   })
+      //   new webpack.DefinePlugin({
+      //     MLBOT_VENDOR: JSON.stringify(process.env.MLBOT_VENDOR || 'club-leader')
+      //   })
     ]
   }
 
@@ -73,28 +73,19 @@ module.exports = function (name) {
   }
 
   if (mode('prod')) {
-    let Uglify
-    try {
-      Uglify = require('webpack-uglify-js-plugin')
-    }
-    catch (ex) {
-      console.error('Cannot import webpack-uglify-js-plugin')
-    }
-
-    if (Uglify) {
-      config.plugins.push(new Uglify({
-        cacheFolder: '/tmp',
-        debug: false,
-        minimize: true,
-        sourceMap: false,
-        compress: {
-          warnings: true
-        },
-        output: {
-          comments: false
-        }
-      }))
-    }
+    const Uglify = require('webpack-uglify-js-plugin')
+    config.plugins.push(new Uglify({
+      cacheFolder: '/tmp',
+      debug: false,
+      minimize: true,
+      sourceMap: false,
+      compress: {
+        warnings: true
+      },
+      output: {
+        comments: false
+      }
+    }))
   }
 
   return config

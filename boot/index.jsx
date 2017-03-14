@@ -13,9 +13,9 @@ import {Loader} from 'semantic-ui-react'
 import {pick, each, isEqual, extend} from 'lodash'
 import {render} from 'react-dom'
 
-if (config.dev) {
-  extend(window, Global)
-}
+// if (config.dev) {
+//   extend(window, Global)
+// }
 
 const appRoot = document.getElementById('app')
 render(<Loader active size='huge'>Подключение к серверу</Loader>, appRoot)
