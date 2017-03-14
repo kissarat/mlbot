@@ -9,7 +9,7 @@ import {CookieJar} from "request";
 import {Promise} from "es6-promise";
 import {EventEmitter} from "./utils";
 
-const rejectWithError = (reject:(reason?:any)=>void, error: string, eventEmitter:EventEmitter) => {
+const rejectWithError = (reject: (reason?: any) => void, error: string, eventEmitter: EventEmitter) => {
     eventEmitter.fire('error', error);
     reject(error);
 };
@@ -19,7 +19,7 @@ export class Login {
     private cookieJar: CookieJar;
     private eventEmitter: EventEmitter;
 
-    constructor(cookieJar:CookieJar, eventEmitter: EventEmitter) {
+    constructor(cookieJar: CookieJar, eventEmitter: EventEmitter) {
         this.cookieJar = cookieJar;
         this.requestWithJar = request.defaults({
             jar: cookieJar,
@@ -30,19 +30,19 @@ export class Login {
         this.eventEmitter = eventEmitter;
     }
 
-    public doLogin(skypeAccount:SkypeAccount) {
+    public doLogin(skypeAccount: SkypeAccount) {
         var functions = [new Promise<string>(this.sendLoginRequestOauth.bind(this, skypeAccount)).then((t) => {
             return this.promiseSkypeToken(skypeAccount, t);
         }), this.getRegistrationToken, this.subscribeToResources, this.createStatusEndpoint, this.getSelfDisplayName];
 
-        return <Promise<{}>>(functions.reduce((previousValue:Promise<{}>, currentValue: any)=> {
-            return previousValue.then((skypeAccount:SkypeAccount) => {
+        return <Promise<{}>>(functions.reduce((previousValue: Promise<{}>, currentValue: any) => {
+            return previousValue.then((skypeAccount: SkypeAccount) => {
                 return new Promise(currentValue.bind(this, skypeAccount));
             });
         }));
     }
 
-    private sendLoginRequestOauth(skypeAccount:SkypeAccount, resolve: any, reject: any) {
+    private sendLoginRequestOauth(skypeAccount: SkypeAccount, resolve: any, reject: any) {
         this.requestWithJar.get(Consts.SKYPEWEB_LOGIN_OAUTH_URL, (error: Error, response: any, body: any) => {
             if (!error && response.statusCode == 200) {
                 //we'll need those values to do successful auth
@@ -83,7 +83,7 @@ export class Login {
         });
     }
 
-    private promiseSkypeToken(skypeAccount:SkypeAccount, magicT: string):Promise<SkypeAccount> {
+    private promiseSkypeToken(skypeAccount: SkypeAccount, magicT: string): Promise<SkypeAccount> {
         return new Promise((resolve, reject) => {
             var postParams = {
                 url: Consts.SKYPEWEB_LOGIN_MICROSOFT_URL,
@@ -113,19 +113,27 @@ export class Login {
         })
     }
 
-    private getRegistrationToken(skypeAccount:SkypeAccount, resolve: any, reject: any) {
+    private getRegistrationToken(skypeAccount: SkypeAccount, resolve: any, reject: any) {
         var currentTime = Utils.getCurrentTime();
         var lockAndKeyResponse = Utils.getMac256Hash(currentTime, Consts.SKYPEWEB_LOCKANDKEY_APPID, Consts.SKYPEWEB_LOCKANDKEY_SECRET);
         this.requestWithJar.post(Consts.SKYPEWEB_HTTPS + skypeAccount.messagesHost + '/v1/users/ME/endpoints', {
             headers: {
-                'LockAndKey': 'appId=' + Consts.SKYPEWEB_LOCKANDKEY_APPID + '; time=' + currentTime + '; lockAndKeyResponse=' + lockAndKeyResponse,
-                'ClientInfo': 'os=Windows; osVer=10; proc=Win64; lcid=en-us; deviceType=1; country=n/a; clientName=' + Consts.SKYPEWEB_CLIENTINFO_NAME + '; clientVer=' + Consts.SKYPEWEB_CLIENTINFO_VERSION,
+                'LockAndKey': 'appId=' + Consts.SKYPEWEB_LOCKANDKEY_APPID + '; time='
+                + currentTime + '; lockAndKeyResponse=' + lockAndKeyResponse,
+                'ClientInfo': 'os=Windows; osVer=10; proc=Win64; lcid=en-us; deviceType=1; country=n/a; clientName='
+                + Consts.SKYPEWEB_CLIENTINFO_NAME + '; clientVer=' + Consts.SKYPEWEB_CLIENTINFO_VERSION,
                 'Authentication': 'skypetoken=' + skypeAccount.skypeToken
             },
             body: '{}' //don't ask why
-        }, (error:any, response:http.IncomingMessage, body:any) => {
+        }, (error: any, response: http.IncomingMessage, body: any) => {
+            if (error) {
+                rejectWithError(reject, `Error while authentication ${error}`, this.eventEmitter);
+            }
+            else if (!response) {
+                rejectWithError(reject, `No response while getRegistrationToken`, this.eventEmitter);
+            }
             //now lets try retrieve registration token
-            if (!error && response.statusCode === 201 || response.statusCode === 301) {
+            else if (!error && response.statusCode === 201 || response.statusCode === 301) {
                 var locationHeader = response.headers['location'];
                 //expecting something like this 'registrationToken=someSting; expires=someNumber; endpointId={someString}'
                 var registrationTokenHeader = response.headers['set-registrationtoken'];
@@ -137,7 +145,7 @@ export class Login {
                     return;
                 }
 
-                var registrationTokenParams = registrationTokenHeader.split(/\s*;\s*/).reduce((params: any, current:string) => {
+                var registrationTokenParams = registrationTokenHeader.split(/\s*;\s*/).reduce((params: any, current: string) => {
                     if (current.indexOf('registrationToken') === 0) {
                         params['registrationToken'] = current;
                     } else {
@@ -167,7 +175,7 @@ export class Login {
         });
     }
 
-    private subscribeToResources(skypeAccount:SkypeAccount, resolve: any, reject: any) {
+    private subscribeToResources(skypeAccount: SkypeAccount, resolve: any, reject: any) {
         var interestedResources = [
             '/v1/threads/ALL',
             '/v1/users/ME/contacts/ALL',
@@ -185,17 +193,18 @@ export class Login {
             headers: {
                 'RegistrationToken': skypeAccount.registrationTokenParams.raw
             }
-        }, (error:any, response:http.IncomingMessage, body:any) => {
+        }, (error: any, response: http.IncomingMessage, body: any) => {
             if (!error && response.statusCode === 201) {
                 resolve(skypeAccount);
             } else {
-                rejectWithError(reject, `Failed to subscribe to resources. ${error} ${response.statusCode}`, this.eventEmitter);
+                const status = response && response.statusCode
+                rejectWithError(reject, `Failed to subscribe to resources. ${error} ${status}`, this.eventEmitter);
             }
         });
     }
 
-    private createStatusEndpoint(skypeAccount:SkypeAccount, resolve: any, reject: any) {
-        if (!skypeAccount.registrationTokenParams.endpointId){
+    private createStatusEndpoint(skypeAccount: SkypeAccount, resolve: any, reject: any) {
+        if (!skypeAccount.registrationTokenParams.endpointId) {
             //there is no need in this case to create endpoint?
             resolve(skypeAccount);
             return;
@@ -221,7 +230,7 @@ export class Login {
             headers: {
                 'RegistrationToken': skypeAccount.registrationTokenParams.raw
             }
-        }, (error:any, response:http.IncomingMessage, body:any) => {
+        }, (error: any, response: http.IncomingMessage, body: any) => {
             if (!error && response.statusCode === 200) {
                 resolve(skypeAccount);
             } else {

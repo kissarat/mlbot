@@ -33,10 +33,25 @@ export default class SelectAccount extends Component {
     }
     catch (ex) {
       console.error(ex)
+      let content
+      switch (ex.kind) {
+        case 'abuse':
+          content = 'Ваш аккаунт заблокирован'
+          break
+        case 'password':
+          content = 'Неверный пароль'
+          break
+        default:
+          content = ex.toString()
+          if ('[object Object]' === content) {
+            content = 'Неопределенная ошибка'
+          }
+          break
+      }
       this.setState({
         alert: {
           error: true,
-          content: ex.toString(),
+          content,
           onDismiss: () => this.setState({alert: false})
         }
       })

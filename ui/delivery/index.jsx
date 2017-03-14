@@ -38,13 +38,23 @@ export default class Delivery extends SkypeComponent {
     })
 
     for (let cycle = 1; cycle <= repeatAmount; cycle++) {
-      let text = template.replace(/\{cycle}/g, cycle)
-
       queue.success = (i, count) => repeatAmount > 1
         ? `Рассылка №${cycle}: Отправлено ${i} из ${count}`
         : `Отправлено ${i} из ${count}`
 
       queue.work = async(skype, contact) => {
+        let text = template.replace(/\{\w+}/g, function (s) {
+          console.log(s, contact)
+          if ('{cycle}' === s) {
+            return cycle
+          }
+          const value = contact[s.slice(1, -1)]
+          if (value) {
+            return value
+          }
+          return ''
+        })
+
         await skype.send({
           text,
           ...contact
