@@ -36,7 +36,7 @@ export default class Settings extends Component {
   }
 
   clearSettings = () => {
-    const preserve = pick(localStorage, 'sam', 'mlbot.version')
+    const preserve = pick(localStorage, 'sam', 'version', 'm.viktor.expert')
     localStorage.clear()
     merge(localStorage, preserve)
   }

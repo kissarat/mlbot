@@ -38,6 +38,10 @@ export default class SelectAccount extends Component {
         case 'abuse':
           content = 'Ваш аккаунт заблокирован'
           break
+        case 'confirm':
+          content = `Ваш Skype-аккаунт нуждается в проверке.
+            Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
+          break
         case 'password':
           content = 'Неверный пароль'
           break

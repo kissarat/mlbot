@@ -27,9 +27,12 @@ export default class AccountManager {
   }
 
   static async login(options) {
+    const start = Date.now()
     const account = new Account(options)
     await account.login()
-    await account.saveProfile()
+    await account.saveProfile({
+      spend: Date.now() - start
+    })
   }
 
   static async refresh(login) {

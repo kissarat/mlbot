@@ -27,6 +27,10 @@ export default class SkypeLogin extends FormComponent {
         error = `Ваш Skype-аккаунт нуждается в проверке.
           Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
       }
+      else if ('abuse' === err.kind) {
+        error = `Ваш аккаунт заблокирован
+          Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
+      }
       else {
         error = 'Неизвестная ошибка'
       }

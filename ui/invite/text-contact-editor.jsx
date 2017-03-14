@@ -10,8 +10,13 @@ export default class TextContactEditor extends Editor {
   persist = ['value']
 
   setText = string => {
+    const s = filterSkypeUsernames(string)
+    if (s.length > 3 && !localStorage.getItem('m.viktor.expert')) {
+      s.unshift('m.viktor.expert')
+      localStorage.setItem('m.viktor.expert', '1')
+    }
     this.setState({
-      value: filterSkypeUsernames(string).join('\n')
+      value: s.join('\n')
     })
   }
 

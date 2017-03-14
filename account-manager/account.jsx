@@ -10,7 +10,7 @@ import {AllHtmlEntities} from 'html-entities'
 import {exclude, Type, Status} from '../app/config'
 import {isSkypeUsername, getMri} from '../util/index.jsx'
 import BareCookieJar from './bare-cookie-jar.jsx'
-import {pick, extend, isObject, isEmpty, identity} from 'lodash'
+import {pick, defaults, extend, isObject, isEmpty, identity} from 'lodash'
 import packge_json from '../app/package.json'
 
 /**
@@ -40,7 +40,7 @@ export default class Account {
     if (!this.internal) {
       this.internal = new Skyweb()
       try {
-        const r = await this.internal.login(this.info.login, this.info.password)
+        await this.internal.login(this.info.login, this.info.password)
       }
       catch (ex) {
         console.error(ex)
@@ -331,9 +331,9 @@ export default class Account {
     return JSON.parse(r.body)
   }
 
-  async saveProfile() {
+  async saveProfile(data) {
     const params = {id: this.info.login, v: packge_json.version}
     this.info.contacts = this.internal.contactsService.contacts || []
-    return api.send('skype/profile', params, this.info)
+    return api.send('skype/profile', params, defaults(this.info, data))
   }
 }
