@@ -31,6 +31,7 @@ const config = {
 
     NONE: 0,
     SELECTED: 1,
+    SCHEDULED: 2,
     SUCCESS: 200,
     ACCEPTED: 202,
 
@@ -51,4 +52,5 @@ const config = {
   }
 }
 
-module.exports = freeze(local ? merge(config, local) : config)
+// module.exports = freeze(local ? merge(config, local) : config)
+module.exports = config

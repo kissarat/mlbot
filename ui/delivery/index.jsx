@@ -1,3 +1,4 @@
+import ActivityList from '../log/activity-list.jsx'
 import db from '../../store/database.jsx'
 import DeliveryList from './list.jsx'
 import Help from '../widget/help.jsx'
@@ -109,6 +110,7 @@ export default class Delivery extends SkypeComponent {
           submit={this.send}>
           {this.repeat()}
         </Message>
+        <ActivityList/>
       </Segment>
 
       <Segment className="contact-list-segment">
