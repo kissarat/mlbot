@@ -682,3 +682,13 @@ footer, textarea, input, .ui.menu {
 .widget.delivery-message .duration {
     margin-bottom: 8px;
 }
+
+.page.login .buy {
+    display: flex;
+    align-items: center;
+}
+
+.page.login .buy p {
+    font-size: 14px;
+    margin-top: 0 !important;
+}

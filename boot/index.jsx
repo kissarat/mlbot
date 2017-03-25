@@ -20,26 +20,21 @@ import {render} from 'react-dom'
 const appRoot = document.getElementById('app')
 render(<Loader active size='huge'>Подключение к серверу</Loader>, appRoot)
 
-db.setup()
-  .then(handshake)
-  .then(function (allow) {
+async function main() {
+  const allow = await handshake()
+  try {
     if (allow) {
-      try {
-        render(router, appRoot)
-        if ('#/' === location.hash) {
-          const isGuest = !api.config.user || api.config.user.guest
-          hashHistory.push(isGuest ? '/login' : '/accounts')
-        }
-      }
-      catch (ex) {
-        api.report(ex)
+      render(router, appRoot)
+      if ('#/' === location.hash) {
+        const isGuest = !api.config.user || api.config.user.guest
+        hashHistory.push(isGuest ? '/login' : '/accounts')
       }
     }
     else {
       console.error('Application not started')
     }
-  })
-  .catch(function (err) {
+  }
+  catch (err) {
     let message
     if (err instanceof DexieError) {
       if ('VersionError' === err.name || 'UpgradeError' === err.name) {
@@ -53,10 +48,19 @@ db.setup()
     else {
       message = ''
     }
-    if ('string' === typeof message) {
-      const stack = err._e && 'string' === typeof err._e.stack ? err._e.stack : err.stack
-      message += `\n______________________\n${err.name} ${err.message}\n${stack}`
+    if (err instanceof SyntaxError) {
+      console.error(err)
     }
-    api.report(err)
-    render(<Unavailable message={message}/>, appRoot)
-  })
+    else {
+      if ('string' === typeof message) {
+        const stack = err.stack || (err._e && 'string' === typeof err._e.stack ? err._e.stack : err.stack)
+        message += `\n______________________\n${err.name} ${err.message}\n${stack}`
+      }
+      api.report(err)
+      render(<Unavailable message={message}/>, appRoot)
+    }
+  }
+}
+
+db.setup()
+  .then(main)

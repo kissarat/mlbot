@@ -1,12 +1,12 @@
 import api from '../../connect/api.jsx'
 import BrowserLink from '../widget/browser-link.jsx'
 import config from '../../app/config'
+import FormComponent from '../base/form-component.jsx'
 import Invalid from '../page/invalid.jsx'
 import React, {Component} from 'react'
 import {Button, Form, Grid, Image, Header, Icon, Message} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {pick} from 'lodash'
-import FormComponent from '../base/form-component.jsx'
 
 export default class Login extends FormComponent {
   persist = ['email']
@@ -14,8 +14,7 @@ export default class Login extends FormComponent {
     loading: false
   }
 
-  onSubmit = e => {
-    e.preventDefault()
+  async submit() {
     if (this.state.email.length < 3) {
       this.setState({alert: 'Введите Email'})
     }
@@ -27,33 +26,31 @@ export default class Login extends FormComponent {
         loading: true,
         alert: false
       })
-      api.send('user/login', pick(this.state, 'email', 'password'))
-        .then((data) => {
-          if (409 === data.status) {
-            Invalid.render()
+      const {success, status, error} = await api.send('user/login', pick(this.state, 'email', 'password'))
+      if (409 === status) {
+        Invalid.render()
+      }
+      else {
+        let alert = false
+        if (success) {
+          hashHistory.push('/accounts')
+        }
+        else {
+          if ('ABSENT' === error.status) {
+            alert = 'Неверные логин или пароль'
+          }
+          else if ('ALERT' === error.status) {
+            alert = error.message
           }
           else {
-            let alert = false
-            if (data.success) {
-              hashHistory.push('/accounts')
-            }
-            else {
-              if ('ABSENT' === data.error.status) {
-                alert = 'Неверные логин или пароль'
-              }
-              else if ('ALERT' === data.error.status) {
-                alert = data.error.message
-              }
-              else {
-                alert = 'Неизвестная ошибка'
-              }
-            }
-            this.setState({
-              alert,
-              loading: false,
-            })
+            alert = 'Неизвестная ошибка'
           }
+        }
+        this.setState({
+          alert,
+          loading: false,
         })
+      }
     }
   }
 
@@ -102,10 +99,19 @@ export default class Login extends FormComponent {
                 Восстановить пароль вы можете на сайте&nbsp;
                 <BrowserLink href="http://my.inbisoft.com/password/recovery">my.inbisoft.com</BrowserLink>
               </p>}
-            {'club-leader' === config.vendor ? <p>
+            {'club-leader' === config.vendor
+              ? <p>
                 MLBot заработает при наличии открытой матрицы Silver в самом прибыльном
                 матричном проекте 2017 года Club Leader.
-              </p> : ''}
+              </p>
+              : <Message className="buy">
+                <Icon name="dollar" size="big"/>
+                <p>
+                  Для использования программы необходимо приобрести лицензию за $22 у разработчика на сайте&nbsp;
+                  <BrowserLink href="http://my.inbisoft.com/">my.inbisoft.com</BrowserLink>&nbsp;
+                  и войти под Email/Пароль от личного кабинета.
+                </p>
+              </Message>}
           </div>
           <BrowserLink
             href={'club-leader' === config.vendor ? "http://mlbot.inbisoft.com/" : "http://inbisoft.com/mlbot/"}>

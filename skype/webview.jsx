@@ -90,4 +90,4 @@ WebView.create = function (partition) {
   return webview
 }
 
-module.exports = WebView
+export default WebView

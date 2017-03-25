@@ -9,31 +9,32 @@ catch (ex) {
 }
 
 const config = {
-  dev: false,
+  dev: true,
   reset: false,
   origin: 'http://app.inbisoft.com',
   window: {
     minWidth: 960,
     minHeight: 680,
-    width: 1280,
-    height: 960
+    width: 1024,
+    height: 768,
+    resizable: false
   },
 
   exclude: ['echo123', 'kissarat'],
 
-  // vendor: 'inbisoft',
-  vendor: 'club-leader',
+  vendor: 'inbisoft',
+  // vendor: 'club-leader',
 
   Status: {
     FORBIDDEN: -2,
     ABSENT: -1,
 
-    CREATED: 0,
+    NONE: 0,
     SELECTED: 1,
-    PROCESSING: 2,
-    INVITED: 3,
-    SENT: 4,
-    DOUBLE: 5,
+    SUCCESS: 200,
+    ACCEPTED: 202,
+
+    // CREATED: 0
   },
 
   Type: {

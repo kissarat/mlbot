@@ -38,11 +38,11 @@ export default async function processProfile(profile) {
         login: c.id,
         name: c.display_name,
         authorized: c.authorized ? 1 : 0,
-        status: found ? found.status : config.Status.CREATED,
+        status: found ? found.status : config.Status.NONE,
         time: found ? found.time : g.next().value
       }
       if (c.authorized && db.INVITED === contact.status) {
-        contact.status = config.Status.CREATED
+        contact.status = config.Status.NONE
       }
       contacts.push(contact)
     }
@@ -72,7 +72,7 @@ export default async function processProfile(profile) {
             login,
             name,
             authorized: 1,
-            status: found ? found.status : config.Status.CREATED,
+            status: found ? found.status : config.Status.NONE,
             time: found ? found.time : g.next().value
           })
         }

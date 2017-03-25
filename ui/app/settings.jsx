@@ -160,7 +160,7 @@ export default class Settings extends Component {
           <Message color="teal">
             <Icon size="huge" name="question circle outline"/>
             Сайт программы с описанием, инструкцией по работе, помощью и поддержкой от разработчиков
-            <BrowserLink href="http://mlbot.inbisoft.com">Перейти →</BrowserLink>
+            <BrowserLink href="http://inbisoft.com/mlbot/">Перейти →</BrowserLink>
           </Message>
         </Segment.Group>
         <Tabs>
@@ -187,7 +187,7 @@ export default class Settings extends Component {
               </ul>
             </article>
           </Tabs.Panel>
-          <Tabs.Panel key="2.0" title="Что нового в версии 2.0" active>
+          <Tabs.Panel key="2.0" title="Что нового в версии 2.0">
             <h5>Возможности</h5>
             <ul>
               <li>Добавили рассылку по группам контактов Вашего аккаунта Skype;</li>
@@ -204,6 +204,8 @@ export default class Settings extends Component {
               <li>Исправили добавления в друзья на все типы аккаунтов;</li>
               <li>Вытаскивание всех Skype-чатов с аккаунта (Бета).</li>
             </ul>
+          </Tabs.Panel>
+          <Tabs.Panel key="3.0" title="Что нового в версии 3.0" active>
           </Tabs.Panel>
         </Tabs>
       </Segment.Group>

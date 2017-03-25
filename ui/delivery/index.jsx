@@ -59,7 +59,7 @@ export default class Delivery extends SkypeComponent {
           text,
           ...contact
         })
-        await db.contact.update(contact.id, {status: Status.CREATED})
+        await db.contact.update(contact.id, {status: Status.NONE})
       }
 
       await queue.execute()
@@ -119,7 +119,7 @@ export default class Delivery extends SkypeComponent {
           authorized={1}
           type={type}
           account={this.state.account}
-          status={Status.CREATED}/>
+          status={Status.NONE}/>
       </Segment>
 
       <Segment className="contact-list-segment">

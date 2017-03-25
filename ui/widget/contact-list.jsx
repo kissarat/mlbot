@@ -18,7 +18,7 @@ export default class ContactList extends PureComponent {
     disabled: PropTypes.bool,
     // group: PropTypes.string,
     sort: PropTypes.string,
-    status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
+    status: PropTypes.oneOf([Status.NONE, Status.SELECTED]).isRequired,
   }
 
   state = {
@@ -109,7 +109,7 @@ export default class ContactList extends PureComponent {
       const unit = td.getBoundingClientRect()
       const target = table.getBoundingClientRect()
       const box = container.getBoundingClientRect()
-      const hasGroupSelection = Type.PERSON === this.props.type && Status.CREATED == this.props.status
+      const hasGroupSelection = Type.PERSON === this.props.type && Status.NONE == this.props.status
       const delta = Math.floor((box.height - target.height - (hasGroupSelection ? 130 : 100)) / unit.height)
       if (delta) {
         this.load({limit: this.state.limit + delta - 1})
@@ -126,7 +126,7 @@ export default class ContactList extends PureComponent {
   }
 
   async changeStatus({id, status}) {
-    status = Status.CREATED === status ? Status.SELECTED : Status.CREATED
+    status = Status.NONE === status ? Status.SELECTED : Status.NONE
     await db.contact.update(id, {status})
     Contact.emit('update')
   }
@@ -204,7 +204,7 @@ export default class ContactList extends PureComponent {
       if (name.length > stringSize) {
         name = name.slice(0, stringSize) + '…'
       }
-      const isNew = Status.CREATED === c.status
+      const isNew = Status.NONE === c.status
       return <Table.Row
         key={c.id} className={isNew ? 'add' : 'remove'}>
         <Table.Cell className="move" onClick={() => this.changeStatus(c)}>{name}</Table.Cell>

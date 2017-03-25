@@ -72,7 +72,7 @@ extend(Contact, {
     contact.id = contact.account ? contact.account + '~' + contact.login : contact.login
     contact.authorized = contact.authorized ? 1 : 0
     if ('number' !== typeof contact.status) {
-      contact.status = Status.CREATED
+      contact.status = Status.NONE
     }
     return contact
   },
@@ -92,7 +92,7 @@ extend(Contact, {
     return db.contact
       .filter(c => c.account === account)
       .modify({
-        status: select ? Status.SELECTED : Status.CREATED
+        status: select ? Status.SELECTED : Status.NONE
       })
   },
 
@@ -113,7 +113,7 @@ extend(Contact, {
     return {
       account,
       authorized: 1,
-      status: selected ? Status.SELECTED : Status.CREATED
+      status: selected ? Status.SELECTED : Status.NONE
     }
   },
 

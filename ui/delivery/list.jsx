@@ -13,7 +13,7 @@ export default class DeliveryList extends Component {
     authorized: PropTypes.oneOf([0, 1]).isRequired,
     disabled: PropTypes.bool,
     sort: PropTypes.string,
-    status: PropTypes.oneOf([Status.CREATED, Status.SELECTED]).isRequired,
+    status: PropTypes.oneOf([Status.NONE, Status.SELECTED]).isRequired,
   }
 
   state = {
@@ -32,7 +32,7 @@ export default class DeliveryList extends Component {
   }
 
   async load(props) {
-    if (Type.PERSON === props.type && Status.CREATED === props.status) {
+    if (Type.PERSON === props.type && Status.NONE === props.status) {
       const groups = [{id: '', text: 'Все группы'}].concat(
         await db.group.filter(g => props.account === g.account).toArray()
       )
@@ -55,7 +55,7 @@ export default class DeliveryList extends Component {
         status: this.props.status,
       }
       const mods = {
-        status: Status.CREATED === this.props.status ? Status.SELECTED : Status.CREATED
+        status: Status.NONE === this.props.status ? Status.SELECTED : Status.NONE
       }
       const q = db.contact.where(where)
       if (this.state.group) {
@@ -92,7 +92,7 @@ export default class DeliveryList extends Component {
   }
 
   hasGroupSelection() {
-    return this.state.groups && Type.PERSON === this.props.type && Status.CREATED === this.props.status
+    return this.state.groups && Type.PERSON === this.props.type && Status.NONE === this.props.status
   }
 
   controls() {

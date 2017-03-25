@@ -11,7 +11,6 @@ module.exports = function (name) {
     output: {
       path: __dirname + '/app/js',
       filename: name + '.js',
-      comments: false
     },
     module: {
       loaders: [
@@ -22,44 +21,36 @@ module.exports = function (name) {
         {
           test: /\.jsx$/,
           exclude: /(node_modules)/,
-          loader: 'babel',
+          loader: 'babel-loader',
           query: {
-            presets: ['es2017', 'es2015', 'react'],
+            presets: [
+              // 'es2017',
+              // 'es2015',
+              'react'
+            ],
             plugins: [
-              'transform-regenerator',
+              // 'transform-regenerator',
               'transform-class-properties',
               'transform-object-rest-spread'
             ]
           }
         },
-        // {
-        //   test: /\.(svg)$/,
-        //   loader: "url-loader"
-        // },
-        // {
-        //   test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        //   loader: "url-loader?limit=10000&minetype=application/font-woff"
-        // },
-        // {
-        //   test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        //   loader: "file-loader"
-        // },
         {
           test: /\.css$/,
           loaders: [{
-            loader: "style-loader" // creates style nodes from JS strings
+            loader: "style-loader"
           }, {
-            loader: "css-loader" // translates CSS into CommonJS
+            loader: "css-loader"
           },
-            // {
-            //   loader: "sass-loader" // compiles Sass to CSS
-            // }
           ]
         },
       ]
     },
+    // modules: [
+    //   __dirname + '/app/node_modules'
+    // ],
     resolve: {
-      modulesDirectories: [__dirname + '/app/node_modules']
+      // modulesDirectories: [__dirname + '/app/node_modules']
     },
     plugins: [
       //   new webpack.DefinePlugin({

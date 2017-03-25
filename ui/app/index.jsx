@@ -78,6 +78,10 @@ export default class App extends SingletonComponent {
             {...itemUrl('/invite')}
             title="Добавляйте в друзья 40 человек в день на аккаунт для избежание блокировки"/>
           <Menu.Item
+            name="Журнал"
+            icon="history"
+            {...itemUrl('/log')}/>
+          <Menu.Item
             name="Настройки"
             icon="setting"
             {...itemUrl('/settings')}

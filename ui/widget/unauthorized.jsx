@@ -18,7 +18,7 @@ export default class Unauthorized extends PureComponent {
     return db.contact.where({
       account: props.account,
       authorized: 0,
-      status: Status.CREATED
+      status: Status.NONE
     })
       .filter(c => Type.PERSON === c.type)
   }

@@ -152,7 +152,7 @@ export default class Account {
           name: c.display_name,
           authorized: c.authorized ? 1 : 0,
           favorite: c.favorite ? 1 : 0,
-          status: found ? found.status : Status.CREATED,
+          status: found ? found.status : Status.NONE,
           created: new Date(c.creation_time).getTime(),
           time: found ? found.time : this.nextId(),
           groups: []
@@ -177,7 +177,7 @@ export default class Account {
           contact.avatar = c.profile.avatar_url
         }
         if (c.authorized && db.INVITED === contact.status) {
-          contact.status = Status.CREATED
+          contact.status = Status.NONE
         }
         contacts.push(contact)
       }
@@ -248,7 +248,7 @@ export default class Account {
       mri: getMri(contact),
       greeting: (contact.text && contact.text.trim()) || ''
     })
-    contact.status = 200 === statusCode ? Status.CREATED : Status.ABSENT
+    contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
     return contact
   }
 
@@ -256,7 +256,7 @@ export default class Account {
     await this.login()
     const url = `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts/` + getMri(contact)
     const {statusCode} = await this.request('DELETE', url)
-    contact.status = 200 === statusCode ? Status.CREATED : Status.ABSENT
+    contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
     return contact
   }
 
@@ -307,7 +307,7 @@ export default class Account {
               login,
               name,
               authorized: 1,
-              status: found ? found.status : Status.CREATED,
+              status: found ? found.status : Status.NONE,
               time: found ? found.time : this.nextId()
             })
           }

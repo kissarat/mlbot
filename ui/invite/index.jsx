@@ -41,13 +41,13 @@ export default class Invite extends SkypeComponent {
           await db.contact.put({
             id: account + '~' + contact.login,
             account,
-            status: Status.CREATED,
+            status: Status.NONE,
             authorized: 0
           })
         }
         */
         if (!isAbsent) {
-          await db.contact.update(contact.id, {status: Status.CREATED})
+          await db.contact.update(contact.id, {status: Status.NONE})
         }
       },
     })

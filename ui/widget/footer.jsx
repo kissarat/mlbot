@@ -30,12 +30,24 @@ export default class Footer extends PureComponent {
               MLBot принадлежит IT-компании&nbsp;
               <BrowserLink href="http://inbisoft.com/">«INBISOFT»</BrowserLink>.
             </p>
-            {'club-leader' === config.vendor ? <p>
-              MLBot Skype разработан для поддержки участников&nbsp;
-              <BrowserLink href="https://club-leader.com/">«CLUB LEADER»</BrowserLink>
-              &nbsp;от компании «BEST CHOICE»
-            </p> : ''}
-            <BrowserLink href="https://join.skype.com/bcrFbzFEnVzI" target="_blank">
+            {'club-leader' === config.vendor
+              ? <p>
+                MLBot Skype разработан для поддержки участников&nbsp;
+                <BrowserLink href="https://club-leader.com/">«CLUB LEADER»</BrowserLink>
+                &nbsp;от компании «BEST CHOICE»
+              </p>
+              : <p>
+                <div>Разрабатываем МЛМ-проекты, программы и сервисы.</div>
+                <BrowserLink href="http://inbisoft.com/magazin/">
+                  <Icon name="shop" />
+                  Магазин
+                </BrowserLink>&nbsp;
+                <BrowserLink href="http://inbisoft.com/kontakty/">
+                  <Icon name="chat" />
+                  Связаться с Inbisoft
+                </BrowserLink>
+              </p>}
+            <BrowserLink href="https://join.skype.com/osF3PAzKHnc9">
               <Icon name="skype" size="big"/>
               Чат Skype-поддержки
             </BrowserLink>
