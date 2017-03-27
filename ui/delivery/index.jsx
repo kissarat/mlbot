@@ -16,65 +16,8 @@ import {wait} from '../../util/index.jsx'
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
-  send = async(template, state) => {
-    const type = this.type()
-    const repeatAmount = Type.CHAT === type ? +Repeat.state.repeat : 1
-    let delay = +state.delay
-    if (!(delay > 0)) {
-      delay = 0
-    }
-    const account = this.state.account
-    const query = () => db.contact.where({
-      account,
-      authorized: 1,
-      status: Status.SELECTED
-    })
-      .filter(c => type === c.type)
-    const current = (await query().toArray()).map(c => c.id)
+  send = async(template, {delay}) => {
 
-    const queue = new Queue({
-      account,
-      query,
-      inform: this.alert,
-    })
-
-    for (let cycle = 1; cycle <= repeatAmount; cycle++) {
-      queue.success = (i, count) => repeatAmount > 1
-        ? `Рассылка №${cycle}: Отправлено ${i} из ${count}`
-        : `Отправлено ${i} из ${count}`
-
-      queue.work = async(skype, contact) => {
-        let text = template.replace(/\{\w+}/g, function (s) {
-          console.log(s, contact)
-          if ('{cycle}' === s) {
-            return cycle
-          }
-          const value = contact[s.slice(1, -1)]
-          if (value) {
-            return value
-          }
-          return ''
-        })
-
-        await skype.send({
-          text,
-          ...contact
-        })
-        await db.contact.update(contact.id, {status: Status.NONE})
-      }
-
-      await queue.execute()
-      if (cycle < repeatAmount) {
-        await db.contact
-          .filter(c => current.indexOf(c.id) >= 0)
-          .modify({status: Status.SELECTED})
-        if (delay > 0) {
-          this.alert('busy', `Ожидание между рассылками ${delay} секунд`)
-          await wait(delay * 1000)
-        }
-      }
-    }
-    this.alert('success', 'Рассылка завершена')
   }
 
   type() {

@@ -20,22 +20,24 @@ const config = {
     resizable: false
   },
 
+  desktop: {
+    loadChatList: true
+  },
+
   exclude: ['echo123', 'kissarat'],
 
   vendor: 'inbisoft',
   // vendor: 'club-leader',
 
   Status: {
-    FORBIDDEN: -2,
-    ABSENT: -1,
+    FORBIDDEN: -403,
+    ABSENT: -404,
 
     NONE: 0,
     SELECTED: 1,
     SCHEDULED: 2,
-    SUCCESS: 200,
-    ACCEPTED: 202,
-
-    // CREATED: 0
+    ACCEPTED: 3,
+    DONE: 4,
   },
 
   Type: {

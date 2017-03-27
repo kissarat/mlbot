@@ -1,6 +1,7 @@
 import api from '../connect/api.jsx'
 import Account from './account.jsx'
 import Contact from '../store/contact.jsx'
+import config from '../app/config'
 
 /**
  * @property Promise.<Account[]> list
@@ -49,6 +50,9 @@ export default class AccountManager {
       async function () {
         await account.loadChats()
         await account.saveChats()
+        if (config.desktop.loadChatList) {
+          await account.loadDesktopChatList()
+        }
       },
     ].map(a => a()))
     await Contact.emit('update')

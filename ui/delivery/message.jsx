@@ -119,22 +119,6 @@ export default class Message extends Editor {
     </select>
   }
 
-  scheduleButton() {
-    let content
-    let icon = 'time'
-    if (this.state.timer) {
-      content = 'Отменить'
-    }
-    else if (this.state.schedule) {
-      content = 'Запланировать'
-    }
-    else {
-      content = 'Разослать'
-      icon = 'send'
-    }
-    return this.submitButton({content, icon})
-  }
-
   scheduleGroup() {
     if (this.state.timer) {
       const time = moment(this.getScheduleTime())
@@ -172,20 +156,30 @@ export default class Message extends Editor {
     }
   }
 
+  scheduleButton() {
+    let content
+    let icon = 'time'
+    if (this.state.timer) {
+      content = 'Отменить'
+    }
+    else if (this.state.schedule) {
+      content = 'Запланировать'
+    }
+    else {
+      content = 'Разослать'
+      icon = 'send'
+    }
+    return this.submitButton({content, icon})
+  }
+
   render() {
-    return <Form className="widget delivery-message"
-                 onSubmit={this.onSubmit}>
+    return <Form
+      className="widget delivery-message"
+      onSubmit={this.onSubmit}>
       {this.textarea({
         label: 'Введите сообщение',
         placeholder: 'Введите сообщение для его рассылки по выбраным контактам'
       })}
-      <Help text={this.state.signature}>
-        <Form.Checkbox
-          label="добавить подпись"
-          name="sign"
-          checked={this.state.sign}
-          onChange={this.onCheckboxChange}/>
-      </Help>
       <div className="container">{this.props.children}</div>
 
       {this.scheduleGroup()}

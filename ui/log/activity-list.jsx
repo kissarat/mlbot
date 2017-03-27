@@ -14,7 +14,7 @@ export default class ActivityList extends Component {
 
   async load() {
     const log = await db.log
-      .filter(a => Status.ACCEPTED === a.status)
+      .filter(a => Status.SCHEDULED === a.status)
       .toArray()
     await joinLog(log)
     this.setState({log})

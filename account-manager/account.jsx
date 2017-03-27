@@ -1,6 +1,7 @@
 import api from '../connect/api.jsx'
 import BareCookieJar from './bare-cookie-jar.jsx'
 import db from '../store/database.jsx'
+import desktop from './desktop.jsx'
 import packge_json from '../app/package.json'
 import request from 'request'
 import Skype from '../skype/index.jsx'
@@ -18,6 +19,7 @@ import {pick, defaults, extend, isObject, isEmpty, identity} from 'lodash'
  */
 export default class Account {
   constructor(options) {
+    extend(this, desktop)
     this.info = options
     this._lastId = Date.now()
     // if (config.dev) {
@@ -75,7 +77,9 @@ export default class Account {
   }
 
   get username() {
-    return this.internal.skypeAccount.username || this.info.login
+    return this.internal && this.internal.skypeAccount ?
+      (this.internal.skypeAccount.username || this.info.login)
+      : this.info.login
   }
 
   getHeaders() {
@@ -276,11 +280,14 @@ export default class Account {
     }
   }
 
+  queryChatList() {
+    return db.contact
+      .filter(c => c.account === this.info.login && Type.CHAT === c.type)
+  }
+
   async saveChats() {
     const account = this.info.login
-    const existing = await db.contact
-      .filter(c => account === this.info.login && Type.CHAT === c.type)
-      .toArray()
+    const existing = await this.queryChatList().toArray()
     const contacts = []
     const absent = []
 
