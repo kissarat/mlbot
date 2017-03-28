@@ -5,7 +5,7 @@ import Help from '../widget/help.jsx'
 import moment from 'moment'
 import React, {Component, PropTypes} from 'react'
 import {Form} from 'semantic-ui-react'
-import {range, toArray, map, defaults, keyBy, uniq, isObject} from 'lodash'
+import {range, toArray, map, defaults, keyBy, uniq, isObject, pick} from 'lodash'
 
 function toOptions(array) {
   return map(array, function (value) {
@@ -46,26 +46,21 @@ export default class Message extends Editor {
       value += '\n▁▁▁▁▁▁▁▁▁▁▁▁▁\n' + this.state.signature
     }
 
-    if (this.state.timer) {
-      this.clearTimer()
-    }
-    else if (this.state.schedule) {
-      const time = this.getScheduleTime()
-      this.setState({
-        timer: setTimeout(() => this.clearTimer() && this.props.submit(value, state), time.getTime() - Date.now()),
-        interval: setInterval(() => this.setState({left: Date.now()}), 980)
-      })
+    let task
+    if (state.schedule) {
+      task = {
+        after: this.getScheduleTime().getTime()
+      }
     }
     else {
-      this.props.submit(value, state)
-    }
-  }
 
-  clearTimer() {
-    clearTimeout(this.state.timer)
-    clearInterval(this.state.interval)
-    this.setState({timer: null})
-    return true
+    }
+    task.text = value
+
+    this.props.submit({
+      ...state,
+      text: value
+    })
   }
 
   getScheduleTime() {

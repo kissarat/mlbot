@@ -1,9 +1,9 @@
 import ActivityList from '../log/activity-list.jsx'
 import db from '../../store/database.jsx'
+import Task from '../../store/task.jsx'
 import DeliveryList from './list.jsx'
 import Help from '../widget/help.jsx'
 import Message from './message.jsx'
-import Queue from '../base/queue.jsx'
 import React from 'react'
 import Repeat from './repeat.jsx'
 import SkypeComponent from '../base/skype-component.jsx'
@@ -11,13 +11,14 @@ import Unauthorized from '../widget/unauthorized.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import {wait} from '../../util/index.jsx'
 
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
-  send = async(template, {delay}) => {
-
+  send = async task => {
+    task.number = Repeat.state.repeat
+    await db.task.add(task)
+    Task.emit('add')
   }
 
   type() {

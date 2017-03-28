@@ -8,6 +8,7 @@ import Skype from '../skype/index.jsx'
 import SkypeAccount from '../rat/src/skype_account.ts'
 import Skyweb from '../rat/src/skyweb.ts'
 import striptags from 'striptags'
+import config from '../app/config'
 import UserAgent from '../util/user-agent.jsx'
 import {AllHtmlEntities} from 'html-entities'
 import {exclude, Type, Status} from '../app/config'
@@ -17,21 +18,10 @@ import {pick, defaults, extend, isObject, isEmpty, identity} from 'lodash'
 /**
  * @property Skyweb internal
  */
-export default class Account {
-  constructor(options) {
-    extend(this, desktop)
-    this.info = options
+export default class Account extends {prototype: config.account} {
+  initialize(options) {
     this._lastId = Date.now()
-    // if (config.dev) {
-    //   ['send'].forEach(name => {
-    //     const original = this[name]
-    //     this[name] = async contact => {
-    //       const data = await original.call(this, contact)
-    //       console.log(data)
-    //       return data
-    //     }
-    //   })
-    // }
+    extend(this, desktop, options)
   }
 
   get isAuthenticated() {

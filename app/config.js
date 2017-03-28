@@ -29,6 +29,12 @@ const config = {
   vendor: 'inbisoft',
   // vendor: 'club-leader',
 
+  account: {
+    desktop: false,
+    min: 0,
+    max: 0
+  },
+
   Status: {
     FORBIDDEN: -403,
     ABSENT: -404,

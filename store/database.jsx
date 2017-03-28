@@ -1,6 +1,7 @@
 import Dexie from 'dexie'
 // import Record from './record.jsx'
 import {extend} from 'lodash'
+import AccountSettings from './account-settings.jsx'
 
 const DBNAME = 'mlbot'
 const db = new Dexie(DBNAME)
@@ -19,11 +20,13 @@ extend(db, {
 
     db.version(4)
       .stores({
-        message: '++&id, text, repeat, waiting',
-        log: '++&id, contact, message, number, status',
+        task: '++&id, after, wait, number, text',
+        log: '++&id, contact, task',
+        account: '++&id, login, password, min, max, desktop',
       })
 
     // db.log.mapToClass(Record)
+    db.account.mapToClass(AccountSettings)
   },
 
   async reset() {
