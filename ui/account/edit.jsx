@@ -7,6 +7,7 @@ import Skype from '../../skype/index.jsx'
 import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {Link} from 'react-router'
+import {getBaseDirectory} from '../../store/sqlite'
 import {pick} from 'lodash'
 
 const oses = {
@@ -35,6 +36,7 @@ export default class AccountEdit extends FormComponent {
       account.initialize()
     }
     const profile = account.getProfile()
+    profile.desktopExists = await getBaseDirectory()
     this.setState(profile)
   }
 
@@ -44,7 +46,7 @@ export default class AccountEdit extends FormComponent {
     this.setState({busy: true})
     try {
       if (this.state.check) {
-        await AccountManager.login(pick(this.state, 'id', 'password', 'desktop', 'web', 'min', 'max'))
+        await AccountManager.login(pick(this.state, 'id', 'password', 'desktop', 'web', 'min', 'max', 'max_invite', 'headers'))
       }
       else {
         const account = new Account()
@@ -77,6 +79,16 @@ export default class AccountEdit extends FormComponent {
     })
   }
 
+  desktop() {
+    if (this.state.desktopExists) {
+      return <Form.Checkbox
+        name="desktop"
+        label={`Использовать данные установленного в ${oses[process.platform]} приложения Skype`}
+        checked={this.state.desktop || false}
+        onChange={this.onCheck}/>
+    }
+  }
+
   render() {
     return <Segment className="page account edit">
       <div className="top">
@@ -102,11 +114,13 @@ export default class AccountEdit extends FormComponent {
           type="password"
           value={this.state.password || ''}
           onChange={this.onChange}/>
-        <Form.Checkbox
-          name="desktop"
-          label={`Использовать данные установленного в ${oses[process.platform]} приложения Skype`}
-          checked={this.state.desktop || false}
-          onChange={this.onCheck}/>
+        <Form.Input
+          name="max_invite"
+          type="number"
+          label="Максимальное количество приглашиений в день"
+          value={this.state.max_invite || 0}
+          onChange={this.onChange}/>
+        {this.desktop()}
         <Form.Checkbox
           name="web"
           label="Использовать Web-версию Skype"

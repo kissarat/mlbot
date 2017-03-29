@@ -391,7 +391,7 @@ export default class Account extends AccountBase {
    * @return {Object}
    */
   getProfile(additional) {
-    let names = ['id', 'password', 'min', 'max', 'desktop', 'time', 'server', 'headers']
+    let names = ['id', 'password', 'min', 'max', 'desktop', 'time', 'server', 'web', 'max_invite', 'headers']
     if (additional instanceof Array) {
       names = names.concat(additional)
     }

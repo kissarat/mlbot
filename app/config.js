@@ -34,6 +34,7 @@ const config = {
     min: 0,
     max: 0,
     server: 0,
+    max_invite: 40,
     desktop: false,
     web: false
   },

@@ -25,7 +25,7 @@ const SkypeStatus = {
 
 let baseDir
 
-export async function skype(username) {
+export async function getBaseDirectory() {
   if (!baseDir) {
     for (const dir of directories) {
       try {
@@ -37,6 +37,11 @@ export async function skype(username) {
       }
     }
   }
+  return baseDir
+}
+
+export async function skype(username) {
+  await getBaseDirectory()
   if (!baseDir) {
     return SkypeStatus.DIR_NOT_FOUND
   }

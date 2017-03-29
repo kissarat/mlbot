@@ -12,7 +12,7 @@ body {
 
 #back {
     background-image: url("images/back.jpg");
-    opacity: 0.9;
+    opacity: 0.4;
     transform: scaleX(-1);
     background-position: center;
 }

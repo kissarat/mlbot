@@ -1,4 +1,8 @@
-// const webpack = require('webpack')
+const webpack = require('webpack')
+const package_json = require('../package.json')
+const {map, pick} = require('lodash')
+const config = require('./app/config')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const _mode = (process.env.MLBOT || '').split(',')
 function mode(name) {
@@ -24,12 +28,9 @@ module.exports = function (name) {
           loader: 'babel-loader',
           query: {
             presets: [
-              // 'es2017',
-              // 'es2015',
               'react'
             ],
             plugins: [
-              // 'transform-regenerator',
               'transform-class-properties',
               'transform-object-rest-spread'
             ]
@@ -46,37 +47,59 @@ module.exports = function (name) {
         },
       ]
     },
-    // modules: [
-    //   __dirname + '/app/node_modules'
-    // ],
-    resolve: {
-      // modulesDirectories: [__dirname + '/app/node_modules']
-    },
-    plugins: [
-      //   new webpack.DefinePlugin({
-      //     MLBOT_VENDOR: JSON.stringify(process.env.MLBOT_VENDOR || 'club-leader')
-      //   })
-    ]
+    resolve: {},
+    plugins: []
   }
 
   if (mode('dev')) {
     config.devtool = 'source-map'
   }
 
-  if (mode('prod')) {
-    const Uglify = require('webpack-uglify-js-plugin')
-    config.plugins.push(new Uglify({
-      cacheFolder: '/tmp',
-      debug: false,
-      minimize: true,
-      sourceMap: false,
-      compress: {
-        warnings: true
-      },
-      output: {
-        comments: false
-      }
+  if (mode('usage')) {
+    config.plugins.push(new BundleAnalyzerPlugin({
+      analyzerMode: 'server',
+      analyzerHost: '127.0.0.1',
+      analyzerPort: 8888,
     }))
+  }
+
+  if (mode('prod')) {
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        'process.env': {
+          'NODE_ENV': JSON.stringify('production'),
+          'MLBOT_VENDOR': JSON.stringify(process.ENV.MLBOT_VENDOR || config.vendor)
+        }
+      }),
+      new webpack.optimize.CommonsChunkPlugin({
+        children: true,
+        async: true,
+      }),
+      new webpack.optimize.UglifyJsPlugin({
+        cacheFolder: '/tmp',
+        debug: false,
+        minimize: true,
+        sourceMap: false,
+        beautify: false,
+        comments: false,
+        compress: {
+          sequences: true,
+          booleans: true,
+          loops: true,
+          unused: true,
+          warnings: false,
+          drop_console: true,
+          unsafe: true,
+        },
+        output: {
+          comments: false
+        }
+      }),
+      new webpack.BannerPlugin({
+        banner: map(pick(package_json, 'name', 'version', 'homepage', 'email', 'author'), (v, k) => `@${k} ${v}`).join('\n'),
+        entryOnly: false
+      })
+    )
   }
 
   return config
