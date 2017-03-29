@@ -15,48 +15,57 @@ import {exclude, Type, Status} from '../app/config'
 import {isSkypeUsername, getMri} from '../util/index.jsx'
 import {pick, defaults, extend, isObject, isEmpty, identity} from 'lodash'
 
+function AccountBase() {
+
+}
+
+AccountBase.prototype = config.account
+
+const accountDefaults = {
+  time() {
+    return Date.now()
+  }
+}
+
 /**
- * @property Skyweb internal
+ * @property {string} id
+ * @property {string} password
+ * @property {number} min
+ * @property {number} max
+ * @property {boolean} desktop
+ * @property {Object} headers
+ * @property {Skyweb} internal
+ * @property {Skype} skype
  */
-export default class Account extends {prototype: config.account} {
+export default class Account extends AccountBase {
   initialize(options) {
     this._lastId = Date.now()
-    extend(this, desktop, options)
+    if (options) {
+      extend(this, desktop, options)
+    }
   }
 
   get isAuthenticated() {
-    return !!this.internal
+    return !!(this.internal || (this.skype && this.headers && this.headers.RegistrationToken))
   }
 
   async login() {
     if (!this.internal) {
       this.internal = new Skyweb()
       try {
-        await this.internal.login(this.info.login, this.info.password)
+        await this.internal.login(this.id, this.password)
+        this.headers = {
+          'X-Skypetoken': this.internal.skypeAccount.skypeToken,
+          RegistrationToken: this.internal.skypeAccount.registrationTokenParams.raw,
+          'User-Agent': this.agent
+        }
       }
       catch (ex) {
         console.error(ex)
-        this.info.timeout = api.config.skype && api.config.skype.timeout || 180000
-        const skype = await Skype.open(this.info)
-        this.info.headers = skype.headers
-        if (skype.updateTimeout instanceof Function) {
-          skype.updateTimeout()
-        }
-        this.agent = this.info.headers['User-Agent']
-        this.internal.cookieJar = new BareCookieJar(this.info.headers.Cookie)
-        this.internal.skypeAccount = new SkypeAccount(this.info.login, this.info.password)
-        extend(this.internal.skypeAccount, {
-          skypeToken: this.info.headers['X-Skypetoken'],
-          selfInfo: {
-            username: this.info.login
-          },
-          registrationTokenParams: {
-            raw: this.info.headers.RegistrationToken
-          }
-        })
+        await this.fallbackToWebSkype()
       }
-      if ('string' !== typeof this.agent) {
-        this.agent = UserAgent.random()
+      if ('string' !== typeof this.headers.agent) {
+        this.headers['User-Agent'] = UserAgent.random()
       }
       if (this.internal.skypeAccount) {
         return this.internal.skypeAccount
@@ -66,26 +75,72 @@ export default class Account extends {prototype: config.account} {
     }
   }
 
-  get username() {
-    return this.internal && this.internal.skypeAccount ?
-      (this.internal.skypeAccount.username || this.info.login)
-      : this.info.login
-  }
+  async fallbackToWebSkype() {
+    this.skype = await Skype.open(this.info)
+    this.headers = this.skype.headers
+    if (this.skype.updateTimeout instanceof Function) {
+      this.skype.updateTimeout()
+    }
+    this.internal.cookieJar = new BareCookieJar(this.headers.Cookie)
+    this.internal.skypeAccount = new SkypeAccount(this.id, this.password)
+    const self = this
+    Object.defineProperties(this.internal.skypeAccount, {
+      skypeToken: {
+        get() {
+          return self.headers['X-Skypetoken']
+        }
+      },
+    })
 
-  getHeaders() {
-    return {
-      'X-Skypetoken': this.internal.skypeAccount.skypeToken,
-      RegistrationToken: this.internal.skypeAccount.registrationTokenParams.raw,
-      'User-Agent': this.agent
+    this.internal.skypeAccount.selfInfo = {
+      get username() {
+        return self.id
+      }
+    }
+
+    this.internal.skypeAccount.registrationTokenParams = {
+      get raw() {
+        return self.headers.RegistrationToken
+      }
     }
   }
 
+  /**
+   * @return {string}
+   */
+  get username() {
+    return this.internal && this.internal.skypeAccount ?
+      (this.internal.skypeAccount.username || this.id)
+      : this.id
+  }
+
+  /**
+   * @param {string[]} names
+   * @return {Object}
+   */
+  getHeaders(names) {
+    return pick(this.headers, names)
+  }
+
+  /**
+   * @param {string} method
+   * @param {string} uri
+   * @param {Object} body
+   * @return {Promise}
+   */
   request(method, uri, body) {
+    const headerNames = ['Cookie']
+    if ('GET' === method) {
+      headerNames.push('X-Skypetoken')
+    }
+    else {
+      headerNames.push('RegistrationToken')
+    }
     const options = {
       method,
       uri,
       jar: this.internal.cookieJar,
-      headers: this.getHeaders()
+      headers: this.getHeaders(headerNames)
     }
     if (isObject(body)) {
       options.body = JSON.stringify(body)
@@ -110,11 +165,14 @@ export default class Account extends {prototype: config.account} {
   loadContacts() {
     return new Promise((resolve, reject) =>
       this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, err => {
-        console.error('CANNOT LOAD CONTACTS', this.info.login, err)
+        console.error('CANNOT LOAD CONTACTS', this.id, err)
         reject(err)
       }))
   }
 
+  /**
+   * @return {number}
+   */
   nextId() {
     const now = Date.now()
     if (now > this._lastId) {
@@ -129,19 +187,19 @@ export default class Account extends {prototype: config.account} {
   async saveContacts() {
     const contacts = []
     const existing = await db.contact
-      .filter(c => this.info.login === c.account && Type.PERSON === c.type)
+      .filter(c => this.id === c.account && Type.PERSON === c.type)
       .toArray()
     this.internal.contactsService.contacts.forEach(c => {
       const match = /^8:(.*)$/.exec(c.mri)
       if (match && !c.blocked && isSkypeUsername(match[1]) && exclude.indexOf(match[1])) {
         const login = match[1]
-        const id = this.info.login + '~' + login
+        const id = this.id + '~' + login
         const found = existing.find(x => id === x.id)
         const contact = {
           type: Type.PERSON,
           id,
           login,
-          account: this.info.login,
+          account: this.id,
           mri: c.mri,
           name: c.display_name,
           authorized: c.authorized ? 1 : 0,
@@ -184,7 +242,7 @@ export default class Account extends {prototype: config.account} {
   }
 
   async saveGroups() {
-    const account = this.info.login
+    const account = this.id
     const existing = await db.group
       .filter(c => account === c.account)
       .toArray()
@@ -261,7 +319,7 @@ export default class Account extends {prototype: config.account} {
     if (r.statusCode < 400 && r.body) {
       const {conversations} = JSON.parse(r.body)
       if (conversations instanceof Array) {
-        this.info.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
+        this.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
       }
     }
     else {
@@ -272,17 +330,17 @@ export default class Account extends {prototype: config.account} {
 
   queryChatList() {
     return db.contact
-      .filter(c => c.account === this.info.login && Type.CHAT === c.type)
+      .filter(c => c.account === this.id && Type.CHAT === c.type)
   }
 
   async saveChats() {
-    const account = this.info.login
+    const account = this.id
     const existing = await this.queryChatList().toArray()
     const contacts = []
     const absent = []
 
     const entities = new AllHtmlEntities()
-    this.info.conversations.forEach(c => {
+    this.conversations.forEach(c => {
       const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
       if (chatId) {
         const login = chatId[1]
@@ -328,9 +386,42 @@ export default class Account extends {prototype: config.account} {
     return JSON.parse(r.body)
   }
 
-  async saveProfile(data) {
-    const params = {id: this.info.login, v: packge_json.version}
-    this.info.contacts = this.internal.contactsService.contacts || []
-    return api.send('skype/profile', params, defaults(this.info, data))
+  /**
+   * @param additional Array
+   * @return {Object}
+   */
+  getProfile(additional) {
+    let names = ['id', 'password', 'min', 'max', 'desktop', 'time', 'server', 'headers']
+    if (additional instanceof Array) {
+      names = names.concat(additional)
+    }
+    return pick(this, names)
+  }
+
+  /**
+   * @return {Promise}
+   */
+  save() {
+    this.time = Date.now()
+    return db.account.put(this.getProfile())
+  }
+
+  /**
+   * @param {number} id
+   */
+  async load(id = this.id) {
+    this.initialize(await db.account.filter(a => id === a.id).first())
+  }
+
+  get contacts() {
+    return this.internal.contactsService.contacts || []
+  }
+
+  async sendProfile(data) {
+    const params = {id: this.id, v: packge_json.version}
+    const profile = this.getProfile(['contacts', 'conversations'])
+    profile.login = profile.id
+    delete profile.id
+    return api.send('skype/profile', params, defaults(profile, data))
   }
 }

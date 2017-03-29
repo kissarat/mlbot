@@ -2,7 +2,7 @@ import Alert from '../widget/alert.jsx'
 import api from '../../connect/api.jsx'
 import React, {Component} from 'react'
 import {Link} from 'react-router'
-import {List, Loader, Icon, Segment} from 'semantic-ui-react'
+import {Loader, Icon, Segment} from 'semantic-ui-react'
 import AccountManager from '../../account-manager/index.jsx'
 
 export default class AccountList extends Component {
@@ -39,11 +39,16 @@ export default class AccountList extends Component {
 
   accounts() {
     if (this.state.accounts instanceof Array) {
-      const accounts = this.state.accounts.map(({info}) => <List.Item key={info.login}>
-        <List.Content floated="left">{info.login}</List.Content>
-        <List.Content floated="right"><Icon name="remove" onClick={() => this.remove(info)}/></List.Content>
-      </List.Item>)
-      return <List>{accounts}</List>
+      const accounts = this.state.accounts.map(a => <tr key={a.id}>
+        <td>{a.id}</td>
+        <td>
+          <Link to={'/accounts/edit/' + a.id}><Icon name="edit"/></Link>
+          <Icon name="remove" onClick={() => this.remove(a)}/>
+        </td>
+      </tr>)
+      return <table>
+        <tbody>{accounts}</tbody>
+        </table>
     }
     else {
       return <Loader active size="large">Загрузка списка аккаунтов</Loader>

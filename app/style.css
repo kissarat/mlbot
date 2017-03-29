@@ -692,3 +692,10 @@ footer, textarea, input, .ui.menu {
     font-size: 14px;
     margin-top: 0 !important;
 }
+
+.page.account.edit .randomization input {
+    width: 60px !important;
+    padding: 2px !important;
+    margin: 0 4px;
+    /*line-height: 1em !important;*/
+}

@@ -30,9 +30,12 @@ const config = {
   // vendor: 'club-leader',
 
   account: {
-    desktop: false,
+    timeout: 180000,
     min: 0,
-    max: 0
+    max: 0,
+    server: 0,
+    desktop: false,
+    web: false
   },
 
   Status: {

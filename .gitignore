@@ -1,11 +1,12 @@
 .DS_Store
 .idea/
 app/dist/
+app/js/
+app/rat
 images
 local.js*
 node_modules
-app/js/
-rat/typings
-rat/dist
 package.json
-app/rat
+rat/dist
+rat/typings
+sounds

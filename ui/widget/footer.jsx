@@ -26,17 +26,17 @@ export default class Footer extends PureComponent {
           </Grid.Column>
           <Grid.Column className="logos">
             <div className="copyright">&copy; 2017 Все права защищены.</div>
-            <p className="inbisoft">
+            <div className="inbisoft">
               MLBot принадлежит IT-компании&nbsp;
               <BrowserLink href="http://inbisoft.com/">«INBISOFT»</BrowserLink>.
-            </p>
+            </div>
             {'club-leader' === config.vendor
               ? <p>
                 MLBot Skype разработан для поддержки участников&nbsp;
                 <BrowserLink href="https://club-leader.com/">«CLUB LEADER»</BrowserLink>
                 &nbsp;от компании «BEST CHOICE»
               </p>
-              : <p>
+              : <div>
                 <div>Разрабатываем МЛМ-проекты, программы и сервисы.</div>
                 <BrowserLink href="http://inbisoft.com/magazin/">
                   <Icon name="shop" />
@@ -46,7 +46,7 @@ export default class Footer extends PureComponent {
                   <Icon name="chat" />
                   Связаться с Inbisoft
                 </BrowserLink>
-              </p>}
+              </div>}
             <BrowserLink href="https://join.skype.com/osF3PAzKHnc9">
               <Icon name="skype" size="big"/>
               Чат Skype-поддержки

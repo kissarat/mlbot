@@ -1,4 +1,4 @@
-import AccountList from './app/account-list.jsx'
+import AccountList from './account/index.jsx'
 import App from './app/index.jsx'
 import config from '../app/config'
 import Delivery from './delivery/index.jsx'
@@ -9,11 +9,11 @@ import Outdoor from './outdoor/index.jsx'
 import package_json from '../app/package.json'
 import React from 'react'
 import Settings from './app/settings.jsx'
-import SkypeLogin from '../skype/login.jsx'
+import AccountEdit from './account/edit.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
 
-document.title = document.title.replace('Beta', `v${package_json.version} Beta`)
+document.title = document.title.replace('Beta', 'v' + package_json.version + ('club-leader' === config.vendor ? ' Beta' : ''))
 if ('club-leader' !== config.vendor) {
   document.getElementById('club-leader').remove()
 }
@@ -32,7 +32,8 @@ export const routes = <Route path='/'>
     <Route path='unavailable' component={Unavailable}/>
   </Route>
   <Route component={App}>
-    <Route path='accounts/login' component={SkypeLogin}/>
+    <Route path='accounts/login' component={AccountEdit}/>
+    <Route path='accounts/edit/:id' component={AccountEdit}/>
     <Route path='accounts' component={AccountList}/>
     <Route path='history' component={AccountList}/>
     <Route path='delivery/:type' component={Delivery}/>

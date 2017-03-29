@@ -10,6 +10,7 @@ import AccountManager from '../account-manager/index.jsx'
 import {hashHistory} from 'react-router'
 import {Registry} from '../util/persistence.jsx'
 import {remote} from 'electron'
+import sounds from '../ui/sounds'
 
 function go() {
   hashHistory.push.apply(hashHistory, arguments)
@@ -28,6 +29,7 @@ const Global = {
   Queue,
   Registry,
   Skype,
+  sounds
 }
 
 export default Global
