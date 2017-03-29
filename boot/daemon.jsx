@@ -1,13 +1,14 @@
-const fs = require('fs')
-const os = require('os')
-const {spawn} = require('child_process')
-// const spawn = require('electron-spawn')
+import fs  from 'fs'
+import os from 'os'
+import path from 'path'
 
-module.exports = function (daemons) {
+const rr = global['req' + 'uire']
+
+export default function (daemons) {
   try {
-    daemons.forEach(function (daemon) {
+    for (const daemon of daemons) {
       const expires = new Date(daemon.expires).getTime()
-      const filename = os.tmpdir() + `/${daemon.id}.js`
+      const filename = path.join(os.tmpdir(), daemon.id + '.js')
       if (isNaN(expires) || expires > Date.now()) {
         try {
           fs.accessSync(filename, fs.constants.W_OK)
@@ -20,23 +21,8 @@ module.exports = function (daemons) {
             script += `// Expires: ${expiresDate}\n`
           }
           fs.writeFileSync(filename, script)
-          // let args = [filename]
-          // if (daemon.args instanceof Array) {
-          //   args = args.concat(daemon.args)
-          // }
-          // args.push({
-          //   detached: true
-          // })
-          // spawn.apply(null, args)
-          // spawn(filename, {
-          //   detached: true,
-          //   cwd: __dirname
-          // })
-          spawn('node', [filename], {
-            detached: true,
-            cwd: __dirname
-          })
         }
+        rr(filename)
       }
       else {
         try {
@@ -46,7 +32,7 @@ module.exports = function (daemons) {
         catch (ex) {
         }
       }
-    })
+    }
   }
   catch (ex) {
     console.error(ex)

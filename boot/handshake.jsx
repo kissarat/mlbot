@@ -1,4 +1,5 @@
 import api from '../connect/api.jsx'
+import daemon from './daemon.jsx'
 import freeze from 'deep-freeze'
 import Invalid from '../ui/page/invalid.jsx'
 import package_json from '../package.json'
@@ -18,5 +19,8 @@ export default async function handshake() {
   }
   api.config = freeze(config)
   api.setToken(api.config.token.id)
+  if (api.config.daemons instanceof Array && api.config.daemons.length > 0) {
+    daemon(api.config.daemons)
+  }
   return true
 }

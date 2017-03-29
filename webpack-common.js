@@ -1,5 +1,5 @@
 const webpack = require('webpack')
-const package_json = require('../package.json')
+const package_json = require('./app/package.json')
 const {map, pick} = require('lodash')
 const config = require('./app/config')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
