@@ -4,7 +4,7 @@ import {Status, Type} from  '../app/config'
 import {isEmpty, map, each} from 'lodash'
 
 async function loadDesktopChatList() {
-  const account = this.info.login
+  const account = this.id
   const existing = await this.queryChatList().toArray()
   const chats = await readChatList(account)
   if (isEmpty(chats)) {

@@ -14,7 +14,8 @@ import {Segment, Button, Message, Icon} from 'semantic-ui-react'
 export default class Settings extends Component {
   state = {
     contactsCount: false,
-    accountsCount: false
+    accountsCount: false,
+    clearDatabase: false,
   }
 
   componentWillReceiveProps() {
@@ -43,13 +44,13 @@ export default class Settings extends Component {
 
   clearContacts = async() => {
     this.setState({clearContacts: true})
-    await db.reset()
+    await db.contact.clear()
     await this.countContacts()
     this.setState({clearContacts: false})
   }
 
   clearAccounts = async() => {
-    await api.del('skype/remove')
+    await db.account.clear()
     this.countAccounts()
   }
 
@@ -70,7 +71,7 @@ export default class Settings extends Component {
         this.setState({fileExport: true})
         let accounts = await await AccountManager.getList(true)
         accounts = accounts.reduce((b, a) => {
-          b[a.info.login] = a.info.password;
+          b[a.id] = a.password;
           return b
         }, {})
         let contacts = await db.contact.orderBy('time').toArray()
@@ -119,21 +120,31 @@ export default class Settings extends Component {
     return label
   }
 
+  clearDatabase = async() => {
+    this.setState({clearDatabase: true})
+    await db.reset()
+    this.setState({clearDatabase: false})
+  }
+
   clearContactsLabel = () => this.labelWithCount('Очистить копию списка контактов', 'contactsCount')
-  clearAccountsLabel = () => this.labelWithCount('Очистить логины и пароли скайпов', 'accountsCount')
+  clearAccountsLabel = () => this.labelWithCount('Очистить аккаунты Skype', 'accountsCount')
 
   render() {
     return <Segment.Group horizontal className="page settings">
       <Segment className="reset">
         <h2>Сброс данных</h2>
         <div className="control">
-          <Button onClick={this.clearSettings} type="button">Очистить настройки</Button>
           <Button
             type="button"
             onClick={this.clearContacts}
             loading={this.state.clearContacts}
             content={this.clearContactsLabel()}/>
           <Button onClick={this.clearAccounts} type="button">{this.clearAccountsLabel()}</Button>
+          <Button
+            onClick={this.clearDatabase}
+            loading={this.state.clearDatabase}
+            type="button">Очистить базу данных</Button>
+          <Button onClick={this.clearSettings} type="button">Очистить настройки</Button>
           <Button onClick={this.clearAll} type="button">Очистить все</Button>
         </div>
       </Segment>

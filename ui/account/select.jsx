@@ -10,20 +10,20 @@ export default class SelectAccount extends Component {
   }
 
   async componentDidMount() {
-    const accounts = (await AccountManager.getList()).map(a => a.info)
+    const accounts = await AccountManager.getList()
     this.setState({accounts})
   }
 
   onChange = async(e, {value}) => {
     const account = await AccountManager.get(value)
-    this.props.select(account.info)
+    this.props.select(account)
   }
 
   options() {
-    return this.state.accounts.map(({login}) => ({
-      key: login,
-      value: login,
-      text: login,
+    return this.state.accounts.map(({id}) => ({
+      key: id,
+      value: id,
+      text: id,
     }))
   }
 

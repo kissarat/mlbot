@@ -46,13 +46,15 @@ export default class AccountEdit extends FormComponent {
     this.setState({busy: true})
     try {
       if (this.state.check) {
-        await AccountManager.login(pick(this.state, 'id', 'password', 'desktop', 'web', 'min', 'max', 'max_invite', 'headers'))
+        await AccountManager.login(pick(this.state,
+          'id', 'password', 'desktop', 'web', 'min', 'max', 'max_invite', 'headers'))
       }
       else {
         const account = new Account()
         account.initialize(this.state)
         await account.save()
       }
+      delete AccountManager.list
       return void hashHistory.push('/accounts')
     }
     catch (err) {
@@ -69,7 +71,8 @@ export default class AccountEdit extends FormComponent {
           Откройте ваше Skype-приложения и подтвердите его с помощью email или SMS`
       }
       else {
-        error = 'Неизвестная ошибка'
+        const string = err.message || err.toString()
+        error = '[object Object]' === string ? 'Неизвестная ошибка' : string
       }
       Skype.removeAll()
     }

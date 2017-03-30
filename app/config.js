@@ -29,6 +29,10 @@ const config = {
   vendor: 'inbisoft',
   // vendor: 'club-leader',
 
+  request: {
+    type: 'fetch'
+  },
+
   account: {
     timeout: 180000,
     min: 0,

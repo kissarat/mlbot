@@ -33,9 +33,9 @@ export default class SkypeComponent extends Component {
   }
 
   changeAccount(account) {
-    if (account.login) {
+    if (account.id) {
       this.setState({
-        account: account.login
+        account: account.id
       })
     }
   }

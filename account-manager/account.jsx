@@ -7,19 +7,21 @@ import request from 'request'
 import Skype from '../skype/index.jsx'
 import SkypeAccount from '../rat/src/skype_account.ts'
 import Skyweb from '../rat/src/skyweb.ts'
-import striptags from 'striptags'
 import config from '../app/config'
 import UserAgent from '../util/user-agent.jsx'
-import {AllHtmlEntities} from 'html-entities'
-import {exclude, Type, Status} from '../app/config'
-import {isSkypeUsername, getMri} from '../util/index.jsx'
-import {pick, defaults, extend, isObject, isEmpty, identity} from 'lodash'
+import {Type, Status} from '../app/config'
+import {getMri} from '../util/index.jsx'
+import {pick, defaults, extend, isObject, isEmpty, identity, merge} from 'lodash'
+import saveFunctions from './save.jsx'
 
 function AccountBase() {
 
 }
 
-AccountBase.prototype = config.account
+AccountBase.prototype = {
+  __proto__: config.account,
+  ...saveFunctions
+}
 
 const accountDefaults = {
   time() {
@@ -50,8 +52,11 @@ export default class Account extends AccountBase {
   }
 
   async login() {
-    if (!this.internal) {
+    if (!this.internal || isEmpty(this.headers)) {
       this.internal = new Skyweb()
+      if (this.web) {
+        return this.fallbackToWebSkype()
+      }
       try {
         await this.internal.login(this.id, this.password)
         this.headers = {
@@ -76,7 +81,7 @@ export default class Account extends AccountBase {
   }
 
   async fallbackToWebSkype() {
-    this.skype = await Skype.open(this.info)
+    this.skype = await Skype.open(this)
     this.headers = this.skype.headers
     if (this.skype.updateTimeout instanceof Function) {
       this.skype.updateTimeout()
@@ -122,44 +127,66 @@ export default class Account extends AccountBase {
     return pick(this.headers, names)
   }
 
+  getCookies(uri) {
+    let cookies = this.internal.cookieJar._jar.toJSON().cookies
+    cookies = cookies.filter(c => new Date(c.expires).getTime() > Date.now())
+    if ('string' === typeof uri) {
+      const [s, protocol, hostname, pathname] = /(https?:)\/\/([^/]+)(.+)/.exec(uri)
+      cookies = cookies.filter(c => hostname === c.domain)
+      if ('/' !== pathname) {
+        cookies = cookies.filter(c => c.path.indexOf(pathname) === 0)
+      }
+    }
+    return cookies
+  }
+
+  getCookiesString(uri) {
+    this.getCookies(uri).map(({key, value}) => key + '=' + value).join('; ')
+  }
+
   /**
    * @param {string} method
    * @param {string} uri
    * @param {Object} body
+   * @param {string[]} headerNames
    * @return {Promise}
    */
-  request(method, uri, body) {
-    const headerNames = ['Cookie']
-    if ('GET' === method) {
-      headerNames.push('X-Skypetoken')
-    }
-    else {
-      headerNames.push('RegistrationToken')
-    }
+  async request(method, uri, body, headerNames = []) {
+    // headerNames.push('User-Agent')
     const options = {
       method,
-      uri,
-      jar: this.internal.cookieJar,
       headers: this.getHeaders(headerNames)
     }
     if (isObject(body)) {
       options.body = JSON.stringify(body)
       options.headers['Content-Type'] = 'application/json'
     }
-    // console.log(options)
-    return new Promise(function (resolve, reject) {
-      request(options, function (err, res) {
-        if (err) {
-          reject(err)
-        }
-        else if (403 === res.statusCode) {
-          reject(res)
-        }
-        else {
-          resolve(res)
-        }
+    if ('fetch' === config.request.type) {
+      const cookies = this.getCookiesString(uri)
+      if (cookies) {
+        options.Cookie = cookies
+      }
+      const r = await fetch(new Request(uri, options))
+      return r.json()
+    }
+    else {
+      options.jar = this.internal.cookieJar
+      options.uri = uri
+      // console.log(options)
+      return new Promise(function (resolve, reject) {
+        request(options, function (err, res) {
+          if (err) {
+            reject(err)
+          }
+          else if (403 === res.statusCode) {
+            reject(res)
+          }
+          else {
+            resolve(res)
+          }
+        })
       })
-    })
+    }
   }
 
   loadContacts() {
@@ -184,113 +211,20 @@ export default class Account extends AccountBase {
     return this._lastId
   }
 
-  async saveContacts() {
-    const contacts = []
-    const existing = await db.contact
-      .filter(c => this.id === c.account && Type.PERSON === c.type)
-      .toArray()
-    this.internal.contactsService.contacts.forEach(c => {
-      const match = /^8:(.*)$/.exec(c.mri)
-      if (match && !c.blocked && isSkypeUsername(match[1]) && exclude.indexOf(match[1])) {
-        const login = match[1]
-        const id = this.id + '~' + login
-        const found = existing.find(x => id === x.id)
-        const contact = {
-          type: Type.PERSON,
-          id,
-          login,
-          account: this.id,
-          mri: c.mri,
-          name: c.display_name,
-          authorized: c.authorized ? 1 : 0,
-          favorite: c.favorite ? 1 : 0,
-          status: found ? found.status : Status.NONE,
-          created: new Date(c.creation_time).getTime(),
-          time: found ? found.time : this.nextId(),
-          groups: []
-        }
-        if (isObject(c.profile.phones) && isEmpty(c.profile.phones)) {
-          contact.phones = {}
-          c.profile.phones.forEach(p => contact.phones[p.type] = p.number)
-        }
-        if (c.locations instanceof Array && c.locations.length > 0) {
-          ['country', 'city'].forEach(name => contact[name] = c.locations[0][name])
-        }
-        if ('string' === typeof c.profile.language) {
-          contact.language = c.profile.language
-        }
-        if ('string' === typeof c.profile.gender) {
-          contact.sex = c.profile.gender
-        }
-        if ('string' === typeof c.profile.nick) {
-          contact.nick = c.profile.nick
-        }
-        if ('string' === typeof c.profile.avatar_url) {
-          contact.avatar = c.profile.avatar_url
-        }
-        if (c.authorized && db.INVITED === contact.status) {
-          contact.status = Status.NONE
-        }
-        contacts.push(contact)
-      }
-    })
-    const absent = contacts
-      .filter(c => !existing.find(x => c.id == x.id))
-      .map(c => c.id)
-    await db.contact.bulkDelete(absent)
-    await db.contact.bulkPut(contacts)
-  }
-
-  async saveGroups() {
-    const account = this.id
-    const existing = await db.group
-      .filter(c => account === c.account)
-      .toArray()
-    let contacts = await db.contact.filter(c => account === c.account).toArray()
-    const groups = this.internal.contactsService.groups.map(function (g) {
-      const group = {
-        account,
-        id: g.id,
-        name: g.name,
-        contacts: []
-      }
-      g.contacts.forEach(function (mri) {
-        const contact = contacts.find(c => mri === c.mri)
-        if (!contact) {
-          return console.error('Contact is not found', mri)
-        }
-        if (contact.groups instanceof Array) {
-          contact.groups.push(g.id)
-        }
-        else {
-          console.error('Contact groups is not initialized', contact.login)
-        }
-        group.contacts.push(contact.login)
-      })
-      return group
-    })
-    const absent = groups
-      .filter(c => !existing.find(x => c.id == x.id))
-      .map(c => c.id)
-    await db.group.bulkDelete(absent)
-    await db.group.bulkPut(groups)
-    await db.contact.bulkPut(contacts)
-  }
-
   async send(message) {
     await this.login()
-    const mri = getMri(message)
-    // return this.internal.sendMessage(getMri(message), message.text)
-    const r = await this.request('POST', `https://client-s.gateway.messenger.live.com/v1/users/ME/conversations/${mri}/messages`, {
-      content: message.text,
-      messagetype: 'RichText',
-      contenttype: 'text'
-    })
-    if (r.statusCode < 400) {
-      return r
+    console.log(message.type)
+    if (this.web && Type.PERSON === message.type) {
+      return this.skype.sendMessage(message)
     }
     else {
-      console.error(r)
+      const mri = getMri(message)
+      return this.request('POST', `https://client-s.gateway.messenger.live.com/v1/users/ME/conversations/${mri}/messages`, {
+          content: message.text,
+          messagetype: 'RichText',
+          contenttype: 'text'
+        },
+        ['RegistrationToken'])
     }
   }
 
@@ -315,69 +249,15 @@ export default class Account extends AccountBase {
   async loadChats() {
     const url = 'https://client-s.gateway.messenger.live.com/v1/users/ME/conversations?' +
       'startTime=0&pageSize=200&view=msnp24Equivalent&targetType=Thread'
-    const r = await this.request('GET', url)
-    if (r.statusCode < 400 && r.body) {
-      const {conversations} = JSON.parse(r.body)
-      if (conversations instanceof Array) {
-        this.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
-      }
-    }
-    else {
-      console.log(r)
-      throw new Error('Невозможно загрузить чаты: ' + r.statusMessage)
+    const {conversations} = await this.request('GET', url, null, ['RegistrationToken'])
+    if (conversations instanceof Array) {
+      this.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
     }
   }
 
   queryChatList() {
     return db.contact
       .filter(c => c.account === this.id && Type.CHAT === c.type)
-  }
-
-  async saveChats() {
-    const account = this.id
-    const existing = await this.queryChatList().toArray()
-    const contacts = []
-    const absent = []
-
-    const entities = new AllHtmlEntities()
-    this.conversations.forEach(c => {
-      const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
-      if (chatId) {
-        const login = chatId[1]
-        const id = account + '~' + login
-        const found = existing.find(x => id === x.id)
-        const available = isObject(c.threadProperties)
-          && c.threadProperties.topic
-          && !c.threadProperties.lastleaveat
-          && !isEmpty(c.lastMessage)
-        if (available) {
-          try {
-            const name = striptags(entities.decode(c.threadProperties.topic))
-              .replace(/\s+/g, ' ')
-              .trim()
-            contacts.push({
-              type: Type.CHAT,
-              id,
-              account,
-              login,
-              name,
-              authorized: 1,
-              status: found ? found.status : Status.NONE,
-              time: found ? found.time : this.nextId()
-            })
-          }
-          catch (ex) {
-            console.error(ex)
-          }
-        }
-        else if (found) {
-          absent.push(id)
-        }
-      }
-    })
-
-    await db.contact.bulkDelete(absent)
-    await db.contact.bulkPut(contacts)
   }
 
   async getMembers({login}) {
