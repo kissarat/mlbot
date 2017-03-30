@@ -1,9 +1,14 @@
-window.skypeTimeout = 180 * 1000
+Object.defineProperty(window, 'skypeTimeout', {
+  get() {
+    console.error('Using global skypeTimeout variable')
+    return 180 * 1000
+  }
+})
 
 import api from '../../connect/api.jsx'
 import Footer from '../widget/footer.jsx'
 import package_json from '../../app/package.json'
-import React, {Component} from 'react'
+import React, {Component, isValidElement} from 'react'
 import SingletonComponent from '../base/singleton-component.jsx'
 import {each, defaults, isObject} from 'lodash'
 import {hashHistory} from 'react-router'
@@ -41,12 +46,21 @@ export default class App extends SingletonComponent {
       , 500)
   }
 
+  dimmer() {
+    if ('string' === typeof this.state.busy) {
+      return <Loader
+        size="medium"
+        content={this.state.busy}/>
+    }
+    else if (isValidElement(this.state.busy)) {
+      return this.state.busy
+    }
+  }
+
   render() {
     return <div className="layout app">
       <Dimmer active={!!this.state.busy} inverted>
-        <Loader
-          size="medium"
-          content={'string' === typeof this.state.busy ? this.state.busy : ''}/>
+        {this.dimmer()}
       </Dimmer>
       <Menu icon="labeled" compact borderless>
         <Menu.Item className="logo">

@@ -11,6 +11,7 @@ import {hashHistory} from 'react-router'
 import {Registry} from '../util/persistence.jsx'
 import {remote} from 'electron'
 import sounds from '../ui/sounds'
+import App from '../ui/app/index.jsx'
 
 function go() {
   hashHistory.push.apply(hashHistory, arguments)
@@ -29,7 +30,8 @@ const Global = {
   Queue,
   Registry,
   Skype,
-  sounds
+  sounds,
+  App
 }
 
 export default Global
