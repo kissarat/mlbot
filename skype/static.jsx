@@ -28,16 +28,22 @@ extend(Skype, {
     return proxy ? all(items) : items
   },
 
-  removeAll() {
-    // console.log('no Skype.all().remove()')
-    Skype.all().remove()
+  close(id) {
+    const webview = Skype.get(id)
+    if (webview) {
+      webview.remove()
+    }
+  },
+
+  closeAll() {
+    document.getElementById('dark').innerHTML = ''
   },
 
   async open(data, busy) {
     // if ('string' === typeof data) {
     //   data = await Skype.getAccount(data)
     // }
-    let skype = Skype.get(data.login)
+    let skype = Skype.get(data.id)
     if (!skype) {
       skype = await Skype.load(data, busy)
     }

@@ -22,7 +22,7 @@ extend(db, {
       .stores({
         task: '++&id, after, wait, number, text',
         log: '++&id, contact, task',
-        account: '&id, password, min, max, desktop, time, web, server, headers',
+        account: '&id, password, min, max, desktop, time, max_invite, web, server, headers',
       })
 
     // db.log.mapToClass(Record)

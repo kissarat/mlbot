@@ -137,7 +137,7 @@ addEventListener('load', function () {
   sky.send({type: 'load'})
 })
 
-export {
+const _exports = {
   clearData,
   insertText,
   insertTextIntoInput,
@@ -149,4 +149,6 @@ export {
   confirmIdentity,
 }
 
-extend(window, exports)
+extend(window, _exports)
+
+export default _exports

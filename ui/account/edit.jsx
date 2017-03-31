@@ -46,8 +46,8 @@ export default class AccountEdit extends FormComponent {
     this.setState({busy: true})
     try {
       if (this.state.check) {
-        await AccountManager.login(pick(this.state,
-          'id', 'password', 'desktop', 'web', 'min', 'max', 'max_invite', 'headers'))
+        const account = await AccountManager.login(this.state)
+        account.closeWebSkype()
       }
       else {
         const account = new Account()
@@ -74,7 +74,7 @@ export default class AccountEdit extends FormComponent {
         const string = err.message || err.toString()
         error = '[object Object]' === string ? 'Неизвестная ошибка' : string
       }
-      Skype.removeAll()
+      await AccountManager.closeWebSkype(this.state.id, true)
     }
     this.setState({
       error,

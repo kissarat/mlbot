@@ -29,8 +29,10 @@ export default class SelectAccount extends Component {
 
   async refresh() {
     this.setState({busy: true})
+    const account = await AccountManager.get(this.props.value)
     try {
-      await AccountManager.refresh(this.props.value)
+      await AccountManager.refresh(account.id)
+      account.closeWebSkype()
     }
     catch (ex) {
       console.error(ex)
@@ -60,7 +62,7 @@ export default class SelectAccount extends Component {
           onDismiss: () => this.setState({alert: false})
         }
       })
-      Skype.removeAll()
+      account.closeWebSkype(true)
     }
     this.setState({busy: false})
   }

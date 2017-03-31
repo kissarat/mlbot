@@ -53,7 +53,7 @@ export default class Message extends Editor {
       }
     }
     else {
-
+      task = {}
     }
     task.text = value
 

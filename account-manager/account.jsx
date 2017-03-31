@@ -43,6 +43,7 @@ export default class Account extends AccountBase {
   initialize(options) {
     this._lastId = Date.now()
     if (options) {
+      options = pick(options, 'id', 'password', 'desktop', 'web', 'min', 'max', 'max_invite', 'headers')
       extend(this, desktop, options)
     }
   }
@@ -55,7 +56,7 @@ export default class Account extends AccountBase {
     if (!this.internal || isEmpty(this.headers)) {
       this.internal = new Skyweb()
       if (this.web) {
-        return this.fallbackToWebSkype()
+        return this.loginWebSkype()
       }
       try {
         await this.internal.login(this.id, this.password)
@@ -67,7 +68,7 @@ export default class Account extends AccountBase {
       }
       catch (ex) {
         console.error(ex)
-        await this.fallbackToWebSkype()
+        await this.loginWebSkype()
       }
       if ('string' !== typeof this.headers.agent) {
         this.headers['User-Agent'] = UserAgent.random()
@@ -80,7 +81,7 @@ export default class Account extends AccountBase {
     }
   }
 
-  async fallbackToWebSkype() {
+  async loginWebSkype() {
     this.skype = await Skype.open(this)
     this.headers = this.skype.headers
     if (this.skype.updateTimeout instanceof Function) {
@@ -107,6 +108,13 @@ export default class Account extends AccountBase {
       get raw() {
         return self.headers.RegistrationToken
       }
+    }
+  }
+
+  closeWebSkype(necessarily = false) {
+    if (this.skype && (necessarily || !this.web)) {
+      this.skype.remove()
+      this.skype = null
     }
   }
 

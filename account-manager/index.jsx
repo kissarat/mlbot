@@ -25,19 +25,25 @@ export default class AccountManager {
   }
 
   /**
+   * @param {string} id
    * @returns {Promise.<Account>}
    */
-  static async get(login) {
+  static async get(id) {
     const list = await this.getList()
-    return list.find(a => login === a.id)
+    return list.find(a => id === a.id)
   }
 
+  /**
+   * @param {Object} options
+   * @return {Promise.<Account>}
+   */
   static async login(options) {
     const account = new Account()
     account.initialize(options)
     await account.login()
     await account.save()
     delete this.list
+    return account
   }
 
   static async refresh(login) {
@@ -61,5 +67,12 @@ export default class AccountManager {
     ].map(a => a()))
     Contact.emit('update')
     console.profileEnd(profileName)
+  }
+
+  static async closeWebSkype(id, necessarily) {
+    const account = await this.get(id)
+    if (account) {
+      account.closeWebSkype(necessarily)
+    }
   }
 }

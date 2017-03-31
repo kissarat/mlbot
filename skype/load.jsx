@@ -2,7 +2,7 @@ import App from '../ui/app/index.jsx'
 
 export default function load(data) {
   return new Promise((resolve, reject) => {
-    const skype = this.create(data.login)
+    const skype = this.create(data.id)
     skype.once('login.error', reject)
     skype.onMany(3, 'load', function (number) {
       if (0 === number) {
@@ -26,7 +26,7 @@ export default function load(data) {
     })
 
     function emitStage(stage) {
-      console.log(`${data.login} stage ${stage}`)
+      console.log(`${data.id} stage ${stage}`)
       try {
         skype.emit('login', {stage})
       }
@@ -82,11 +82,11 @@ export default function load(data) {
     skype.once('load', function () {
       emitStage('username')
       // timeout.updateTimeout()
-      skype.login(data.login, data.password)
+      skype.login(data.id, data.password)
       skype.once('load', function () {
         emitStage('password')
         // timeout.updateTimeout()
-        skype.login(data.login, data.password)
+        skype.login(data.id, data.password)
       })
     })
     document.getElementById('dark').appendChild(skype)

@@ -1,8 +1,10 @@
-const webpack = require('webpack')
-const package_json = require('./app/package.json')
-const {map, pick} = require('lodash')
 const config = require('./app/config')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const os = require('os')
+const package_json = require('./app/package.json')
+const path = require('path')
+const webpack = require('webpack')
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const {map, pick} = require('lodash')
 
 const _mode = (process.env.MLBOT || '').split(',')
 function mode(name) {
@@ -11,9 +13,9 @@ function mode(name) {
 
 module.exports = function (name) {
   const config = {
-    entry: [`${__dirname}/${name}/index.jsx`],
+    entry: [path.join(__dirname, name, 'index.jsx')],
     output: {
-      path: __dirname + '/app/js',
+      path: path.join(__dirname, 'app', 'js'),
       filename: name + '.js',
     },
     module: {
@@ -76,7 +78,7 @@ module.exports = function (name) {
         async: true,
       }),
       new webpack.optimize.UglifyJsPlugin({
-        cacheFolder: '/tmp',
+        cacheFolder: os.tmpdir(),
         debug: false,
         minimize: true,
         sourceMap: false,
