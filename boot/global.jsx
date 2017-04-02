@@ -11,7 +11,6 @@ import Delivery from '../ui/delivery/index.jsx'
 import Dexie from 'dexie'
 import Job from '../account-manager/job.jsx'
 import Queue from '../ui/base/queue.jsx'
-import run from './run.jsx'
 import Skype from '../skype/index.jsx'
 import sounds from '../ui/sounds'
 import {hashHistory} from 'react-router'
@@ -39,7 +38,6 @@ const Global = {
   merge,
   Queue,
   Registry,
-  run,
   Skype,
   sounds,
 }

@@ -7,7 +7,7 @@ import Global from './global.jsx'
 import handshake from './handshake.jsx'
 import React, {Component} from 'react'
 import router from '../ui/routes.jsx'
-import run from './run.jsx'
+import Job from '../account-manager/job.jsx'
 import Unavailable from '../ui/page/unavailable.jsx'
 import {DexieError} from 'dexie'
 import {hashHistory} from 'react-router'
@@ -31,11 +31,7 @@ async function main() {
         const isGuest = !api.config.user || api.config.user.guest
         hashHistory.push(isGuest ? '/login' : '/accounts')
       }
-      if (config.task.enabled && !App.runner) {
-        setTimeout(function () {
-          App.runner = setInterval(run, config.task.interval)
-        }, config.task.delay)
-      }
+      Job.boot()
     }
     else {
       console.error('Application not started')

@@ -7,7 +7,6 @@ import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {omit, debounce} from 'lodash'
 import Job from '../../account-manager/job.jsx'
-import run from '../../boot/run.jsx'
 
 // pause circle outline
 // calendar plus

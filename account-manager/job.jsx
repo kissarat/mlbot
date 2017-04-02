@@ -27,6 +27,31 @@ export default class Job {
     return this.active.length > 0 && this.active.some(j => j.isActive)
   }
 
+  static get enabled() {
+    return config.task.enabled
+  }
+
+  static set enabled(v) {
+    config.task.enabled = v
+    if (v) {
+      this.boot()
+    }
+    else {
+      clearInterval(this._timer)
+    }
+  }
+
+  static boot() {
+    if (!this._timer && config.task.enabled) {
+      this._timer = setInterval(this.serve, config.task.interval)
+    }
+  }
+
+  static serve = async() => {
+    await Job.restart()
+    await Job.start()
+  }
+
   iterate() {
     throw new Error('Job.iterate is unimplemented for ' + this.toString())
   }
@@ -98,6 +123,7 @@ export default class Job {
   }
 
   static async start() {
+    config.task.enabled = true
     let task = await getTaskByStatus(config.Status.ACCEPTED)
     if (task) {
       if (Job.active.find(j => task.id === j.task.id)) {
@@ -135,6 +161,7 @@ export default class Job {
   }
 
   static async stop() {
+    config.task.enabled = false
     const jobs = Job.active
     for (const job of jobs) {
       job.stop()
