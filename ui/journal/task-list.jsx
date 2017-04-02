@@ -1,9 +1,11 @@
 import db from '../../store/database.jsx'
 import Help from '../widget/help.jsx'
 import React, {Component, PropTypes} from 'react'
+import Record from '../../store/record.jsx'
 import Task from '../../store/task.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
+import {omit} from 'lodash'
 
 const StatusText = {
   [Status.SELECTED]: 'Пауза',
@@ -18,15 +20,29 @@ export default class TaskList extends Component {
   }
 
   componentDidMount() {
-    void this.load(this.props)
+    void this.refresh()
     Task.on('add', this.add)
+    Task.on('update', this.update)
   }
 
   componentWillUnmount() {
+    Task.removeListener('update', this.update)
     Task.removeListener('add', this.add)
   }
 
-  add = task => this.state.tasks.unshift(task)
+  add = task => this.setState({tasks: this.state.tasks.filter(t => task.id != t.id)})
+
+  update = updatedTask => {
+    for (const i in this.state.tasks) {
+      if (updatedTask.id === this.state.tasks[i].id) {
+        this.state.tasks[i] = updatedTask
+        return this.setState({tasks: this.state.tasks})
+      }
+    }
+    return this.refresh()
+  }
+
+  refresh = () => this.load(this.props)
 
   async load(props) {
     this.setState({busy: true})
@@ -34,12 +50,11 @@ export default class TaskList extends Component {
     if (props.filter instanceof Function) {
       q.filter(props.filter)
     }
-    const tasks = await q.toArray()
-    for (const task of tasks) {
-      task.contacts = task.contacts.length
-    }
+    const tasks = await q
+      .toArray()
 
-    // await joinLog(tasks)
+    tasks.sort((a, b) => b.id - a.id)
+
     this.setState({
       busy: false,
       tasks
@@ -47,8 +62,10 @@ export default class TaskList extends Component {
   }
 
   async remove(id) {
+    await db.log.filter(t => id === t.task).delete()
     await db.task.delete(id)
-    await this.load(this.props)
+    await this.refresh()
+    Record.emit('refresh')
   }
 
   /**
@@ -57,7 +74,29 @@ export default class TaskList extends Component {
   contactsCount(t) {
     return this.props.filter
       ? <Table.Cell/>
-      : <Table.Cell>{t.contacts} контакты</Table.Cell>
+      : <Table.Cell>{t.contacts.length} контакты</Table.Cell>
+  }
+
+  async copy(t) {
+    const newTask = omit(t, 'id')
+    newTask.status = Status.SCHEDULED
+    await db.task.add(newTask)
+    return this.refresh()
+  }
+
+  actionIcons(t) {
+    const actions = []
+    if (Status.DONE === t.status) {
+      actions.push(<Icon
+        key="copy"
+        name="copy"
+        onClick={() => this.copy(t)}/>)
+    }
+    actions.push(<Icon
+      key="trash"
+      name="trash"
+      onClick={() => this.remove(t.id)}/>)
+    return actions
   }
 
   rows() {
@@ -68,9 +107,7 @@ export default class TaskList extends Component {
       {this.contactsCount(t)}
       <Table.Cell>{StatusText[t.status] || 'Неизвестно'}</Table.Cell>
       <Table.Cell className="action">
-        <Icon
-          name="trash"
-          onClick={() => this.remove(t.id)}/>
+        {this.actionIcons(t)}
       </Table.Cell>
     </Table.Row>)
   }

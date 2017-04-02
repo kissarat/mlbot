@@ -1,8 +1,10 @@
-import db from '../store/database.jsx'
 import AccountManager from '../account-manager/index.jsx'
 import config from '../app/config'
-import {wait} from '../util/index.jsx'
+import db from '../store/database.jsx'
+import Record from '../store/record.jsx'
+import Task from '../store/task.jsx'
 import {random} from 'lodash'
+import {wait} from '../util/index.jsx'
 
 /**
  * @property {number} started
@@ -56,13 +58,16 @@ export default class Job {
           record.status = config.Status.ERROR
           record.message = ex.toString()
         }
-        db.log.add(record)
+        await db.log.add(record)
+        Record.emit('add', record)
       }
       else {
         return
       }
     }
-    return db.task.filter(t => this.task.id === t.id).modify({status: config.Status.DONE})
+    this.task.status = config.Status.DONE
+    await db.task.filter(t => this.task.id === t.id).modify({status: this.task.status})
+    Task.emit('update', this.task)
   }
 
   toString() {

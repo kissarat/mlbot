@@ -23,24 +23,32 @@ export default async function run() {
     }
   }
   Job.active = valid
-  for(const job of invalid) {
+  for (const job of invalid) {
     Job.active.push(job)
     job.start()
   }
 
-  const accepted = await getTask(config.Status.ACCEPTED)
-  if (!accepted) {
-    const scheduled = await getTask(config.Status.SCHEDULED)
-    if (scheduled) {
-      console.log(scheduled.toString() + ' accepted')
-      db.task.filter(t => scheduled.id === t.id).modify({status: config.Status.ACCEPTED})
-      /**
-       * @type Job
-       */
-      const job = new Job[scheduled.type]
-      job.task = scheduled
-      Job.active.push(job)
-      job.start()
+  let task = await getTask(config.Status.ACCEPTED)
+  if (task) {
+    if (Job.active.find(j => task.id === j.task.id)) {
+      task = null
     }
+  } else {
+    task = await getTask(config.Status.SCHEDULED)
+  }
+  if (task) {
+    console.log(task.toString() + ' accepted')
+    if (config.Status.ACCEPTED !== task.status) {
+      task.status = config.Status.ACCEPTED
+      await db.task.filter(t => task.id === t.id).modify({status: task.status})
+      Task.emit('update', task)
+    }
+    /**
+     * @type Job
+     */
+    const job = new Job[task.type]
+    job.task = task
+    Job.active.push(job)
+    job.start()
   }
 }

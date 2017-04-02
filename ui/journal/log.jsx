@@ -1,7 +1,8 @@
-import React, {Component, PropTypes} from 'react'
 import db from '../../store/database.jsx'
-import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
+import React, {Component, PropTypes} from 'react'
+import Record from '../../store/record.jsx'
 import {joinLog} from '../../store/utils.jsx'
+import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 
 const StatusText = {
@@ -20,11 +21,25 @@ export default class Log extends Component {
 
   componentDidMount() {
     void this.load()
+    Record.on('add', this.add)
+    Record.on('refresh', this.load)
   }
 
-  async load() {
+  componentWillUnmount() {
+    Record.removeListener('refresh', this.load)
+    Record.removeListener('add', this.add)
+  }
+
+  add = async record => {
+    const newRecords = [record]
+    await joinLog(newRecords)
+    this.setState({records: this.state.records.concat(newRecords)})
+  }
+
+  load = async() => {
     this.setState({busy: true})
-    const records = await db.log.orderBy('id', 'desc')
+    const records = await db.log
+      .orderBy('id', 'desc')
       .limit(300)
       .toArray()
     window._records = records
@@ -42,16 +57,15 @@ export default class Log extends Component {
 
   rows() {
     return this.state.records.map(l => <Table.Row key={l.id}>
-        <Table.Cell className="id">{l.id}</Table.Cell>
-        <Table.Cell>{l.name}</Table.Cell>
-        <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>
-        <Table.Cell className="action">
-          <Icon
-            name="trash"
-            onClick={() => this.remove(l.id)}/>
-        </Table.Cell>
-      </Table.Row>
-    )
+      <Table.Cell className="id">{l.id}</Table.Cell>
+      <Table.Cell>{l.name}</Table.Cell>
+      <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>
+      <Table.Cell className="action">
+        <Icon
+          name="trash"
+          onClick={() => this.remove(l.id)}/>
+      </Table.Cell>
+    </Table.Row>)
   }
 
   render() {
