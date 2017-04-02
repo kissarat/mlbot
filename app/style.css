@@ -699,3 +699,12 @@ footer, textarea, input, .ui.menu {
     margin: 0 4px;
     /*line-height: 1em !important;*/
 }
+
+.ui.table td.id:before {
+    color: darkgray;
+    content: '#';
+}
+
+.ui.table td.action {
+    text-align: right;
+}

@@ -32,5 +32,5 @@ export async function load(array, attrs) {
 }
 
 export async function joinLog(array) {
-  return load(array, ['contact', 'message'])
+  return load(array, ['contact', 'task'])
 }

@@ -1,16 +1,16 @@
 import React, {Component} from 'react'
 import Footer from '../widget/footer.jsx'
 import {Message} from 'semantic-ui-react'
+import package_json from '../../app/package.json'
 
 export default class Unavailable extends Component {
   render() {
     return <div className="page error">
-      <header>
-        <img src="images/logo-leader.png"/>
-        <p>ML Skype AutoBot ™ </p>
-      </header>
+      <h1>MLBot for Skype v{package_json.version}</h1>
 
-      <Message error><pre>{this.props.message}</pre></Message>
+      <Message error>
+        <pre>{this.props.message}</pre>
+      </Message>
 
       <div className="message">
         <h1>Ошибка! </h1>

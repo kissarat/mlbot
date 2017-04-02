@@ -1,17 +1,16 @@
-import React, {Component, PropTypes} from 'react'
-import {Status} from '../../app/config'
 import db from '../../store/database.jsx'
-import {joinLog} from '../../store/utils.jsx'
-import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import Help from '../widget/help.jsx'
+import React, {Component, PropTypes} from 'react'
 import Task from '../../store/task.jsx'
+import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
+import {Status} from '../../app/config'
 
 export default class TaskList extends Component {
   state = {
     tasks: []
   }
 
-  componentWillMount() {
+  componentDidMount() {
     void this.load(this.props)
     Task.on('add', this.add)
   }
@@ -55,23 +54,17 @@ export default class TaskList extends Component {
   }
 
   rows() {
-    return this.state.tasks.map(t => {
-      const text = t.text
-        .replace(/\s+/g, ' ')
-        .replace(/▁▁▁▁▁▁▁▁▁▁▁▁▁.*$/m, '')
-        .slice(0, 30)
-      return <Table.Row key={t.id} color="red">
-        <Table.Cell>№{t.id}</Table.Cell>
+    return this.state.tasks.map(t => <Table.Row key={t.id}>
+        <Table.Cell className="id">{t.id}</Table.Cell>
         <Table.Cell>{t.account}</Table.Cell>
-        <Table.Cell>{text}</Table.Cell>
-        <Table.Cell>{this.contactsCount(t)}</Table.Cell>
-        <Table.Cell>
+        <Table.Cell>{t.short}</Table.Cell>
+        {this.contactsCount(t)}
+        <Table.Cell className="action">
           <Icon
             name="trash"
             onClick={() => this.remove(t.id)}/>
         </Table.Cell>
-      </Table.Row>
-    })
+      </Table.Row>)
   }
 
   table() {
@@ -92,7 +85,7 @@ export default class TaskList extends Component {
 
   render() {
     return <Segment className="widget task-list">
-      <Dimmer active={this.state.loading} inverted>
+      <Dimmer active={this.state.busy} inverted>
         <Loader/>
       </Dimmer>
       {this.table()}
