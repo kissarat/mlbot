@@ -38,7 +38,8 @@ let config = {
     server: 0,
     max_invite: 40,
     desktop: false,
-    web: false
+    web: false,
+    expires: 3 * 3600 * 1000 
   },
 
   Status: {

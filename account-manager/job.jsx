@@ -80,12 +80,12 @@ export default class Job {
     const queue = await this.task.contacts.filter(a => !found.find(b => a === b))
     this.started = Date.now()
     for (const id of queue) {
+      await this.wait()
       if (this.isActive) {
         const record = new Record()
         record.contact = id
         record.task = this.task.id
         try {
-          await this.wait()
           await this.iterate(id)
           record.status = config.Status.DONE
         }
