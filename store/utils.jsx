@@ -1,9 +1,13 @@
 import db from './database.jsx'
 import {uniq, keyBy} from 'lodash'
 
+const entities = {
+  contact: {},
+  task: {}
+}
+
 export async function load(array, attrs) {
   const o = {}
-  const entities = {}
   for (const name of attrs) {
     o[name] = []
 
@@ -16,16 +20,19 @@ export async function load(array, attrs) {
       }
     }
   }
-  for(const name in o) {
+  for (const name in o) {
     const ids = uniq(o[name]).sort()
-    entities[name] = ids.length > 0
-    ? keyBy(await db[name].filter(a => ids.indexOf(a.id) >= 0).toArray(), 'id')
-    : {}
+    const objects = await db[name].filter(r => ids.indexOf(r.id) >= 0).toArray()
+    const collection = entities[name]
+    for (const entity of objects) {
+      collection[entity.id] = entity
+    }
   }
-  for(const item of array) {
-    for(const name of attrs) {
+  for (const name of attrs) {
+    const collection = entities[name]
+    for (const item of array) {
       const id = item[name]
-      item[name] = entities[name][id]
+      item[name] = collection[id]
     }
   }
   return array
@@ -33,4 +40,10 @@ export async function load(array, attrs) {
 
 export async function joinLog(array) {
   return load(array, ['contact', 'task'])
+}
+
+export function clearCache() {
+  for (const name in entities) {
+    entities[name] = {}
+  }
 }

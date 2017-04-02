@@ -4,7 +4,9 @@ import Record from '../../store/record.jsx'
 import {joinLog} from '../../store/utils.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
+import Job from '../../account-manager/job.jsx'
 
+// checkmark
 const StatusText = {
   [Status.NONE]: 'Нету',
   [Status.SELECTED]: 'Неопределено',
@@ -56,16 +58,24 @@ export default class Log extends Component {
   }
 
   rows() {
-    return this.state.records.map(l => <Table.Row key={l.id}>
-      <Table.Cell className="id">{l.id}</Table.Cell>
-      <Table.Cell>{l.name}</Table.Cell>
-      <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>
-      <Table.Cell className="action">
-        <Icon
-          name="trash"
-          onClick={() => this.remove(l.id)}/>
-      </Table.Cell>
-    </Table.Row>)
+    return this.state.records.map(l => {
+      const JobType = Job[l.task.type]
+      return <Table.Row
+        key={l.id}
+        positive={Status.DONE === l.status}
+        negative={Status.ERROR === l.status}
+        title={JobType.title}>
+        <Table.Cell><Icon name={JobType.icon}/></Table.Cell>
+        <Table.Cell className="id">{l.id}</Table.Cell>
+        <Table.Cell>{l.name}</Table.Cell>
+        <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>
+        <Table.Cell className="action">
+          <Icon
+            name="trash"
+            onClick={() => this.remove(l.id)}/>
+        </Table.Cell>
+      </Table.Row>
+    })
   }
 
   render() {

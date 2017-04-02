@@ -6,6 +6,13 @@ import Task from '../store/task.jsx'
 import {random} from 'lodash'
 import {wait} from '../util/index.jsx'
 
+function getTaskByStatus(status) {
+  return db.task
+    .filter(t => status === t.status)
+    .desc('id')
+    .first()
+}
+
 /**
  * @property {number} started
  * @static {Account[]} active
@@ -13,8 +20,12 @@ import {wait} from '../util/index.jsx'
  * @property {Account} account
  */
 export default class Job {
-  isActive = true
+  isActive = false
   static active = []
+
+  static get isRunning() {
+    return this.active.length > 0 && this.active.some(j => j.isActive)
+  }
 
   iterate() {
     throw new Error('Job.iterate is unimplemented for ' + this.toString())
@@ -41,14 +52,13 @@ export default class Job {
     }
     const found = (await db.log.filter(r => r.task === this.task.id).toArray())
       .map(r => r.contact)
-    const active = await this.task.contacts.filter(a => !found.find(b => a === b))
+    const queue = await this.task.contacts.filter(a => !found.find(b => a === b))
     this.started = Date.now()
-    for (const id of active) {
+    for (const id of queue) {
       if (this.isActive) {
-        const record = {
-          contact: id,
-          task: this.task.id
-        }
+        const record = new Record()
+        record.contact = id
+        record.task = this.task.id
         try {
           await this.wait()
           await this.iterate(id)
@@ -62,12 +72,17 @@ export default class Job {
         Record.emit('add', record)
       }
       else {
-        return
+        return void 0
       }
     }
     this.task.status = config.Status.DONE
     await db.task.filter(t => this.task.id === t.id).modify({status: this.task.status})
+    this.isActive = false
     Task.emit('update', this.task)
+  }
+
+  stop = () => {
+    this.isActive = false
   }
 
   toString() {
@@ -82,12 +97,77 @@ export default class Job {
     }
   }
 
-  stop = () => {
-    this.isActive = false
+  static async start() {
+    let task = await getTaskByStatus(config.Status.ACCEPTED)
+    if (task) {
+      if (Job.active.find(j => task.id === j.task.id)) {
+        task = null
+      }
+    } else {
+      task = await getTaskByStatus(config.Status.SCHEDULED)
+    }
+    if (task) {
+      console.log(task.toString() + ' accepted')
+      if (config.Status.ACCEPTED !== task.status) {
+        task.status = config.Status.ACCEPTED
+        await db.task.filter(t => task.id === t.id).modify({status: task.status})
+        Task.emit('update', task)
+      }
+      /**
+       * @type Job
+       */
+      const job = new Job[task.type]
+      job.task = task
+      Job.active.push(job)
+      void job.start()
+    }
+  }
+
+  static async restart() {
+    const now = Date.now()
+    for (const job of Job.active) {
+      if (job.isActive && job.account.timeout > now - job.started) {
+        job.stop()
+        job.start()
+      }
+    }
+    Job.active = Job.active.filter(job => job.isActive)
+  }
+
+  static async stop() {
+    const jobs = Job.active
+    for (const job of jobs) {
+      job.stop()
+    }
+    Job.active = []
+    await db.task
+      .filter(t => config.Status.ACCEPTED === t.status)
+      .modify({status: config.Status.SCHEDULED})
   }
 }
 
 class Delivery extends Job {
+  static icon = 'comment'
+  static title = 'Рассылка'
+
+  iterate(contact) {
+    return this.account.send(this.createMessage(contact))
+  }
+}
+
+class Invite extends Job {
+  static icon = 'add user'
+  static title = 'Приглашения'
+
+  iterate(contact) {
+    return this.account.invite(this.createMessage(contact))
+  }
+}
+
+class Clear extends Job {
+  static icon = 'trash'
+  static title = 'Очистка серых контактов'
+
   iterate(contact) {
     return this.account.send(this.createMessage(contact))
   }

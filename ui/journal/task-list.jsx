@@ -6,7 +6,13 @@ import Task from '../../store/task.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {omit, debounce} from 'lodash'
+import Job from '../../account-manager/job.jsx'
+import run from '../../boot/run.jsx'
 
+// pause circle outline
+// calendar plus
+// dashboard
+// checkmark
 const StatusText = {
   [Status.SELECTED]: 'Пауза',
   [Status.SCHEDULED]: 'В очереди',
@@ -32,7 +38,7 @@ export default class TaskList extends Component {
     Task.removeListener('add', this.add)
   }
 
-  add = task => this.setState({tasks: this.state.tasks.filter(t => task.id != t.id)})
+  add = task => this.setState({tasks: this.state.tasks.concat([task])})
 
   update = updatedTask => {
     for (const i in this.state.tasks) {
@@ -91,6 +97,17 @@ export default class TaskList extends Component {
     }
   }
 
+  play = async() => {
+    if (Job.isRunning) {
+      await Job.stop()
+      await this.refresh()
+    }
+    else {
+      await Job.start()
+    }
+    this.setState({running: Job.isRunning})
+  }
+
   action(t) {
     if (!this.props.filter || innerWidth > 1080) {
       return <Table.Cell className="action">
@@ -104,13 +121,24 @@ export default class TaskList extends Component {
     }
   }
 
+  status(t) {
+    if (Status.ACCEPTED === t.status) {
+      return <img src="images/loading-dots.gif"/>
+    }
+    return StatusText[t.status] || 'Неизвестно'
+  }
+
   rows() {
-    return this.state.tasks.map(t => <Table.Row key={t.id}>
+    return this.state.tasks.map(t => <Table.Row
+      key={t.id}
+      positive={Status.DONE === t.status}
+      title={Job[t.type].title}>
+      <Table.Cell><Icon name={Job[t.type].icon}/></Table.Cell>
       <Table.Cell className="id">{t.id}</Table.Cell>
       <Table.Cell>{t.account}</Table.Cell>
       {this.short(t)}
       {this.contactsCount(t)}
-      <Table.Cell>{StatusText[t.status] || 'Неизвестно'}</Table.Cell>
+      <Table.Cell>{this.status(t)}</Table.Cell>
       {this.action(t)}
     </Table.Row>)
   }
@@ -119,7 +147,12 @@ export default class TaskList extends Component {
     if (this.state.tasks.length > 0) {
       return <div>
         <Help text="Нажмите, чтобы исключить контакт из рассылки">
-          <Header textAlign="center" as="h2">Список задач</Header>
+          <Header textAlign="center" as="h2">
+            <Icon
+              onClick={this.play}
+              name={Job.isRunning ? 'pause circle outline' : 'play circle outline'}/>
+            Список задач
+          </Header>
         </Help>
         <Table compact="very">
           <Table.Body>{this.rows()}</Table.Body>
