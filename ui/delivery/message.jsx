@@ -32,9 +32,11 @@ export default class Message extends Editor {
 
   componentWillMount() {
     const now = new Date()
-    const refURL = 'club-leader' === config.vendor ? 'https://club-leader.com/?r=' : 'http://inbisoft.com/mlbot/ref/'
+    const isClubLeader = 'club-leader' === config.vendor
+    const refURL = isClubLeader ? 'https://club-leader.com/?r=' : 'https://inbisoft.com/mlbot/ref/'
+    const nick = isClubLeader ? api.config.user.nick : api.config.user.nick.replace(/^inbisoft_/, '')
     this.setup({
-      signature: 'Сообщение отправлено с помощью программы: ' + refURL + api.config.user.nick,
+      signature: 'Сообщение отправлено с помощью программы: ' + refURL + nick,
       hour: (1 + now.getHours()) % 24,
       minute: (5 + now.getMinutes()) % 60,
       schedule: false

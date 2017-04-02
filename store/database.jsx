@@ -20,7 +20,7 @@ extend(db, {
 
     db.version(4)
       .stores({
-        task: '++&id, after, wait, number, text',
+        task: '++&id, contacts, after, wait, number, text',
         log: '++&id, contact, task',
         account: '&id, password, min, max, desktop, time, max_invite, web, server, headers',
       })

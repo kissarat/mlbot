@@ -1,4 +1,4 @@
-import ActivityList from '../log/activity-list.jsx'
+import TaskList from '../journal/task-list.jsx'
 import db from '../../store/database.jsx'
 import Task from '../../store/task.jsx'
 import DeliveryList from './list.jsx'
@@ -15,10 +15,28 @@ import {toArray, defaults} from 'lodash'
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
 
+  querySelected() {
+    const type = this.type()
+    return db.contact.filter(c =>
+      type === c.type &&
+      Status.SELECTED === c.status &&
+      this.state.account === c.account
+    )
+  }
+
   send = async task => {
     task.number = Repeat.state.repeat
-    await db.task.add(task)
-    Task.emit('add')
+    const contacts = await this.querySelected().toArray()
+    if (contacts.length > 0) {
+      task.contacts = contacts.map(c => c.id)
+      await db.task.add(task)
+      await this.querySelected().modify({status: Status.NONE})
+      Task.emit('add', task)
+      this.alert('success', `Рассылка ${contacts.length} контактам запланирована в очередь задач`)
+    }
+    else {
+      this.alert('error', 'Вы не выбрали ни одного контакта')
+    }
   }
 
   type() {
@@ -54,7 +72,7 @@ export default class Delivery extends SkypeComponent {
           submit={this.send}>
           {this.repeat()}
         </Message>
-        <ActivityList/>
+        <TaskList filter={c => c.status !== Status.DONE}/>
       </Segment>
 
       <Segment className="contact-list-segment">

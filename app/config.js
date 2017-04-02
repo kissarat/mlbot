@@ -11,13 +11,13 @@ catch (ex) {
 const config = {
   dev: true,
   reset: false,
-  origin: 'http://app.inbisoft.com',
+  origin: 'https://app.inbisoft.com',
   window: {
     minWidth: 960,
     minHeight: 680,
     width: 1024,
     height: 768,
-    resizable: false
+    // resizable: false
   },
 
   desktop: {

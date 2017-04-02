@@ -9,6 +9,7 @@ import Outdoor from './outdoor/index.jsx'
 import package_json from '../app/package.json'
 import React from 'react'
 import Settings from './app/settings.jsx'
+import Journal from './journal/index.jsx'
 import AccountEdit from './account/edit.jsx'
 import Unavailable from './page/unavailable.jsx'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
@@ -35,7 +36,7 @@ export const routes = <Route path='/'>
     <Route path='accounts/login' component={AccountEdit}/>
     <Route path='accounts/edit/:id' component={AccountEdit}/>
     <Route path='accounts' component={AccountList}/>
-    <Route path='history' component={AccountList}/>
+    <Route path='journal' component={Journal}/>
     <Route path='delivery/:type' component={Delivery}/>
     <Route path='invite/:account' component={Invite}/>
     <Route path='invite' component={Invite}/>

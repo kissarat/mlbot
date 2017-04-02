@@ -62,7 +62,7 @@ export default class SkypeComponent extends Component {
       alert = type
     }
     else {
-      alert = {type, content}
+      alert = {[type]: true, content}
     }
     let busy = 'busy' === type
     if (busy) {
