@@ -5,6 +5,13 @@ import Task from '../../store/task.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 
+const StatusText = {
+  [Status.SELECTED]: 'Пауза',
+  [Status.SCHEDULED]: 'В очереди',
+  [Status.ACCEPTED]: 'Выполняется',
+  [Status.DONE]: 'Завершено',
+}
+
 export default class TaskList extends Component {
   state = {
     tasks: []
@@ -55,16 +62,17 @@ export default class TaskList extends Component {
 
   rows() {
     return this.state.tasks.map(t => <Table.Row key={t.id}>
-        <Table.Cell className="id">{t.id}</Table.Cell>
-        <Table.Cell>{t.account}</Table.Cell>
-        <Table.Cell>{t.short}</Table.Cell>
-        {this.contactsCount(t)}
-        <Table.Cell className="action">
-          <Icon
-            name="trash"
-            onClick={() => this.remove(t.id)}/>
-        </Table.Cell>
-      </Table.Row>)
+      <Table.Cell className="id">{t.id}</Table.Cell>
+      <Table.Cell>{t.account}</Table.Cell>
+      <Table.Cell>{t.short}</Table.Cell>
+      {this.contactsCount(t)}
+      <Table.Cell>{StatusText[t.status] || 'Неизвестно'}</Table.Cell>
+      <Table.Cell className="action">
+        <Icon
+          name="trash"
+          onClick={() => this.remove(t.id)}/>
+      </Table.Cell>
+    </Table.Row>)
   }
 
   table() {

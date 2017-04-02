@@ -1,8 +1,12 @@
 import {isObject} from 'lodash'
+import {EventEmitter} from 'events'
+import {extend} from 'lodash'
+
+const n = Symbol.for('name')
 
 export default class Record {
   get name() {
-    if (!this[Symbol.for('name')]) {
+    if (!this[n]) {
       let name
       if (isObject(this.contact)) {
         name = this.contact.login
@@ -13,10 +17,11 @@ export default class Record {
       else {
         name = 'string' === typeof this.contact ? this.contact.split('~')[1] : ''
       }
-      this[Symbol.for('name')] = name
+      this[n] = name
     }
-    return this[Symbol.for('name')]
+    return this[n]
   }
 }
 
-// Log.Collection
+extend(Record, EventEmitter.prototype)
+EventEmitter.call(Record)

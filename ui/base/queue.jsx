@@ -13,6 +13,7 @@ Queue.prototype = {
   __proto__: Timeout,
 
   async execute() {
+
     this.timeoutDuration = skypeTimeout
     const count = await this.query()
       .count()

@@ -46,6 +46,7 @@ const config = {
   Status: {
     FORBIDDEN: -403,
     ABSENT: -404,
+    ERROR: -500,
 
     NONE: 0,
     SELECTED: 1,
@@ -57,6 +58,12 @@ const config = {
   Type: {
     PERSON: 0,
     CHAT: 1,
+  },
+
+  task: {
+    enabled: false,
+    interval: 5000,
+    delay: 5000
   },
 
   start: {

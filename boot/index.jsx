@@ -12,6 +12,8 @@ import {hashHistory} from 'react-router'
 import {Loader} from 'semantic-ui-react'
 import {pick, each, isEqual, extend} from 'lodash'
 import {render} from 'react-dom'
+import App from '../ui/app/index.jsx'
+import run from './run.jsx'
 
 if (config.dev) {
   extend(window, Global)
@@ -28,6 +30,11 @@ async function main() {
       if ('#/' === location.hash) {
         const isGuest = !api.config.user || api.config.user.guest
         hashHistory.push(isGuest ? '/login' : '/accounts')
+      }
+      if (config.task.enabled && !App.runner) {
+        setTimeout(function () {
+          App.runner = setInterval(run, config.task.interval)
+        }, config.task.delay)
       }
     }
     else {

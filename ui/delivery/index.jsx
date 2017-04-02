@@ -11,6 +11,7 @@ import Unauthorized from '../widget/unauthorized.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
+import Job from '../../account-manager/job.jsx'
 
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
@@ -28,7 +29,10 @@ export default class Delivery extends SkypeComponent {
     task.number = Repeat.state.repeat
     const contacts = await this.querySelected().toArray()
     if (contacts.length > 0) {
+      task.account = this.state.account
       task.contacts = contacts.map(c => c.id)
+      task.type = Job.Delivery.name
+      task.status = Status.SCHEDULED
       await db.task.add(task)
       await this.querySelected().modify({status: Status.NONE})
       Task.emit('add', task)

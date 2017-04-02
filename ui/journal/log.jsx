@@ -4,8 +4,12 @@ import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {joinLog} from '../../store/utils.jsx'
 import {Status} from '../../app/config'
 
-const statusText = {
-  [Status.DONE]: 'Сделано'
+const StatusText = {
+  [Status.NONE]: 'Нету',
+  [Status.SELECTED]: 'Неопределено',
+  [Status.SCHEDULED]: 'Запланировано',
+  [Status.ACCEPTED]: 'Обрабатывается',
+  [Status.DONE]: 'Сделано',
 }
 
 export default class Log extends Component {
@@ -31,14 +35,20 @@ export default class Log extends Component {
     })
   }
 
+  async remove(id) {
+    await db.log.delete(id)
+    return this.load()
+  }
+
   rows() {
-    return this.state.records.map(t => <Table.Row key={t.id}>
-        <Table.Cell className="id">{t.id}</Table.Cell>
-        <Table.Cell>{t.name}</Table.Cell>
+    return this.state.records.map(l => <Table.Row key={l.id}>
+        <Table.Cell className="id">{l.id}</Table.Cell>
+        <Table.Cell>{l.name}</Table.Cell>
+        <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>
         <Table.Cell className="action">
           <Icon
             name="trash"
-            onClick={() => this.remove(t.id)}/>
+            onClick={() => this.remove(l.id)}/>
         </Table.Cell>
       </Table.Row>
     )

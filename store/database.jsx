@@ -21,8 +21,8 @@ extend(db, {
 
     db.version(4)
       .stores({
-        task: '++&id, contacts, after, wait, number, text',
-        log: '++&id, contact, task',
+        task: '++&id, contacts, after, wait, number, type, text',
+        log: '++&id, contact, task, status, message',
         account: '&id, password, min, max, desktop, time, max_invite, web, server, headers',
       })
 
