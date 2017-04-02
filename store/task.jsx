@@ -9,7 +9,7 @@ export default class Task {
       this[s] = this.text
         .replace(/\s+/g, ' ')
         .replace(/▁▁▁▁▁▁▁▁▁▁▁▁▁.*$/m, '')
-        .slice(0, 30)
+        .slice(0, 20)
     }
     return this[s]
   }

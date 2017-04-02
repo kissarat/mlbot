@@ -5,7 +5,7 @@ import Record from '../../store/record.jsx'
 import Task from '../../store/task.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
-import {omit} from 'lodash'
+import {omit, debounce} from 'lodash'
 
 const StatusText = {
   [Status.SELECTED]: 'Пауза',
@@ -23,9 +23,11 @@ export default class TaskList extends Component {
     void this.refresh()
     Task.on('add', this.add)
     Task.on('update', this.update)
+    addEventListener('resize', this.refreshDebounced)
   }
 
   componentWillUnmount() {
+    removeEventListener('resize', this.refreshDebounced)
     Task.removeListener('update', this.update)
     Task.removeListener('add', this.add)
   }
@@ -43,6 +45,8 @@ export default class TaskList extends Component {
   }
 
   refresh = () => this.load(this.props)
+
+  refreshDebounced = debounce(this.refresh, 500)
 
   async load(props) {
     this.setState({busy: true})
@@ -68,15 +72,6 @@ export default class TaskList extends Component {
     Record.emit('refresh')
   }
 
-  /**
-   * @param {Task} t
-   */
-  contactsCount(t) {
-    return this.props.filter
-      ? <Table.Cell/>
-      : <Table.Cell>{t.contacts.length} контакты</Table.Cell>
-  }
-
   async copy(t) {
     const newTask = omit(t, 'id')
     newTask.status = Status.SCHEDULED
@@ -84,31 +79,39 @@ export default class TaskList extends Component {
     return this.refresh()
   }
 
-  actionIcons(t) {
-    const actions = []
-    if (Status.DONE === t.status) {
-      actions.push(<Icon
-        key="copy"
-        name="copy"
-        onClick={() => this.copy(t)}/>)
+  contactsCount(t) {
+    return this.props.filter
+      ? <Table.Cell/>
+      : <Table.Cell>{t.contacts.length} контакты</Table.Cell>
+  }
+
+  short(t) {
+    if (!this.props.filter || innerWidth > 1280) {
+      return <Table.Cell>{t.short}</Table.Cell>
     }
-    actions.push(<Icon
-      key="trash"
-      name="trash"
-      onClick={() => this.remove(t.id)}/>)
-    return actions
+  }
+
+  action(t) {
+    if (!this.props.filter || innerWidth > 1080) {
+      return <Table.Cell className="action">
+        <Icon
+          name="copy"
+          onClick={() => this.copy(t)}/>
+        <Icon
+          name="trash"
+          onClick={() => this.remove(t.id)}/>
+      </Table.Cell>
+    }
   }
 
   rows() {
     return this.state.tasks.map(t => <Table.Row key={t.id}>
       <Table.Cell className="id">{t.id}</Table.Cell>
       <Table.Cell>{t.account}</Table.Cell>
-      <Table.Cell>{t.short}</Table.Cell>
+      {this.short(t)}
       {this.contactsCount(t)}
       <Table.Cell>{StatusText[t.status] || 'Неизвестно'}</Table.Cell>
-      <Table.Cell className="action">
-        {this.actionIcons(t)}
-      </Table.Cell>
+      {this.action(t)}
     </Table.Row>)
   }
 
