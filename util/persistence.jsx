@@ -1,4 +1,5 @@
-import {merge, defaults, pick, each, isObject} from 'lodash'
+import config from '../app/config'
+import {merge, defaults, pick, each, isObject, omit} from 'lodash'
 
 const Persistence = {
   getStorageName() {
@@ -52,6 +53,10 @@ Persistence.unregister = function (state) {
 
 addEventListener('beforeunload', function () {
   each(Registry, s => s.save())
+  if (!config.reset) {
+    localStorage.setItem('config', JSON.stringify(omit(config,
+      'window', 'vendor', 'Status', 'Type', '')))
+  }
 })
 
 export default Persistence

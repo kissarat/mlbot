@@ -1,5 +1,7 @@
-const merge = require('deepmerge')
 const freeze = require('deep-freeze')
+const merge = require('deepmerge')
+const package_json = require('./package.json')
+const {cloneDeep} = require('lodash')
 
 var local
 try {
@@ -8,7 +10,7 @@ try {
 catch (ex) {
 }
 
-const config = {
+let config = {
   dev: true,
   reset: false,
   origin: 'https://app.inbisoft.com',
@@ -18,10 +20,6 @@ const config = {
     width: 1024,
     height: 768,
     // resizable: false
-  },
-
-  desktop: {
-    loadChatList: true
   },
 
   exclude: ['echo123', 'kissarat'],
@@ -69,9 +67,31 @@ const config = {
   start: {
     delay: 3000
   },
+
   invite: {
     timeout: 7000,
     interval: 2000
+  }
+}
+
+if ('undefined' !== typeof localStorage) {
+  config[Symbol.for('default')] = cloneDeep(config)
+  try {
+    const string = localStorage.getItem('config')
+    if (string) {
+      const _config = JSON.parse(string)
+      config.version = package_json.version
+      if (config.version === _config.version) {
+        config = merge(config, _config)
+      }
+      localStorage.removeItem('config')
+    }
+    else {
+      console.warn('Local configuration not found')
+    }
+  }
+  catch (ex) {
+    console.warn('Local configuration not loaded', ex)
   }
 }
 

@@ -1,13 +1,14 @@
 import AccountManager from '../../account-manager/index.jsx'
 import api from '../../connect/api.jsx'
 import BrowserLink from '../widget/browser-link.jsx'
+import config from '../../app/config'
 import Contact from '../../store/contact.jsx'
 import db from '../../store/database.jsx'
 import fs from 'fs-promise'
 import React, {Component} from 'react'
 import Tabs from '../widget/tabs.jsx'
 import {createTokenInfo} from '../../util/index.jsx'
-import {merge, defaults, omit, map, pick} from 'lodash'
+import {merge, defaults, omit, map, pick, cloneDeep} from 'lodash'
 import {remote} from 'electron'
 import {Segment, Button, Message, Icon} from 'semantic-ui-react'
 
@@ -40,6 +41,8 @@ export default class Settings extends Component {
     const preserve = pick(localStorage, 'sam', 'version', 'm.viktor.expert')
     localStorage.clear()
     merge(localStorage, preserve)
+    config.reset = true
+    location.reload()
   }
 
   clearContacts = async() => {

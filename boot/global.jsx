@@ -1,7 +1,10 @@
+const freeze = require('deep-freeze')
+const merge = require('deepmerge')
 import _ from 'lodash'
 import AccountManager from '../account-manager/index.jsx'
 import api from '../connect/api.jsx'
 import App from '../ui/app/index.jsx'
+import config from '../app/config'
 import Contact from '../store/contact.jsx'
 import db from '../store/database.jsx'
 import Delivery from '../ui/delivery/index.jsx'
@@ -25,12 +28,15 @@ const Global = {
   api,
   App,
   app: remote.app,
+  config,
   Contact,
   db,
   Delivery,
   Dexie,
+  freeze,
   go,
   Job,
+  merge,
   Queue,
   Registry,
   run,

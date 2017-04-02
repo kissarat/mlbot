@@ -1,19 +1,19 @@
 import 'babel-polyfill'
 import api from '../connect/api.jsx'
+import App from '../ui/app/index.jsx'
 import config from '../app/config'
 import db from '../store/database.jsx'
 import Global from './global.jsx'
 import handshake from './handshake.jsx'
 import React, {Component} from 'react'
 import router from '../ui/routes.jsx'
+import run from './run.jsx'
 import Unavailable from '../ui/page/unavailable.jsx'
 import {DexieError} from 'dexie'
 import {hashHistory} from 'react-router'
 import {Loader} from 'semantic-ui-react'
 import {pick, each, isEqual, extend} from 'lodash'
 import {render} from 'react-dom'
-import App from '../ui/app/index.jsx'
-import run from './run.jsx'
 
 if (config.dev) {
   extend(window, Global)
