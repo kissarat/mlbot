@@ -8,4 +8,9 @@ export default class FormComponent extends Component {
   onCheck = (e, {name, checked}) => {
     this.setState({[name]: checked})
   }
+
+  onSubmit = async e => {
+    e.preventDefault()
+    this.submit()
+  }
 }

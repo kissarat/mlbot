@@ -36,6 +36,18 @@ function randomization(text) {
   return text.replace(/\[[\wа-яіїґё\s\|]+]/ig, s => _.sample(s.slice(1, -1).split('|')))
 }
 
+function evaluation(text, vars) {
+  return text.replace(/\{[^}]+}/g, function (s) {
+    s = s.slice(1, -1)
+    if (!_.isEmpty(vars)) {
+      s = s.replace(/[a-z_]+/g, function (name) {
+        return name in vars ? JSON.stringify(vars[name]) :  ''
+      })
+    }
+    return eval(s)
+  })
+}
+
 function latinFinding(text) {
   return text
       .split('')
