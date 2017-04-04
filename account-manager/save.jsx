@@ -107,6 +107,7 @@ async function saveChats() {
 
   await db.contact.bulkDelete(absent)
   await db.contact.bulkPut(contacts)
+  this.status = 'contacts'
 }
 
 async function saveGroups() {

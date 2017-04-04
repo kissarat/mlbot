@@ -15,9 +15,20 @@ export default class AccountList extends Component {
     this.setState({accounts})
   }
 
-  componentWillMount() {
-    void this.load()
+  async componentDidMount() {
+    await this.load()
+    for (const account of this.state.accounts) {
+      account.on('status', this.changeTime)
+    }
   }
+
+  componentWillUnmount() {
+    for (const account of this.state.accounts) {
+      account.removeEventListener('status', this.changeTime)
+    }
+  }
+
+  changeTime = () => this.setState({time: Date.now()})
 
   async remove({login}) {
     await api.del('skype/remove', {login})
@@ -28,8 +39,8 @@ export default class AccountList extends Component {
     if (this.state.accounts instanceof Array) {
       if (this.state.accounts.length >= 20) {
         return <Alert
-          warning
-          content="К сожалению в данной версии приложения вы не можете добавить больше 20-ти скайпов"/>
+            warning
+            content="К сожалению в данной версии приложения вы не можете добавить больше 20-ти скайпов"/>
       }
       else {
         return <Link to="/accounts/login">Добавить Skype</Link>
@@ -37,9 +48,30 @@ export default class AccountList extends Component {
     }
   }
 
+  async login(a) {
+    await a.login()
+    this.changeTime()
+  }
+
+  webSkype(a) {
+    if (a.web) {
+      let color = ['authenticated', 'contacts'].indexOf(a.status) >= 0 ? 'green' : 'grey'
+      if ('skype' === a.status) {
+        color = 'yellow'
+      }
+      return <Icon
+          name="skype"
+          size="large"
+          color={color}
+          onClick={() => this.login(a)}
+          title={'skype' === a.status ? 'Вход в Web-версию Skype' : 'Использовать Web-версию Skype'}/>
+    }
+  }
+
   accounts() {
     if (this.state.accounts instanceof Array) {
       const accounts = this.state.accounts.map(a => <tr key={a.id}>
+        <td>{this.webSkype(a)}</td>
         <td>{a.id}</td>
         <td>
           <Link to={'/accounts/edit/' + a.id}><Icon name="edit"/></Link>
@@ -48,7 +80,7 @@ export default class AccountList extends Component {
       </tr>)
       return <table>
         <tbody>{accounts}</tbody>
-        </table>
+      </table>
     }
     else {
       return <Loader active size="large">Загрузка списка аккаунтов</Loader>
@@ -60,8 +92,8 @@ export default class AccountList extends Component {
       {this.addSkype()}
       {this.accounts()}
       <Alert
-        persist="addSkypeHelp"
-        content="Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
+          persist="addSkypeHelp"
+          content="Добавьте свои аккаунты Skype, с которых Вы планируете рассылать сообщения
         и вести рекламную деятельность в интернете"/>
     </Segment>
   }

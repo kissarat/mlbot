@@ -1,21 +1,21 @@
 import api from '../connect/api.jsx'
 import BareCookieJar from './bare-cookie-jar.jsx'
+import config from '../app/config'
 import db from '../store/database.jsx'
 import desktop from './desktop.jsx'
+import EventEmitter from 'events'
 import packge_json from '../app/package.json'
 import request from 'request'
+import saveFunctions from './save.jsx'
 import Skype from '../skype/index.jsx'
 import SkypeAccount from '../rat/src/skype_account.ts'
 import Skyweb from '../rat/src/skyweb.ts'
-import config from '../app/config'
 import UserAgent from '../util/user-agent.jsx'
-import {Type, Status} from '../app/config'
 import {getMri} from '../util/index.jsx'
 import {pick, defaults, extend, isObject, isEmpty, identity, merge} from 'lodash'
-import saveFunctions from './save.jsx'
+import {Type, Status} from '../app/config'
 
 function AccountBase() {
-
 }
 
 AccountBase.prototype = {
@@ -41,6 +41,8 @@ const accountDefaults = {
  */
 export default class Account extends AccountBase {
   initialize(options) {
+    extend(this, EventEmitter.prototype)
+    EventEmitter.call(this)
     this._lastId = Date.now()
     if (options) {
       options = pick(options, 'id', 'password', 'desktop', 'web', 'min', 'max', 'max_invite', 'headers')
@@ -48,19 +50,51 @@ export default class Account extends AccountBase {
     }
   }
 
+  get skype() {
+    return document.querySelector(`#dark [partition="${this.id}"]`)
+  }
+
+  set skype(v) {
+    const skype = this.skype
+    if (v !== skype) {
+      if (skype) {
+        skype.remove()
+      }
+      if (v) {
+        document.getElementById('dark').appendChild(v)
+      }
+    }
+  }
+
   get isAuthenticated() {
     return !!(this.internal || (this.skype && this.headers && this.headers.RegistrationToken))
   }
 
+  get status() {
+    return this._status
+  }
+
+  set status(v) {
+    this.emit('status', {
+      status: v,
+      account: this,
+      time: Date.now()
+    })
+    this._status = v
+  }
+
   async login() {
     if (Date.now() - this.time > config.account.expires) {
-      this.internal = null
       this.headers = null
+      this.internal = null
+      this.skype = null
     }
     if (!this.internal || isEmpty(this.headers)) {
+      this.status = 'login'
       this.internal = new Skyweb()
       if (this.web) {
-        return this.loginWebSkype()
+        await this.loginWebSkype()
+        return this.status = 'authenticated'
       }
       try {
         await this.internal.login(this.id, this.password)
@@ -78,6 +112,7 @@ export default class Account extends AccountBase {
         this.headers['User-Agent'] = UserAgent.random()
       }
       if (this.internal.skypeAccount) {
+        this.status = 'authenticated'
         return this.internal.skypeAccount
       }
 
@@ -86,11 +121,9 @@ export default class Account extends AccountBase {
   }
 
   async loginWebSkype() {
-    this.skype = await Skype.open(this)
+    this.status = 'skype'
+    await Skype.open(this)
     this.headers = this.skype.headers
-    if (this.skype.updateTimeout instanceof Function) {
-      this.skype.updateTimeout()
-    }
     this.internal.cookieJar = new BareCookieJar(this.headers.Cookie)
     this.internal.skypeAccount = new SkypeAccount(this.id, this.password)
     const self = this

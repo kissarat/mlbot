@@ -735,3 +735,7 @@ footer, textarea, input, .ui.menu {
 .widget.indicator .danger {
     color: #c60000;
 }
+
+.account-list .skype {
+    cursor: pointer;
+}
