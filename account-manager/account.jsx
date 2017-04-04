@@ -148,6 +148,14 @@ export default class Account extends AccountBase {
     }
   }
 
+  logout() {
+    if (this.web) {
+      this.skype = null
+    }
+    this.headers = null
+    this.status = false
+  }
+
   closeWebSkype(necessarily = false) {
     if (this.skype && (necessarily || !this.web)) {
       this.skype.remove()

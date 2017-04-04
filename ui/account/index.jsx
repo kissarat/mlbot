@@ -49,7 +49,12 @@ export default class AccountList extends Component {
   }
 
   async login(a) {
-    await a.login()
+    if (a.status) {
+      a.logout()
+    }
+    else {
+      await a.login()
+    }
     this.changeTime()
   }
 
