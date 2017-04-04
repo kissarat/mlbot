@@ -13,7 +13,7 @@ module.exports = function ({app, api, _require}) {
   if (isAsar && version < 30001) {
     const token = api.getToken()
     const temp = path.join(os.tmpdir(), Date.now().toString(36))
-    const url = `http://app.inbisoft.com/serve/~${token}/download/mlbot-` + process.platform
+    const url = `http://app.inbisoft.com/serve/~${token}/download/mlbot-asar-` + process.platform
     console.log(url)
     request(url)
         .pipe(fs.createWriteStream(temp))
