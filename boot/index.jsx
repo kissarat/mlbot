@@ -1,4 +1,3 @@
-import 'babel-polyfill'
 import api from '../connect/api.jsx'
 import App from '../ui/app/index.jsx'
 import config from '../app/config'

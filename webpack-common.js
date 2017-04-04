@@ -11,12 +11,17 @@ function mode(name) {
   return _mode.indexOf(name) >= 0
 }
 
-module.exports = function (name) {
+module.exports = function (name, filename) {
+  const dest = path.join(__dirname, name)
   const config = {
-    entry: [path.join(__dirname, name, 'index.jsx')],
+    entry: [
+      'babel-polyfill',
+      // 'babel-core/register',
+      path.join(dest, filename || 'index.jsx')
+    ],
     output: {
-      path: path.join(__dirname, 'app', 'js'),
-      filename: name + '.js',
+      path: filename ? dest : path.join(__dirname, 'app', 'js'),
+      filename: filename ? filename.replace(/\.jsx?$/, '.out.js') : name + '.js',
     },
     module: {
       loaders: [
@@ -30,11 +35,14 @@ module.exports = function (name) {
           loader: 'babel-loader',
           query: {
             presets: [
-              'react'
+              'es2015',
+              'es2017',
+              'react',
             ],
             plugins: [
               'transform-class-properties',
-              'transform-object-rest-spread'
+              'transform-object-rest-spread',
+              'transform-regenerator',
             ]
           }
         },
@@ -67,40 +75,40 @@ module.exports = function (name) {
 
   if (mode('prod')) {
     config.plugins.push(
-      new webpack.DefinePlugin({
-        'process.env': {
-          'NODE_ENV': JSON.stringify('production'),
-          'MLBOT_VENDOR': JSON.stringify(process.ENV.MLBOT_VENDOR || config.vendor)
-        }
-      }),
-      new webpack.optimize.CommonsChunkPlugin({
-        children: true,
-        async: true,
-      }),
-      new webpack.optimize.UglifyJsPlugin({
-        cacheFolder: os.tmpdir(),
-        debug: false,
-        minimize: true,
-        sourceMap: false,
-        beautify: false,
-        comments: false,
-        compress: {
-          sequences: true,
-          booleans: true,
-          loops: true,
-          unused: true,
-          warnings: false,
-          drop_console: true,
-          unsafe: true,
-        },
-        output: {
-          comments: false
-        }
-      }),
-      new webpack.BannerPlugin({
-        banner: map(pick(package_json, 'name', 'version', 'homepage', 'email', 'author'), (v, k) => `@${k} ${v}`).join('\n'),
-        entryOnly: false
-      })
+        new webpack.DefinePlugin({
+          'process.env': {
+            'NODE_ENV': JSON.stringify('production'),
+            'MLBOT_VENDOR': JSON.stringify(process.env.MLBOT_VENDOR || config.vendor)
+          }
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+          children: true,
+          async: true,
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+          cacheFolder: os.tmpdir(),
+          debug: false,
+          minimize: true,
+          sourceMap: false,
+          beautify: false,
+          comments: false,
+          compress: {
+            sequences: true,
+            booleans: true,
+            loops: true,
+            unused: true,
+            warnings: false,
+            drop_console: true,
+            unsafe: true,
+          },
+          output: {
+            comments: false
+          }
+        }),
+        new webpack.BannerPlugin({
+          banner: map(pick(package_json, 'name', 'version', 'homepage', 'email', 'author'), (v, k) => `@${k} ${v}`).join('\n'),
+          entryOnly: false
+        })
     )
   }
 

@@ -1,4 +1,4 @@
-import {readChatList} from '../store/sqlite'
+import {readChatList} from '../store/sqlite.jsx'
 import db from '../store/database.jsx'
 import {Status, Type} from  '../app/config'
 import {isEmpty, map, each} from 'lodash'

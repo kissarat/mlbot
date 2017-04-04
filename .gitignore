@@ -9,4 +9,5 @@ node_modules
 package.json
 rat/dist
 rat/typings
+scripts/*.out.js
 sounds

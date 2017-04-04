@@ -7,7 +7,7 @@ import Skype from '../../skype/index.jsx'
 import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
 import {hashHistory} from 'react-router'
 import {Link} from 'react-router'
-import {getBaseDirectory} from '../../store/sqlite'
+import {getBaseDirectory} from '../../store/sqlite.jsx'
 import {pick} from 'lodash'
 
 const oses = {
