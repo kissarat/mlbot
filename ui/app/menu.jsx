@@ -1,7 +1,8 @@
-import React, {Component, isValidElement} from 'react'
+import Indicator from './indicator.jsx'
 import package_json from '../../app/package.json'
-import {Menu, Image} from 'semantic-ui-react'
+import React, {Component, isValidElement} from 'react'
 import {hashHistory} from 'react-router'
+import {Menu, Image} from 'semantic-ui-react'
 
 function itemUrl(url) {
   return {
@@ -20,6 +21,9 @@ export default class AppMenu extends Component {
         <span className="version">версия {package_json.version}</span>
       </Menu.Item>
       <Menu.Menu position="right">
+        <Menu.Item>
+          <Indicator/>
+        </Menu.Item>
         <Menu.Item
           name="Аккаунт"
           icon="skype"

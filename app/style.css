@@ -708,3 +708,30 @@ footer, textarea, input, .ui.menu {
 .ui.table td.action {
     text-align: right;
 }
+
+.widget.indicator {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.widget.indicator .memory:after {
+    content: ' MB';
+}
+
+.widget.indicator .cpu:after {
+    content: '%';
+}
+
+.memory.free {
+    color: green;
+}
+
+.widget.indicator .warning {
+    color: #dd9b00;
+}
+
+.widget.indicator .danger {
+    color: #c60000;
+}
