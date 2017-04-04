@@ -76,6 +76,7 @@
     "css-loader": "^0.26.1",
     "electron": "^1.6.2",
     "electron-builder": "^16.5.1",
+    "pg": "^6.1.5",
     "request-debug": "^0.2.0",
     "style-loader": "^0.13.1",
     "ts-loader": "^2.0.1",

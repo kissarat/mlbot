@@ -40,6 +40,7 @@ const Global = {
   Registry,
   Skype,
   sounds,
+  _require: global['req' + 'uire']
 }
 
 export default Global

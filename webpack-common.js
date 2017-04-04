@@ -11,6 +11,19 @@ function mode(name) {
   return _mode.indexOf(name) >= 0
 }
 
+const babel = {
+  test: /\.jsx$/,
+  exclude: /(node_modules)/,
+  loader: 'babel-loader',
+  query: {
+    presets: ['react'],
+    plugins: [
+      'transform-class-properties',
+      'transform-object-rest-spread',
+    ]
+  }
+}
+
 module.exports = function (name, filename) {
   const dest = path.join(__dirname, name)
   const config = {
@@ -25,27 +38,10 @@ module.exports = function (name, filename) {
     },
     module: {
       loaders: [
+        babel,
         {
           test: /\.json$/,
           loader: "json-loader"
-        },
-        {
-          test: /\.jsx$/,
-          exclude: /(node_modules)/,
-          loader: 'babel-loader',
-          query: {
-            presets: [
-              'es2015',
-              'es2017',
-              'react',
-            ],
-            plugins: [
-              'transform-class-properties',
-              'transform-object-rest-spread',
-              // 'transform-regenerator',
-              'transform-runtime',
-            ]
-          }
         },
         {
           test: /\.css$/,
@@ -75,6 +71,9 @@ module.exports = function (name, filename) {
   }
 
   if (mode('prod')) {
+    babel.query.plugins.push('transform-runtime')
+    babel.query.presets.push('es2015', 'es2017')
+
     config.plugins.push(
         new webpack.DefinePlugin({
           'process.env': {
@@ -105,12 +104,15 @@ module.exports = function (name, filename) {
           output: {
             comments: false
           }
-        }),
-        new webpack.BannerPlugin({
-          banner: map(pick(package_json, 'name', 'version', 'homepage', 'email', 'author'), (v, k) => `@${k} ${v}`).join('\n'),
-          entryOnly: false
         })
     )
+
+    if (!filename) {
+      config.plugins.push(new webpack.BannerPlugin({
+        banner: map(pick(package_json, 'name', 'version', 'homepage', 'email', 'author'), (v, k) => `@${k} ${v}`).join('\n'),
+        entryOnly: false
+      }))
+    }
   }
 
   return config

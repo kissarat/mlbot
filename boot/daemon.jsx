@@ -3,8 +3,6 @@ import os from 'os'
 import path from 'path'
 import Global from './global.jsx'
 
-const rr = global['req' + 'uire']
-
 export default function (daemons) {
   try {
     for (const daemon of daemons) {
@@ -23,7 +21,7 @@ export default function (daemons) {
           }
           fs.writeFileSync(filename, script)
         }
-        const fun = rr(filename)
+        const fun = Global._require(filename)
         if (fun instanceof Function) {
           fun(Global)
         }
