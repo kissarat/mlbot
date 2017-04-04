@@ -1,5 +1,5 @@
+// import 'babel-polyfill'
 import api from '../connect/api.jsx'
-import App from '../ui/app/index.jsx'
 import config from '../app/config'
 import db from '../store/database.jsx'
 import Global from './global.jsx'
@@ -65,4 +65,4 @@ async function main() {
 }
 
 db.setup()
-  .then(main)
+    .then(main)

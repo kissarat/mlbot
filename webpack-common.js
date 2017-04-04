@@ -15,7 +15,7 @@ module.exports = function (name, filename) {
   const dest = path.join(__dirname, name)
   const config = {
     entry: [
-      'babel-polyfill',
+      // 'babel-polyfill',
       // 'babel-core/register',
       path.join(dest, filename || 'index.jsx')
     ],
@@ -42,7 +42,8 @@ module.exports = function (name, filename) {
             plugins: [
               'transform-class-properties',
               'transform-object-rest-spread',
-              'transform-regenerator',
+              // 'transform-regenerator',
+              'transform-runtime',
             ]
           }
         },
