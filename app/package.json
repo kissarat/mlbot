@@ -23,9 +23,6 @@
     },
     "win": {
       "icon": "images/bitcoin.ico"
-    },
-    "mac": {
-      "icon": "images/bitcoin.icns"
     }
   },
   "bugs": {

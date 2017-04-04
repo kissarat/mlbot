@@ -28,8 +28,6 @@ module.exports = function (name, filename) {
   const dest = path.join(__dirname, name)
   const config = {
     entry: [
-      // 'babel-polyfill',
-      // 'babel-core/register',
       path.join(dest, filename || 'index.jsx')
     ],
     output: {
