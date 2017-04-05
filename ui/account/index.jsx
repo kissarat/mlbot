@@ -1,9 +1,9 @@
+import AccountManager from '../../account-manager/index.jsx'
 import Alert from '../widget/alert.jsx'
 import api from '../../connect/api.jsx'
 import React, {Component} from 'react'
 import {Link} from 'react-router'
 import {Loader, Icon, Segment} from 'semantic-ui-react'
-import AccountManager from '../../account-manager/index.jsx'
 
 export default class AccountList extends Component {
   state = {
@@ -24,7 +24,7 @@ export default class AccountList extends Component {
 
   componentWillUnmount() {
     for (const account of this.state.accounts) {
-      account.removeEventListener('status', this.changeTime)
+      account.removeListener('status', this.changeTime)
     }
   }
 
@@ -69,7 +69,7 @@ export default class AccountList extends Component {
           size="large"
           color={color}
           onClick={() => this.login(a)}
-          title={'skype' === a.status ? 'Вход в Web-версию Skype' : 'Использовать Web-версию Skype'}/>
+          title={'skype' === a.status ? 'Вход в Web-версию Skype' : 'Используется Web-версия Skype'}/>
     }
   }
 

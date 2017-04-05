@@ -67,10 +67,19 @@ export default class Account extends AccountBase {
   }
 
   get isAuthenticated() {
-    return !!(this.internal || (this.skype && this.headers && this.headers.RegistrationToken))
+    return !!(this.internal
+    || ['authenticated', 'contacts'].indexOf(this.status)
+    || (this.skype && this.headers && this.headers.RegistrationToken))
   }
 
   get status() {
+    if (!this._status) {
+      const skype = this.skype
+      if (skype && skype.headers) {
+        this.headers = skype.headers
+        this._status = 'authenticated'
+      }
+    }
     return this._status
   }
 
@@ -93,8 +102,7 @@ export default class Account extends AccountBase {
       this.status = 'login'
       this.internal = new Skyweb()
       if (this.web) {
-        await this.loginWebSkype()
-        return this.status = 'authenticated'
+        return this.loginWebSkype()
       }
       try {
         await this.internal.login(this.id, this.password)
@@ -146,6 +154,7 @@ export default class Account extends AccountBase {
         return self.headers.RegistrationToken
       }
     }
+    this.status = 'authenticated'
   }
 
   logout() {
@@ -168,8 +177,8 @@ export default class Account extends AccountBase {
    */
   get username() {
     return this.internal && this.internal.skypeAccount ?
-        (this.internal.skypeAccount.username || this.id)
-        : this.id
+      (this.internal.skypeAccount.username || this.id)
+      : this.id
   }
 
   /**
@@ -244,10 +253,10 @@ export default class Account extends AccountBase {
 
   loadContacts() {
     return new Promise((resolve, reject) =>
-        this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, err => {
-          console.error('CANNOT LOAD CONTACTS', this.id, err)
-          reject(err)
-        }))
+      this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, err => {
+        console.error('CANNOT LOAD CONTACTS', this.id, err)
+        reject(err)
+      }))
   }
 
   /**
@@ -273,11 +282,11 @@ export default class Account extends AccountBase {
     else {
       const mri = getMri(message)
       return this.request('POST', `https://client-s.gateway.messenger.live.com/v1/users/ME/conversations/${mri}/messages`, {
-            content: message.text,
-            messagetype: 'RichText',
-            contenttype: 'text'
-          },
-          ['RegistrationToken'])
+          content: message.text,
+          messagetype: 'RichText',
+          contenttype: 'text'
+        },
+        ['RegistrationToken'])
     }
   }
 
@@ -301,7 +310,7 @@ export default class Account extends AccountBase {
 
   async loadChats() {
     const url = 'https://client-s.gateway.messenger.live.com/v1/users/ME/conversations?' +
-        'startTime=0&pageSize=200&view=msnp24Equivalent&targetType=Thread'
+      'startTime=0&pageSize=200&view=msnp24Equivalent&targetType=Thread'
     const {conversations} = await this.request('GET', url, null, ['RegistrationToken'])
     if (conversations instanceof Array) {
       this.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
@@ -310,7 +319,7 @@ export default class Account extends AccountBase {
 
   queryChatList() {
     return db.contact
-        .filter(c => c.account === this.id && Type.CHAT === c.type)
+      .filter(c => c.account === this.id && Type.CHAT === c.type)
   }
 
   async getMembers({login}) {

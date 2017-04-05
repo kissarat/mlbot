@@ -3,11 +3,10 @@ import AccountManager from '../../account-manager/index.jsx'
 import Alert from '../../ui/widget/alert.jsx'
 import FormComponent from '../../ui/base/form-component.jsx'
 import React, {Component} from 'react'
-import Skype from '../../skype/index.jsx'
 import {Button, Form, Segment, Header, Icon} from 'semantic-ui-react'
+import {getBaseDirectory} from '../../store/sqlite.jsx'
 import {hashHistory} from 'react-router'
 import {Link} from 'react-router'
-import {getBaseDirectory} from '../../store/sqlite.jsx'
 import {pick} from 'lodash'
 
 const oses = {
@@ -16,11 +15,15 @@ const oses = {
   linux: 'Linux'
 }
 
+/**
+ * @property {Account} account
+ */
 export default class AccountEdit extends FormComponent {
   state = {busy: false}
 
-  componentWillMount() {
-    void this.load(this.props)
+  async componentDidMount() {
+    await this.load(this.props)
+    await AccountManager.closeWebSkype(this.state.id, true)
   }
 
   componentWillReceiveProps(props) {
@@ -35,13 +38,13 @@ export default class AccountEdit extends FormComponent {
     else {
       account.initialize()
     }
+    this.account = account
     const profile = account.getProfile()
     profile.desktopExists = await getBaseDirectory()
     this.setState(profile)
   }
 
-  onSubmit = async e => {
-    e.preventDefault()
+  async submit() {
     let error = false
     this.setState({busy: true})
     try {
@@ -92,6 +95,12 @@ export default class AccountEdit extends FormComponent {
     }
   }
 
+  onBlurPassword = () => {
+    if (this.account.password !== this.state.password && !this.state.check) {
+      this.setState({check: true})
+    }
+  }
+
   render() {
     return <Segment className="page account edit">
       <div className="top">
@@ -116,7 +125,8 @@ export default class AccountEdit extends FormComponent {
           placeholder="Введите пароль Skype"
           type="password"
           value={this.state.password || ''}
-          onChange={this.onChange}/>
+          onChange={this.onChange}
+          onBlur={this.onBlurPassword}/>
         <Form.Input
           name="max_invite"
           type="number"
