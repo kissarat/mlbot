@@ -121,6 +121,15 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     sky.profile.headers = headers
     XMLHttpRequest.prototype.open = XHROpen
 
+    if ('https://api.skype.com/users/self/profile' === url) {
+
+    }
+
+    if ('https://client-s.gateway.messenger.live.com/v1/users/ME/endpoints/SELF/subscriptions/0/poll' === url) {
+      console.log(url)
+      this.send = Function()
+    }
+
     /*
      sky.getContacts(sky.profile.username)
      .then(({contacts}) => {

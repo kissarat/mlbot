@@ -34,7 +34,10 @@ extend(Skype.prototype, {
   },
 
   async getProfile() {
-    return this.profile || await new Promise(resolve => this.on('contacts', profile => resolve(profile)))
+    return new Promise(resolve => {
+      this.once('profile', resolve)
+      this.invoke('getProfile')
+    })
   },
 
   sendMessage(message) {

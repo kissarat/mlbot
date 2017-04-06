@@ -251,12 +251,20 @@ export default class Account extends AccountBase {
     }
   }
 
-  loadContacts() {
-    return new Promise((resolve, reject) =>
-      this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, err => {
-        console.error('CANNOT LOAD CONTACTS', this.id, err)
-        reject(err)
-      }))
+  async loadContacts() {
+    await this.login()
+    let contacts
+    if (this.web && this.skype) {
+      contacts = await this.skype.getContacts()
+    }
+    else {
+      contacts = await new Promise((resolve, reject) =>
+        this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, err => {
+          console.error('CANNOT LOAD CONTACTS', this.id, err)
+          reject(err)
+        }))
+    }
+    return contacts
   }
 
   /**
@@ -275,8 +283,8 @@ export default class Account extends AccountBase {
 
   async send(message) {
     await this.login()
-    console.log(message.type, message.login, message.text)
     if (this.web && Type.PERSON === message.type) {
+      console.log(message.type, message.login, message.text)
       return this.skype.sendMessage(message)
     }
     else {
