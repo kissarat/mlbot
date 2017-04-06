@@ -18,25 +18,25 @@ const s = {
   Х: 'X'
 }
 
-function graphicalSubstitution(text) {
+export function substituteVisual(text) {
   return text
       .split('')
       .map(c => s[c] && Math.random() > 0.5 ? s[c] : c)
       .join('')
 }
 
-function specialSymbols(text) {
+export function specialSymbols(text) {
   return text
       .replace(/(\.\.\.|…)/g, s => Math.random() > 1 / 3 ? '…' : '...')
       .replace(/[.,!?] /g, s => Math.random() > 2 / 3 ? s + ' ' : s)
       .replace(/ - /g, s => Math.random() > 1 / 3 ? ' - ' : ' — ')
 }
 
-function randomization(text) {
+export function randomization(text) {
   return text.replace(/\[[\wа-яіїґё\s\|]+]/ig, s => _.sample(s.slice(1, -1).split('|')))
 }
 
-function evaluation(text, vars) {
+export function evaluation(text, vars) {
   return text.replace(/\{[^}]+}/g, function (s) {
     s = s.slice(1, -1)
     if (!_.isEmpty(vars)) {
@@ -48,7 +48,11 @@ function evaluation(text, vars) {
   })
 }
 
-function latinFinding(text) {
+export function substitute(text, vars) {
+  return substituteVisual(specialSymbols(randomization(evaluation(text, vars))))
+}
+
+export function latinFinding(text) {
   return text
       .split('')
       .map(c => c.charCodeAt(0) < 128 ? c : ' ')

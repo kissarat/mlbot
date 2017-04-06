@@ -275,7 +275,7 @@ export default class Account extends AccountBase {
 
   async send(message) {
     await this.login()
-    console.log(message)
+    console.log(message.type, message.login, message.text)
     if (this.web && Type.PERSON === message.type) {
       return this.skype.sendMessage(message)
     }

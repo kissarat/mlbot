@@ -24,7 +24,7 @@ function insertTextIntoInput(input, text) {
 }
 
 function sendMessage(message) {
-  $$('swx-search-input button').click()
+  // $$('swx-search-input button').click()
   // $all('swx-recent-item').forEach(function (item) {
   //   item.remove()
   // })

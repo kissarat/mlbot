@@ -5,6 +5,7 @@ import Record from '../store/record.jsx'
 import Task from '../store/task.jsx'
 import {random} from 'lodash'
 import {wait} from '../util/index.jsx'
+import {substitute} from '../util/linguistics.jsx'
 
 function getTaskByStatus(status) {
   return db.task
@@ -90,6 +91,7 @@ export default class Job {
           record.status = config.Status.DONE
         }
         catch (ex) {
+          console.error(ex)
           record.status = config.Status.ERROR
           record.message = ex.toString()
         }
@@ -118,7 +120,8 @@ export default class Job {
     const login = contact.split('~')[1]
     return {
       login,
-      text: this.task.text
+      type: /[0-9a-f]{32}/.test(login) ? config.Type.CHAT : config.Type.PERSON,
+      text: substitute(this.task.text)
     }
   }
 
