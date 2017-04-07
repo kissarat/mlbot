@@ -11,7 +11,7 @@ import Skype from '../skype/index.jsx'
 import SkypeAccount from '../rat/src/skype_account.ts'
 import Skyweb from '../rat/src/skyweb.ts'
 import UserAgent from '../util/user-agent.jsx'
-import {getMri} from '../util/index.jsx'
+import {getMri, wait} from '../util/index.jsx'
 import {pick, defaults, extend, isObject, isEmpty, identity, merge} from 'lodash'
 import {Type, Status} from '../app/config'
 
@@ -93,11 +93,11 @@ export default class Account extends AccountBase {
   }
 
   async login() {
-    if (Date.now() - this.time > config.account.expires) {
-      this.headers = null
-      this.internal = null
-      this.skype = null
-    }
+    // if (Date.now() - this.time > config.account.expires) {
+    //   this.headers = null
+    //   this.internal = null
+    //   this.skype = null
+    // }
     if (!this.internal || isEmpty(this.headers)) {
       this.status = 'login'
       this.internal = new Skyweb()
@@ -131,6 +131,8 @@ export default class Account extends AccountBase {
   async loginWebSkype() {
     this.status = 'skype'
     await Skype.open(this)
+    this.skype.openSettings()
+    await wait(2000)
     this.headers = this.skype.headers
     this.internal.cookieJar = new BareCookieJar(this.headers.Cookie)
     this.internal.skypeAccount = new SkypeAccount(this.id, this.password)
@@ -167,6 +169,7 @@ export default class Account extends AccountBase {
 
   closeWebSkype(necessarily = false) {
     if (this.skype && (necessarily || !this.web)) {
+      console.log('Closing web Skype of ' + this.id)
       this.skype.remove()
       this.skype = null
     }
@@ -190,6 +193,9 @@ export default class Account extends AccountBase {
   }
 
   getCookies(uri) {
+    if (this.internal.cookieJar instanceof BareCookieJar) {
+      return this.internal.cookieJar.string
+    }
     let cookies = this.internal.cookieJar._jar.toJSON().cookies
     cookies = cookies.filter(c => new Date(c.expires).getTime() > Date.now())
     if ('string' === typeof uri) {

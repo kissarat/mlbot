@@ -21,7 +21,7 @@ export default class Message extends Editor {
   persist = ['value', 'sign']
 
   state = {
-    sign: true,
+    sign: false,
     signature: 'https://club-leader.com/',
     delay: 10,
   }

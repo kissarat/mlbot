@@ -1,4 +1,4 @@
-import {extend} from 'lodash'
+// import {extend} from 'lodash'
 
 export function Emitter() {
   this._events = {}
@@ -43,4 +43,4 @@ export class Sky extends Emitter {
 
 export const sky = new Sky();
 
-extend(window, {Emitter, Sky, sky})
+// extend(window, {Emitter, Sky, sky})

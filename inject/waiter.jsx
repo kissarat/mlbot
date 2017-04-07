@@ -1,8 +1,5 @@
-import './ui.jsx'
 import {each, isObject, extend} from 'lodash'
-import ui, {$$} from './ui.jsx'
-
-extend(window, ui)
+import {$$} from './ui.jsx'
 
 const DELAY = 180
 
@@ -206,4 +203,4 @@ waiter.extract = function (selector) {
   return object
 }
 
-window.waiter = waiter
+export default waiter

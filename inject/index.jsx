@@ -1,4 +1,4 @@
-import './waiter.jsx'
+import waiter from './waiter.jsx'
 import './xhr.jsx'
 import {$$} from './ui.jsx'
 import {extend} from 'lodash'

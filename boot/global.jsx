@@ -8,7 +8,7 @@ import db from '../store/database.jsx'
 import Delivery from '../ui/delivery/index.jsx'
 import Dexie from 'dexie'
 import freeze from 'deep-freeze'
-import Job from '../account-manager/job.jsx'
+import Task from '../account-manager/task.jsx'
 import merge from 'deepmerge'
 import Queue from '../ui/base/queue.jsx'
 import request from 'request-promise'
@@ -38,7 +38,7 @@ const Global = {
   Dexie,
   freeze,
   go,
-  Job,
+  Task,
   merge,
   Queue,
   Registry,

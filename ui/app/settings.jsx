@@ -4,6 +4,7 @@ import BrowserLink from '../widget/browser-link.jsx'
 import config from '../../app/config'
 import Contact from '../../store/contact.jsx'
 import db from '../../store/database.jsx'
+import manage from '../../store/manage.jsx'
 import fs from 'fs-promise'
 import React, {Component} from 'react'
 import Tabs from '../widget/tabs.jsx'
@@ -126,7 +127,7 @@ export default class Settings extends Component {
 
   clearDatabase = async() => {
     this.setState({clearDatabase: true})
-    await db.reset()
+    await manage.reset()
     this.setState({clearDatabase: false})
   }
 

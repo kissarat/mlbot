@@ -1,6 +1,5 @@
 import TaskList from '../journal/task-list.jsx'
 import db from '../../store/database.jsx'
-import Task from '../../store/task.jsx'
 import DeliveryList from './list.jsx'
 import Help from '../widget/help.jsx'
 import Message from './message.jsx'
@@ -11,7 +10,7 @@ import Unauthorized from '../widget/unauthorized.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
-import Job from '../../account-manager/job.jsx'
+import Task from '../../account-manager/task.jsx'
 
 export default class Delivery extends SkypeComponent {
   name = 'Delivery'
@@ -31,7 +30,7 @@ export default class Delivery extends SkypeComponent {
     if (contacts.length > 0) {
       task.account = this.state.account
       task.contacts = contacts.map(c => c.id)
-      task.type = Job.Delivery.name
+      task.type = Task.Delivery.name
       task.status = Status.SCHEDULED
       await db.task.add(task)
       await this.querySelected().modify({status: Status.NONE})

@@ -1,19 +1,19 @@
 import {extend, each, isObject} from 'lodash'
 import {Emitter} from './sky.jsx'
 
-function $$(selector) {
+export function $$(selector) {
   return document.querySelector(selector)
 }
 
-function $all(selector) {
+export function $all(selector) {
   return document.querySelectorAll(selector)
 }
 
-function $id(id) {
+export function $id(id) {
   return document.getElementById(id)
 }
 
-function $new(tag, attributes, children) {
+export function $new(tag, attributes, children) {
   if (!children && attributes instanceof Array || attributes instanceof Element) {
     children = attributes
     attributes = null
@@ -51,7 +51,7 @@ function $new(tag, attributes, children) {
   return element
 }
 
-function $list(items) {
+export function $list(items) {
   const ul = document.createElement('ul')
   items.forEach(function (item) {
     ul.appendChild($new('li', item))
@@ -59,7 +59,7 @@ function $list(items) {
   return ul
 }
 
-function $row(row) {
+export function $row(row) {
   const tr = document.createElement('tr')
   if (row._id) {
     tr.id = row._id
@@ -85,7 +85,7 @@ function $row(row) {
   return tr
 }
 
-function $table(rows) {
+export function $table(rows) {
   const table = document.createElement('table')
   rows.forEach(function (row) {
     table.appendChild($row(row))
@@ -93,34 +93,35 @@ function $table(rows) {
   return table
 }
 
-function bar(events) {
+export function bar(events) {
   each(events, function (fn, id) {
     $id(id).addEventListener('click', fn)
   })
 }
 
-function keydown(key, code) {
+export function keydown(key, code) {
   if (!code) {
     code = key.charCodeAt(0)
   }
   this.dispatchEvent(new KeyboardEvent('keydown', {key, code: key, charCode: code, keyCode: code}))
 }
 
-function keyup(key, code) {
+export function keyup(key, code) {
   if (!code) {
     code = key.charCodeAt(0)
   }
   this.dispatchEvent(new KeyboardEvent('keyup', {key, code: key, charCode: code, keyCode: code}))
 }
 
-function keypress(key, code) {
+export function keypress(key, code) {
   if (!code) {
     code = key.charCodeAt(0)
   }
   this.dispatchEvent(new KeyboardEvent('keypress', {key, code: key, charCode: code, keyCode: code}))
 }
 
-export {$$, $all, $id, $new, $list, $table, bar, keydown, keyup, keypress}
+// const _exports = {$$, $all, $id, $new, $list, $table, bar, keydown, keyup, keypress}
+// extend(window, _exports);
 
 ['map', 'forEach', 'filter'].forEach(function (fn) {
   NodeList.prototype[fn] = Array.prototype[fn]

@@ -4,7 +4,7 @@ import Record from '../../store/record.jsx'
 import {joinLog} from '../../store/utils.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
-import Job from '../../account-manager/job.jsx'
+import Task from '../../account-manager/task.jsx'
 
 // checkmark
 const StatusText = {
@@ -59,7 +59,7 @@ export default class Log extends Component {
 
   rows() {
     return this.state.records.map(l => {
-      const JobType = Job[l.task.type]
+      const JobType = Task[l.task.type]
       return <Table.Row
         key={l.id}
         positive={Status.DONE === l.status}

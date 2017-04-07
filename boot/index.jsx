@@ -1,9 +1,9 @@
 import api from '../connect/api.jsx'
 import config from '../app/config'
-import db from '../store/database.jsx'
+import db from '../store/manage.jsx'
 import Global from './global.jsx'
 import handshake from './handshake.jsx'
-import Job from '../account-manager/job.jsx'
+import Task from '../account-manager/task.jsx'
 import React, {Component} from 'react'
 import router from '../ui/routes.jsx'
 import Unavailable from '../ui/page/unavailable.jsx'
@@ -29,7 +29,7 @@ async function main() {
         const isGuest = !api.config.user || api.config.user.guest
         hashHistory.push(isGuest ? '/login' : '/accounts')
       }
-      Job.boot()
+      Task.boot()
     }
     else {
       console.error('Application not started')

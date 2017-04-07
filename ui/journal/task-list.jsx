@@ -2,11 +2,10 @@ import db from '../../store/database.jsx'
 import Help from '../widget/help.jsx'
 import React, {Component, PropTypes} from 'react'
 import Record from '../../store/record.jsx'
-import Task from '../../store/task.jsx'
+import Task from '../../account-manager/task.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
-import {omit, debounce} from 'lodash'
-import Job from '../../account-manager/job.jsx'
+import {omit, debounce, isObject} from 'lodash'
 
 // pause circle outline
 // calendar plus
@@ -21,7 +20,8 @@ const StatusText = {
 
 export default class TaskList extends Component {
   state = {
-    tasks: []
+    tasks: [],
+    running: false
   }
 
   componentDidMount() {
@@ -97,14 +97,15 @@ export default class TaskList extends Component {
   }
 
   play = async() => {
-    if (Job.isRunning) {
-      await Job.stop()
+    const running = await Task.isRunning()
+    if (running) {
+      await Task.stop()
       await this.refresh()
     }
     else {
-      await Job.start()
+      await Task.start()
     }
-    this.setState({running: Job.isRunning})
+    this.setState({running: await Task.isRunning()})
   }
 
   action(t) {
@@ -131,10 +132,10 @@ export default class TaskList extends Component {
     return this.state.tasks.map(t => <Table.Row
       key={t.id}
       positive={Status.DONE === t.status}
-      title={Job[t.type].title}>
-      <Table.Cell><Icon name={Job[t.type].icon}/></Table.Cell>
+      title={Task[t.type].title}>
+      <Table.Cell><Icon name={Task[t.type].icon}/></Table.Cell>
       <Table.Cell className="id">{t.id}</Table.Cell>
-      <Table.Cell>{t.account}</Table.Cell>
+      <Table.Cell>{isObject(t.account) ? t.account.toString() : t.account}</Table.Cell>
       {this.short(t)}
       {this.contactsCount(t)}
       <Table.Cell>{this.status(t)}</Table.Cell>
@@ -149,7 +150,7 @@ export default class TaskList extends Component {
           <Header textAlign="center" as="h2">
             <Icon
               onClick={this.play}
-              name={Job.isRunning ? 'pause circle outline' : 'play circle outline'}/>
+              name={this.state.running ? 'pause circle outline' : 'play circle outline'}/>
             Список задач
           </Header>
         </Help>
