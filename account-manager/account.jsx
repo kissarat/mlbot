@@ -23,12 +23,6 @@ AccountBase.prototype = {
   ...saveFunctions
 }
 
-const accountDefaults = {
-  time() {
-    return Date.now()
-  }
-}
-
 /**
  * @property {string} id
  * @property {string} password
@@ -166,7 +160,7 @@ export default class Account extends AccountBase {
     this.headers = null
     this.status = false
   }
-
+  
   closeWebSkype(necessarily = false) {
     if (this.skype && (necessarily || !this.web)) {
       console.log('Closing web Skype of ' + this.id)
@@ -371,6 +365,10 @@ export default class Account extends AccountBase {
 
   get contacts() {
     return this.internal.contactsService.contacts || []
+  }
+  
+  set contacts(contacts) {
+    this.internal.contactsService.contacts = contacts 
   }
 
   async sendProfile(data) {

@@ -68,13 +68,20 @@ extend(Skype.prototype, {
     })
   },
 
+  getContacts() {
+    return new Promise(resolve => {
+      this.once('getContacts', resolve)
+      this.invoke('getContacts')
+    })
+  },
+
   openSettings() {
     this.invoke('openSettings')
   },
 
   removeContact(username) {
     return new Promise(resolve => {
-      this.once('contact.remove', resolve)
+      this.once('contact.remove', resolve)  
       this.invoke('removeContact', [username])
     })
   },

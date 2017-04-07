@@ -130,6 +130,7 @@ function clearData() {
 }
 
 function openSettings() {
+  $('.btn.green.narrow.large.close').click()
   $$('#menuItem-userSettings').click()
 }
 

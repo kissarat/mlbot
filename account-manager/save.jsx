@@ -5,12 +5,12 @@ import {exclude, Type, Status} from '../app/config'
 import {isSkypeUsername} from '../util/index.jsx'
 import {pick, defaults, extend, isObject, isEmpty, identity} from 'lodash'
 
-async function saveContacts() {
+async function saveContacts(rawContacts = this.contacts) {
   const contacts = []
   const existing = await db.contact
     .filter(c => this.id === c.account && Type.PERSON === c.type)
     .toArray()
-  this.internal.contactsService.contacts.forEach(c => {
+  for(const c of rawContacts) {
     const match = /^8:(.*)$/.exec(c.mri)
     if (match && !c.blocked && isSkypeUsername(match[1]) && exclude.indexOf(match[1])) {
       const login = match[1]
@@ -54,7 +54,7 @@ async function saveContacts() {
       }
       contacts.push(contact)
     }
-  })
+  }
   const absent = contacts
     .filter(c => !existing.find(x => c.id == x.id))
     .map(c => c.id)
@@ -62,14 +62,14 @@ async function saveContacts() {
   await db.contact.bulkPut(contacts)
 }
 
-async function saveChats() {
+async function saveChats(conversations = this.conversations) {
   const account = this.id
   const existing = await this.queryChatList().toArray()
   const contacts = []
   const absent = []
 
   const entities = new AllHtmlEntities()
-  this.conversations.forEach(c => {
+  for(const c of conversations) {
     const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
     if (chatId) {
       const login = chatId[1]
@@ -103,7 +103,7 @@ async function saveChats() {
         absent.push(id)
       }
     }
-  })
+  }
 
   await db.contact.bulkDelete(absent)
   await db.contact.bulkPut(contacts)

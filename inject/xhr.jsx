@@ -21,7 +21,8 @@ extend(sky, {
   },
 
   getContacts(username) {
-    return sky.fetch(`https://contacts.skype.com/contacts/v1/users/${username}/contacts`)
+    // return sky.fetch(`https://contacts.skype.com/contacts/v1/users/${username}/contacts`)
+    return sky.fetch(`https://contacts.skype.com/contacts/v2/users/${username}?delta&reason=default`)
   },
 
   getChatConversations() {
@@ -83,6 +84,14 @@ extend(window, {
       })
   },
 
+  getContacts(username) {
+    sky.getContacts(username)
+      .then(() => sky.send({
+        type: 'getContacts',
+        username
+      }))
+  },
+
   removeContact(username) {
     sky.removeContact(username)
       .then(() => sky.send({
@@ -111,6 +120,43 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     })
   }
 
+  if ('https://contacts.skype.com/contacts/v2/users/'.indexOf(url) >= 0 && 'GET' === method) {
+    this.addEventListener('load', function () {
+      const r = JSON.parse(this.responseText)
+      const {contacts} = r
+      if (contacts instanceof Array) {
+        sky.send({
+          type: 'contacts',
+          contacts
+        })
+      }
+      else {
+        console.error('Unknown contacts response', r)
+      }
+    })
+  }
+
+  if ('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations'.indexOf(url) >= 0 && 'GET' === method) {
+    this.addEventListener('load', function () {
+      const r = JSON.parse(this.responseText)
+      const {conversations} = r
+      if (conversations instanceof Array) {
+        sky.send({
+          type: 'conversations',
+          conversations
+        })
+      }
+      else {
+        console.error('Unknown conversations response', r)
+      }
+    })
+  }
+
+  if ('https://client-s.gateway.messenger.live.com/v1/users/ME/endpoints/SELF/subscriptions/0/poll' === url) {
+    console.log(url)
+    this.send = Function()
+  }
+
   // console.log('url', sky.fetchOptions.headers)
   if (neededHeaders.every(h => (h = sky.fetchOptions.headers[h]) && h.length > 0)) {
     const headers = merge(sky.fetchOptions.headers, {
@@ -120,15 +166,6 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     sky.send({type: 'token', headers})
     sky.profile.headers = headers
     XMLHttpRequest.prototype.open = XHROpen
-
-    if ('https://api.skype.com/users/self/profile' === url) {
-
-    }
-
-    if ('https://client-s.gateway.messenger.live.com/v1/users/ME/endpoints/SELF/subscriptions/0/poll' === url) {
-      console.log(url)
-      this.send = Function()
-    }
 
     /*
      sky.getContacts(sky.profile.username)
