@@ -193,7 +193,7 @@ export default class Task {
   }
 
   get short() {
-    if (!this._short) {
+    if (!this._short && 'string' === typeof this.text) {
       this._short = this.text
         .replace(/\s+/g, ' ')
         .replace(/▁▁▁▁▁▁▁▁▁▁▁▁▁.*$/m, '')
@@ -219,7 +219,7 @@ export default class Task {
   }
 
   pick() {
-    const object = pick(this, ['id', 'contacts', 'after', 'wait', 'number', 'type', 'text'])
+    const object = pick(this, ['id', 'contacts', 'status', 'after', 'wait', 'number', 'type', 'text'])
     if (this.account) {
       object.account = this.account.id || this.account
     }

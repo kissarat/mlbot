@@ -73,13 +73,13 @@ export default class Settings extends Component {
 
   clearAccounts = async() => {
     await db.account.clear()
-    this.countAccounts()
+    return this.countAccounts()
   }
 
   clearAll = async() => {
     await this.clearContacts()
     await this.clearAccounts()
-    this.clearSettings()
+    return this.clearSettings()
   }
 
   fileExport = () => {

@@ -13,7 +13,7 @@ catch (ex) {
 let config = {
   dev: true,
   reset: false,
-  origin: 'https://app.inbisoft.com',
+  origin: 'https://ls.inbisoft.com',
   window: {
     minWidth: 960,
     minHeight: 680,
@@ -24,8 +24,9 @@ let config = {
 
   exclude: ['echo123', 'kissarat'],
 
-  vendor: 'inbisoft',
+  // vendor: 'inbisoft',
   // vendor: 'club-leader',
+  vendor: 'lsproject',
 
   request: {
     type: 'fetch'

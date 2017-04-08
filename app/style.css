@@ -229,6 +229,7 @@ footer img {
     height: auto;
     margin: auto;
     max-width: 45% !important;
+    max-height: 100px;
 }
 
 footer .control {

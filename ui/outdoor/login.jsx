@@ -58,34 +58,64 @@ export default class Login extends FormComponent {
     return this.state.alert ? <Message error>{this.state.alert}</Message> : ''
   }
 
+  descriptionLink(url) {
+    return <BrowserLink href={url}>
+      <Icon name="question circle" size="large"/> Описание программы
+    </BrowserLink>
+  }
+
   howToUse() {
     switch (config.vendor) {
       case 'club-leader':
-        return <div>
-          <p>
-            Для входа в программу MLBot Skype используйте почту и пароль проекта&nbsp;
-            <BrowserLink href="https://club-leader.com/">club-leader.com</BrowserLink>
-          </p>
-          <p>
-            MLBot заработает при наличии открытой матрицы Silver в самом прибыльном
-            матричном проекте 2017 года Club Leader.
-          </p>
-        </div>
-      case 'inbisoft':
-        return <div>
-          <p>
-            Восстановить пароль вы можете на сайте&nbsp;
-            <BrowserLink href="http://my.inbisoft.com/password/recovery">my.inbisoft.com</BrowserLink>
-          </p>
-          <Message className="buy">
-            <Icon name="dollar" size="big"/>
+        return <Grid.Column>
+          <Header as="h2">Как пользоваться?</Header>
+          <div>
             <p>
-              Для использования программы необходимо приобрести лицензию за $22 у разработчика на сайте&nbsp;
-              <BrowserLink href="http://my.inbisoft.com/">my.inbisoft.com</BrowserLink>&nbsp;
-              и войти под Email/Пароль от личного кабинета.
+              Для входа в программу MLBot Skype используйте почту и пароль проекта&nbsp;
+              <BrowserLink href="https://club-leader.com/">club-leader.com</BrowserLink>
             </p>
-          </Message>
-        </div>
+            <p>
+              MLBot заработает при наличии открытой матрицы Silver в самом прибыльном
+              матричном проекте 2017 года Club Leader.
+            </p>
+          </div>
+          {this.descriptionLink('http://mlbot.inbisoft.com/')}
+        </Grid.Column>
+
+      case 'inbisoft':
+        return <Grid.Column>
+          <Header as="h2">Как пользоваться?</Header>
+          <div>
+            <p>
+              Восстановить пароль вы можете на сайте&nbsp;
+              <BrowserLink href="http://my.inbisoft.com/password/recovery">my.inbisoft.com</BrowserLink>
+            </p>
+            <Message className="buy">
+              <Icon name="dollar" size="big"/>
+              <p>
+                Для использования программы необходимо приобрести лицензию за $22 у разработчика на сайте&nbsp;
+                <BrowserLink href="http://my.inbisoft.com/">my.inbisoft.com</BrowserLink>&nbsp;
+                и войти под Email/Пароль от личного кабинета.
+              </p>
+            </Message>
+          </div>
+          {this.descriptionLink('http://inbisoft.com/mlbot/')}
+        </Grid.Column>
+
+      case 'lsproject':
+        return <Grid.Column>
+          <Header as="h2">Команда L&S Project</Header>
+          <div>
+            <p>Уверенный взгляд в красивое будущее!</p>
+            <p>Наш сайт: <BrowserLink href="https://lsproject.net">lsproject.net</BrowserLink></p>
+            <br/>
+            <BrowserLink href="skype:live:evl01051970?chat">
+              <Icon name="skype" size="large"/>
+              Скайп администрации
+            </BrowserLink>
+          </div>
+          {this.descriptionLink('http://inbisoft.com/mlbot/')}
+        </Grid.Column>
     }
   }
 
@@ -118,14 +148,7 @@ export default class Login extends FormComponent {
             </Button>
           </Form>
         </Grid.Column>
-        <Grid.Column>
-          <Header as="h2">Как пользоваться?</Header>
-          {this.howToUse()}
-          <BrowserLink
-            href={'club-leader' === config.vendor ? "http://mlbot.inbisoft.com/" : "http://inbisoft.com/mlbot/"}>
-            <Icon name="question circle" size="large"/> Описание программы
-          </BrowserLink>
-        </Grid.Column>
+        {this.howToUse()}
       </Grid.Row>
     </Grid>
   }
