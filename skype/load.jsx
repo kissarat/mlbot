@@ -2,7 +2,7 @@ import App from '../ui/app/index.jsx'
 
 export default function load(data) {
   return new Promise((resolve, reject) => {
-    const skype = this.create(data.id)
+    const skype = this
     skype.once('login.error', reject)
     skype.onMany(3, 'load', function (number) {
       if (0 === number) {

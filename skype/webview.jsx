@@ -1,4 +1,4 @@
-import config from '../app/config'
+import  config from '../app/config'
 import {EventEmitter} from 'events'
 import {extend, isObject, toArray} from 'lodash'
 import UserAgent from '../util/user-agent.jsx'
@@ -29,6 +29,7 @@ WebView.prototype = extend({
   },
 
   receiveData(data) {
+    console.log(data)
     if ('string' === typeof data.type) {
       this.emit(data.type, data)
     }

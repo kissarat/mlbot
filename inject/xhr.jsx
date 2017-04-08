@@ -101,29 +101,37 @@ extend(window, {
   }
 })
 
-const neededHeaders = ['X-Skypetoken', 'RegistrationToken']
+let neededHeaders = ['X-Skypetoken', 'RegistrationToken']
+window.abcd = {}
 
-XMLHttpRequest.prototype.open = function (method, url, async) {
-  this.setRequestHeader = function (key, value) {
-    if (neededHeaders.indexOf(key) >= 0) {
-      sky.fetchOptions.headers[key] = value
+XMLHttpRequest.prototype.open = function (method, url, sync) {
+  const xhr = this
+  if (neededHeaders) {
+    this.setRequestHeader = function (key, value) {
+      if (neededHeaders.indexOf(key) >= 0) {
+        sky.fetchOptions.headers[key] = value
+      }
+      XMLHttpRequest.prototype.setRequestHeader.call(this, key, value)
     }
-    XMLHttpRequest.prototype.setRequestHeader.call(this, key, value)
+
+    // console.log('url', sky.fetchOptions.headers)
+    if (neededHeaders.every(h => (h = sky.fetchOptions.headers[h]) && h.length > 0)) {
+      const headers = merge(sky.fetchOptions.headers, {
+        Cookie: document.cookie,
+        'User-Agent': navigator.userAgent
+      })
+      sky.send({type: 'token', headers})
+      sky.profile.headers = headers
+      neededHeaders = false
+      // XMLHttpRequest.prototype.open = XHROpen
+    }
   }
 
-  if ('https://api.skype.com/users/self/profile' === url && 'GET' === method && !sky.profile && sky.fetchOptions.headers['X-Skypetoken']) {
-    this.addEventListener('load', function () {
-      sky.profile = JSON.parse(this.responseText)
-      sky.profile.v = 1
-      sky.profile.type = 'profile'
-      sky.send(sky.profile)
-    })
-  }
 
-  if ('https://contacts.skype.com/contacts/v2/users/'.indexOf(url) >= 0 && 'GET' === method) {
+  const isContacts = 0 === url.indexOf('https://contacts.skype.com/contacts/v2/users/') && url.indexOf('/invites') < 0
+  if (isContacts && 'GET' === method) {
     this.addEventListener('load', function () {
-      const r = JSON.parse(this.responseText)
-      const {contacts} = r
+      const {contacts} = JSON.parse(this.responseText)
       if (contacts instanceof Array) {
         sky.send({
           type: 'contacts',
@@ -157,25 +165,14 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     this.send = Function()
   }
 
-  // console.log('url', sky.fetchOptions.headers)
-  if (neededHeaders.every(h => (h = sky.fetchOptions.headers[h]) && h.length > 0)) {
-    const headers = merge(sky.fetchOptions.headers, {
-      Cookie: document.cookie,
-      'User-Agent': navigator.userAgent
+  if ('https://api.skype.com/users/self/profile' === url && 'GET' === method && !sky.profile && sky.fetchOptions.headers['X-Skypetoken']) {
+    this.addEventListener('load', function () {
+      sky.profile = JSON.parse(this.responseText)
+      sky.profile.v = 1
+      sky.profile.type = 'profile'
+      sky.send(sky.profile)
     })
-    sky.send({type: 'token', headers})
-    sky.profile.headers = headers
-    XMLHttpRequest.prototype.open = XHROpen
-
-    /*
-     sky.getContacts(sky.profile.username)
-     .then(({contacts}) => {
-     sky.profile.contacts = contacts
-     sky.profile.conversations = conversations
-     sky.profile.type = 'contacts'
-     sky.send(sky.profile)
-     })
-     */
   }
-  XHROpen.call(this, method, url, async)
+
+  XHROpen.call(this, method, url, sync)
 }

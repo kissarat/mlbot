@@ -2,8 +2,11 @@ import processProfile from './process-profile.jsx'
 import Skype from './static.jsx'
 import {extend} from 'lodash'
 import {Status, Type, start} from '../app/config'
+import load from './load.jsx'
 
 extend(Skype.prototype, {
+  load,
+  
   login(username, password) {
     this.invoke('login', [username, password])
   },

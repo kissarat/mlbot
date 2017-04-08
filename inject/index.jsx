@@ -88,14 +88,14 @@ function login(nick, password) {
         kind: 'password'
       })
     },
-/*
-    '.serviceAbusePageContainer' () {
-      sky.send({
-        type: 'login.error',
-        kind: 'abuse'
-      })
-    }
-    */
+    /*
+     '.serviceAbusePageContainer' () {
+     sky.send({
+     type: 'login.error',
+     kind: 'abuse'
+     })
+     }
+     */
   })
 }
 
@@ -130,7 +130,10 @@ function clearData() {
 }
 
 function openSettings() {
-  $('.btn.green.narrow.large.close').click()
+  const welcome = $$('.btn.green.narrow.large.close')
+  if (welcome instanceof Element) {
+    welcome.click()
+  }
   $$('#menuItem-userSettings').click()
 }
 

@@ -1,4 +1,3 @@
-import load from './load.jsx'
 import Skype from './webview.jsx'
 import {extend, each} from 'lodash'
 
@@ -16,8 +15,6 @@ function all(array) {
 }
 
 extend(Skype, {
-  load,
-
   get(username) {
     return document.querySelector(`#dark [partition="${username}"]`)
   },
@@ -38,15 +35,9 @@ extend(Skype, {
     document.getElementById('dark').innerHTML = ''
   },
 
-  async open(data, busy) {
-    // if ('string' === typeof data) {
-    //   data = await Skype.getAccount(data)
-    // }
-    let skype = Skype.get(data.id)
-    if (!skype) {
-      skype = await Skype.load(data, busy)
-    }
-    Skype.emit('open', {busy, skype, ...data})
+  open(data) {
+    let skype = Skype.get(data.id) || Skype.create(data.id)
+    Skype.emit('open', {skype, ...data})
     return skype
   },
 

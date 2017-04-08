@@ -12,8 +12,9 @@ import SkypeAccount from '../rat/src/skype_account.ts'
 import Skyweb from '../rat/src/skyweb.ts'
 import UserAgent from '../util/user-agent.jsx'
 import {getMri, wait} from '../util/index.jsx'
-import {pick, defaults, extend, isObject, isEmpty, identity, merge} from 'lodash'
+import {pick, defaults, extend, isObject, isEmpty, identity, merge, debounce} from 'lodash'
 import {Type, Status} from '../app/config'
+import Contact from '../store/contact.jsx'
 
 function AccountBase() {
 }
@@ -124,7 +125,19 @@ export default class Account extends AccountBase {
 
   async loginWebSkype() {
     this.status = 'skype'
-    await Skype.open(this)
+    /* this.skype = */
+    const skype = Skype.open(this)
+    const emitUpdates = debounce(() => Contact.emit('update'), 1400)
+    skype.on('contacts', ({contacts}) => {
+      if (contacts instanceof Array && contacts.length > 0) {
+        this.saveContacts(contacts)
+        emitUpdates()
+      }
+      else {
+        console.warn('No contacts received')
+      }
+    })
+    await skype.load(this)
     this.skype.openSettings()
     await wait(2000)
     this.headers = this.skype.headers
@@ -160,7 +173,7 @@ export default class Account extends AccountBase {
     this.headers = null
     this.status = false
   }
-  
+
   closeWebSkype(necessarily = false) {
     if (this.skype && (necessarily || !this.web)) {
       console.log('Closing web Skype of ' + this.id)
@@ -366,9 +379,9 @@ export default class Account extends AccountBase {
   get contacts() {
     return this.internal.contactsService.contacts || []
   }
-  
+
   set contacts(contacts) {
-    this.internal.contactsService.contacts = contacts 
+    this.internal.contactsService.contacts = contacts
   }
 
   async sendProfile(data) {
