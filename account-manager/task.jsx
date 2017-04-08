@@ -4,7 +4,7 @@ import config from '../app/config'
 import db from '../store/database.jsx'
 import Record from '../store/record.jsx'
 import {EventEmitter} from 'events'
-import {extend, random} from 'lodash'
+import {extend, random, merge} from 'lodash'
 import {substitute} from '../util/linguistics.jsx'
 import {wait} from '../util/index.jsx'
 
@@ -17,6 +17,22 @@ import {wait} from '../util/index.jsx'
  * @property {Object[]} contacts
  */
 export default class Task {
+  constructor(state) {
+    merge(this, state)
+    if (!this.type && this.constructor.name !== 'Task') {
+      this.type = this.constructor.name
+    }
+    else if ('string' === typeof this.type) {
+      throw new Error('Task.type is not string', this.type)
+    }
+
+    if ('number' === typeof this.status) {
+      this.status = config.Status.SCHEDULED
+    }
+
+    console.log('STATE MERGED', this.type, state)
+  }
+
   static async isRunning() {
     const count = await db.task.filter(t => config.Status.ACCEPTED === t.status).count()
     return count > 0

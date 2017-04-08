@@ -1,8 +1,8 @@
 import Contact from '../../store/contact.jsx'
 import db from '../../store/database.jsx'
-import Queue from '../base/queue.jsx'
 import React, {PureComponent} from 'react'
 import {Button} from 'semantic-ui-react'
+import Task from '../../account-manager/task.jsx'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 
@@ -24,22 +24,12 @@ export default class Unauthorized extends PureComponent {
   }
 
   clear = async() => {
-    const account = this.props.account
-    const queue = new Queue({
-      inform: this.props.alert,
-      account: account,
-      success: (i, count) => `Удалено ${i} из ${count} контактов`,
-
-      query: () => this.query(),
-
-      work: async(skype, contact) => {
-        const {id} = await skype.remove(contact)
-        return this.query().filter(c => id === c.id).delete()
-      }
+    const contacts = await this.query(this.props).toArray()
+    const task = new Task.Clear({
+      account: this.props.account,
+      contacts: contacts.map(c => c.id)
     })
-    await queue.execute()
-    await this.count()
-    this.props.alert('success', 'Серые контакты удалены')
+    await db.task.put(task)
   }
 
   count = async(props) => {
