@@ -4,7 +4,7 @@ import config from '../app/config'
 import db from '../store/database.jsx'
 import Record from '../store/record.jsx'
 import {EventEmitter} from 'events'
-import {extend, random, merge} from 'lodash'
+import {extend, random, merge, pick} from 'lodash'
 import {substitute} from '../util/linguistics.jsx'
 import {wait} from '../util/index.jsx'
 
@@ -26,8 +26,20 @@ export default class Task {
       throw new Error('Task.type is not string', this.type)
     }
 
-    if ('number' === typeof this.status) {
+    if ('number' !== typeof this.status) {
       this.status = config.Status.SCHEDULED
+    }
+
+    if ('number' !== typeof this.number) {
+      this.number = 1
+    }
+
+    if ('number' !== typeof this.after) {
+      this.after = 0
+    }
+
+    if ('number' !== typeof this.wait) {
+      this.wait = 0
     }
 
     console.log('STATE MERGED', this.type, state)
@@ -67,7 +79,7 @@ export default class Task {
     throw new Error('Job.iterate is unimplemented for ' + this.toString())
   }
 
-  wait() {
+  waitForAccount() {
     if (this.account.max > 0 || this.account.max > this.account.min) {
       return wait(random(this.account.min, this.account.max))
     }
@@ -80,7 +92,7 @@ export default class Task {
     const queue = await this.contacts.filter(a => !found.find(b => a === b))
     this.started = Date.now()
     for (const id of queue) {
-      await this.wait()
+      await this.waitForAccount()
       const _task = await db.task.get(this.id)
       if (config.Status.ACCEPTED === _task.status) {
         this.status = config.Status.ACCEPTED
@@ -206,7 +218,25 @@ export default class Task {
     }
   }
 
+  pick() {
+    const object = pick(this, ['id', 'contacts', 'after', 'wait', 'number', 'type', 'text'])
+    if (this.account) {
+      object.account = this.account.id || this.account
+    }
+    return object
+  }
+
+  create() {
+    return db.task.add(this.pick())
+  }
+
+  save() {
+    return db.task.put(this.pick())
+  }
 }
+
+extend(Task, EventEmitter.prototype)
+EventEmitter.call(EventEmitter)
 
 class Delivery extends Task {
   static icon = 'comment'
@@ -216,9 +246,6 @@ class Delivery extends Task {
     return this.account.send(this.createMessage(contact))
   }
 }
-
-extend(Task, EventEmitter.prototype)
-EventEmitter.call(EventEmitter)
 
 class Invite extends Task {
   static icon = 'add user'
@@ -233,7 +260,7 @@ class Invite extends Task {
       authorized: 0,
       status
     })
-      .filter(c => config.Type.PERSON === c.type && !c.account)
+      .filter(c => config.Type.PERSON === c.type)
   }
 }
 

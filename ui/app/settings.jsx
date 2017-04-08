@@ -16,13 +16,18 @@ import {Segment, Button, Message, Icon} from 'semantic-ui-react'
 export default class Settings extends Component {
   state = {
     contactsCount: false,
+    clearContacts: false,
     accountsCount: false,
+    clearAccounts: false,
+    tasksCount: false,
+    clearTasks: false,
     clearDatabase: false,
   }
 
   componentWillReceiveProps() {
     void this.countContacts()
     void this.countAccounts()
+    void this.countTasks()
   }
 
   componentWillMount() {
@@ -31,6 +36,10 @@ export default class Settings extends Component {
 
   async countContacts() {
     this.setState({contactsCount: await Contact.countAll()})
+  }
+
+  async countTasks() {
+    this.setState({tasksCount: await db.task.count()})
   }
 
   async countAccounts() {
@@ -44,6 +53,14 @@ export default class Settings extends Component {
     merge(localStorage, preserve)
     config.reset = true
     location.reload()
+  }
+
+  clearTasks = async() => {
+    this.setState({tasksCount: true})
+    await db.log.clear()
+    await db.task.clear()
+    await this.countTasks()
+    this.setState({tasksCount: false})
   }
 
   clearContacts = async() => {
@@ -133,6 +150,7 @@ export default class Settings extends Component {
 
   clearContactsLabel = () => this.labelWithCount('Очистить копию списка контактов', 'contactsCount')
   clearAccountsLabel = () => this.labelWithCount('Очистить аккаунты Skype', 'accountsCount')
+  clearTasksLabel = () => this.labelWithCount('Очистить задачи', 'tasksCount')
 
   render() {
     return <Segment.Group horizontal className="page settings">
@@ -145,6 +163,11 @@ export default class Settings extends Component {
             loading={this.state.clearContacts}
             content={this.clearContactsLabel()}/>
           <Button onClick={this.clearAccounts} type="button">{this.clearAccountsLabel()}</Button>
+          <Button
+            type="button"
+            onClick={this.clearTasks}
+            loading={this.state.clearTasks}
+            content={this.clearTasksLabel()}/>
           <Button
             onClick={this.clearDatabase}
             loading={this.state.clearDatabase}

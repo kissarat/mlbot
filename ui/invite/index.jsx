@@ -22,13 +22,11 @@ export default class Invite extends SkypeComponent {
       .toArray()
     if (contacts.length > 0) {
       let ids = contacts.map(c => c.id)
-      await db.task.put(task)
       await db.contacts.filter(c => ids.indexOf(c.id) >= 0).delete()
-      for(const contact of contacts) {
+      for (const contact of contacts) {
         contact.account = this.props.account
         contact.id = contact.account + '~' + contact.login
         contact.status = Status.SCHEDULED
-        contact.text = text
       }
       const found = await db.contacts
         .filter(c => ids.indexOf(c.id) >= 0)
@@ -36,6 +34,12 @@ export default class Invite extends SkypeComponent {
       ids = found.map(c => c.id)
       contacts = contacts.filter(c => ids.indexOf(c.id) < 0)
       await db.contacts.bulkPut(contacts)
+      const task = Task.Invite({
+        account: this.props.account,
+        contacts: contacts.map(c => c.id),
+        text
+      })
+      return task.create()
     }
     else {
       this.alert('error', 'Вы не выбрали ни одного контакта')

@@ -29,10 +29,10 @@ export default class Unauthorized extends PureComponent {
       account: this.props.account,
       contacts: contacts.map(c => c.id)
     })
-    await db.task.put(task)
+    return task.create()
   }
 
-  count = async(props) => {
+  count = async props => {
     this.setState({unauthorizedCount: null})
     const unauthorizedCount = await this.query(props).count()
     this.setState({unauthorizedCount})
