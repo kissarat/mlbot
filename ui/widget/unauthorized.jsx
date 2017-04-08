@@ -1,8 +1,8 @@
 import Contact from '../../store/contact.jsx'
 import db from '../../store/database.jsx'
 import React, {PureComponent} from 'react'
-import {Button} from 'semantic-ui-react'
 import Task from '../../account-manager/task.jsx'
+import {Button} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults} from 'lodash'
 

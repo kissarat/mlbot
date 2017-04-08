@@ -3,56 +3,43 @@ import db from '../../store/database.jsx'
 import Help from '../widget/help.jsx'
 import InviteGreeting from './greeting.jsx'
 import InviteList from './list.jsx'
-import Queue from '../base/queue.jsx'
 import React from 'react'
 import SkypeComponent from '../base/skype-component.jsx'
+import Task from '../../account-manager/task.jsx'
 import TextContactEditor from './text-contact-editor.jsx'
 import {Segment, Header} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults, keyBy, uniq} from 'lodash'
+import AccountManager from '../account/index.jsx'
 
 export default class Invite extends SkypeComponent {
   name = 'Invite'
 
   invite = async text => {
-    const account = this.state.account
-    const queue = new Queue({
-      success: (i, count) => `Приглашено ${i} контактов из ${count}`,
-      account,
-      inform: this.alert,
-      max: 40,
-
-      query: () => db.contact.where({
-        authorized: 0,
-        status: Status.SELECTED
-      })
-        .filter(c => Type.PERSON === c.type),
-
-      work: async(skype, contact) => {
-        const answer = await skype.invite(text ? {text, ...contact} : contact)
-        const isAbsent = Status.ABSENT === answer.status
-        if (isAbsent) {
-          this.alert('busy', `Контакт ${contact.login} не существует!`)
-          db.contact.delete(contact.id)
-        }
-        /*
-        await db.contact.delete(contact.id)
-        if (!isAbsent) {
-          await db.contact.put({
-            id: account + '~' + contact.login,
-            account,
-            status: Status.NONE,
-            authorized: 0
-          })
-        }
-        */
-        if (!isAbsent) {
-          await db.contact.update(contact.id, {status: Status.NONE})
-        }
-      },
-    })
-    await queue.execute()
-    this.alert('success', 'Приглашение завершено')
+    const account = await AccountManager.get(this.props.account)
+    let contacts = await Task.Invite.query()
+      .limit(account.max_invite)
+      .toArray()
+    if (contacts.length > 0) {
+      let ids = contacts.map(c => c.id)
+      await db.task.put(task)
+      await db.contacts.filter(c => ids.indexOf(c.id) >= 0).delete()
+      for(const contact of contacts) {
+        contact.account = this.props.account
+        contact.id = contact.account + '~' + contact.login
+        contact.status = Status.SCHEDULED
+        contact.text = text
+      }
+      const found = await db.contacts
+        .filter(c => ids.indexOf(c.id) >= 0)
+        .toArray()
+      ids = found.map(c => c.id)
+      contacts = contacts.filter(c => ids.indexOf(c.id) < 0)
+      await db.contacts.bulkPut(contacts)
+    }
+    else {
+      this.alert('error', 'Вы не выбрали ни одного контакта')
+    }
   }
 
   render() {

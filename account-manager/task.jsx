@@ -152,7 +152,7 @@ export default class Task {
   }
 
   /**
-   * @return {Promise.<Task[]>} 
+   * @return {Promise.<Task[]>}
    */
   static getAccepted() {
     return db.task.filter(t => config.Status.ACCEPTED === t.status).toArray()
@@ -201,10 +201,11 @@ export default class Task {
     if (!(this.account instanceof Account)) {
       this.account = await AccountManager.get(this.account)
     }
-    for(const name of names) {
+    for (const name of names) {
       this[name] = Type.prototype[name]
     }
   }
+
 }
 
 class Delivery extends Task {
@@ -225,6 +226,14 @@ class Invite extends Task {
 
   iterate(contact) {
     return this.account.invite(this.createMessage(contact))
+  }
+
+  static query(status = config.Status.SELECTED) {
+    return db.contact.where({
+      authorized: 0,
+      status
+    })
+      .filter(c => config.Type.PERSON === c.type && !c.account)
   }
 }
 
