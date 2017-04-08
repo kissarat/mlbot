@@ -128,7 +128,7 @@ export default class Account extends AccountBase {
     /* this.skype = */
     const skype = Skype.open(this)
     const emitUpdates = debounce(() => Contact.emit('update'), 1400)
-    skype.on('contacts', async ({contacts}) => {
+    skype.on('contacts', async({contacts}) => {
       if (contacts instanceof Array && contacts.length > 0) {
         await this.saveContacts(contacts)
         emitUpdates()
@@ -137,7 +137,7 @@ export default class Account extends AccountBase {
         console.warn('No contacts received')
       }
     })
-    skype.on('conversations', async ({conversations}) => {
+    skype.on('conversations', async({conversations}) => {
       if (conversations instanceof Array && conversations.length > 0) {
         await this.saveChats(conversations)
         emitUpdates()
@@ -312,9 +312,12 @@ export default class Account extends AccountBase {
     else {
       const mri = getMri(message)
       return this.request('POST', `https://client-s.gateway.messenger.live.com/v1/users/ME/conversations/${mri}/messages`, {
+          'Has-Mentions': 'false',
+          clientmessageid: Date.now().toString(),
           content: message.text,
-          messagetype: 'RichText',
-          contenttype: 'text'
+          contenttype: 'text',
+          // messagetype: 'RichText',
+          imdisplayname: message.name || ''
         },
         ['RegistrationToken'])
     }

@@ -48,8 +48,12 @@ export function evaluation(text, vars) {
   })
 }
 
+export function skypeMarkup(text) {
+  return text.replace(/\*[^*]+\*/, s => '<b raw_pre="*" raw_post="*">' + s.slice(1, -1) + '</b>')
+}
+
 export function substitute(text, vars) {
-  return substituteVisual(specialSymbols(randomization(evaluation(text, vars))))
+  return skypeMarkup(substituteVisual(specialSymbols(randomization(evaluation(text, vars)))))
 }
 
 export function latinFinding(text) {
