@@ -144,6 +144,7 @@ function invite(contact) {
     $$('[role=search]').value = ''
     clearInterval(directoryTimer)
     clearInterval(contactRequestTimer)
+    openSettings()
     sky.send(extend(contact, {
       type: 'invite',
       status

@@ -208,8 +208,7 @@ class Invite extends Task {
   static title = 'Приглашения'
 
   iterate(contact) {
-    throw new Error('Invite is unimplemented')
-    // return this.account.invite(this.createMessage(contact))
+    return this.account.invite(this.createMessage(contact))
   }
 }
 
@@ -218,8 +217,7 @@ class Clear extends Task {
   static title = 'Очистка серых контактов'
 
   iterate(contact) {
-    throw new Error('Clear is unimplemented')
-    // return this.account.send(this.createMessage(contact))
+    return this.account.remove(contact)
   }
 }
 

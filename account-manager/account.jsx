@@ -315,8 +315,7 @@ export default class Account extends AccountBase {
           'Has-Mentions': 'false',
           clientmessageid: Date.now().toString(),
           content: message.text,
-          contenttype: 'text',
-          // messagetype: 'RichText',
+          contenttype: 'text', // 'RichText',
           imdisplayname: message.name || ''
         },
         ['RegistrationToken'])
@@ -325,16 +324,29 @@ export default class Account extends AccountBase {
 
   async invite(contact) {
     await this.login()
-    const {statusCode} = await this.request('POST', `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts`, {
-      mri: getMri(contact),
-      greeting: (contact.text && contact.text.trim()) || ''
-    })
-    contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
+    if ('string' === typeof contact) {
+      contact = {login: contact}
+      console.warn('Using string as contact', contact.login)
+    }
+    if (this.web) {
+      contact = await this.skype.invite(contact)
+    }
+    else {
+      const {statusCode} = await this.request('POST', `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts`, {
+        mri: getMri(contact),
+        greeting: (contact.text && contact.text.trim()) || ''
+      })
+      contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
+    }
     return contact
   }
 
   async remove(contact) {
     await this.login()
+    if ('string' === typeof contact) {
+      contact = {login: contact}
+      console.warn('Using string as contact', contact.login)
+    }
     const url = `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts/` + getMri(contact)
     const {statusCode} = await this.request('DELETE', url)
     contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
