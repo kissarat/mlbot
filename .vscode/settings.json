@@ -1,0 +1,13 @@
+{
+    "search.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/.idea": true,
+        "**/node_modules": true,
+        "app/js": true
+    },
+    "vsicons.presets.jsOfficial": true,
+    "vsicons.presets.tsOfficial": true,
+    "vsicons.presets.jsonOfficial": true,
+    "files.autoSave": "onFocusChange"
+}

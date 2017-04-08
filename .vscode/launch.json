@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "name": "ui",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/.bin/webpack",
+            "args": [
+            ],
+            "cwd": "${workspaceRoot}/ui"
+        },
+        {
+            "type": "node",
+            "name": "inject",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/.bin/webpack",
+            "args": [
+            ],
+            "cwd": "${workspaceRoot}/inject"
+        },
+        {
+            "name": "Debug Main Process",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "program": "${workspaceRoot}/app/main.js"
+        }
+    ]
+}

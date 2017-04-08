@@ -1,0 +1,15 @@
+{
+    "version": "0.1.0",
+    "tasks": [
+        {
+            "taskName": "Webpack UI",
+            "isShellCommand": true,
+            "command": "${workspaceRoot}/node_modules/.bin/webpack",
+            "args": [
+                "-w",
+                "--config ${workspaceRoot}/ui/webpack.config.js"
+            ],
+            "showOutput": "always"
+        }
+    ]
+}

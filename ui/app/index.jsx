@@ -23,11 +23,6 @@ export default class App extends SingletonComponent {
     this.set({busy})
   }
 
-  async logout() {
-    await api.logout()
-    hashHistory.push('/login')
-  }
-
   componentDidMount() {
     setTimeout(function () {
         if (!(isObject(api.config.user) && 'string' === typeof api.config.user.nick)) {

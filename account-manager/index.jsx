@@ -26,7 +26,7 @@ export default class AccountManager {
 
   /**
    * @param {string} id
-   * @returns {Promise.<Account>}
+   * @return {Promise.<Account>}
    */
   static async get(id) {
     const list = await this.getList()

@@ -3,6 +3,7 @@ import package_json from '../../app/package.json'
 import React, {Component, isValidElement} from 'react'
 import {hashHistory} from 'react-router'
 import {Menu, Image} from 'semantic-ui-react'
+import api from '../../connect/api.jsx'
 
 function itemUrl(url) {
   return {
@@ -14,6 +15,11 @@ function itemUrl(url) {
 }
 
 export default class AppMenu extends Component {
+  async logout() {
+    await api.logout()
+    hashHistory.push('/login')
+  }
+
   render() {
     return <Menu icon="labeled" compact borderless>
       <Menu.Item className="logo">
@@ -28,15 +34,12 @@ export default class AppMenu extends Component {
           name="Аккаунт"
           icon="skype"
           {...itemUrl('/accounts')}
-          title="Добавляйте и удаляйте аккаунты Skype.
-            Если возникнет ошибка, попробуйте войти на
-            web.skype.com в браузере"/>
+          title="Добавляйте и удаляйте аккаунты Skype. Если возникнет ошибка, попробуйте войти на web.skype.com в браузере"/>
         <Menu.Item
           name="Рассылка"
           icon="mail"
           {...itemUrl('/delivery/person')}
-          title="Если закроете программу на рассылке — Вы сможете ее продолжить
-            при следующем запуске с места окончания рассылки"/>
+          title="Если закроете программу на рассылке — Вы сможете ее продолжить при следующем запуске с места окончания рассылки"/>
         <Menu.Item
           name="Чат-рассылка"
           className="chat-delivery"
@@ -55,8 +58,7 @@ export default class AppMenu extends Component {
           name="Настройки"
           icon="setting"
           {...itemUrl('/settings')}
-          title="Сбросьте настройки программы или очистите историю использования.
-          Импортируйте и экспортируйте настройки и историю с помощью функций импорт/экспорт"/>
+          title="Сбросьте настройки программы или очистите историю использования. Импортируйте и экспортируйте настройки и историю с помощью функций импорт/экспорт"/>
         <Menu.Item
           name="Выход"
           icon="sign out"
