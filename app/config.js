@@ -43,6 +43,7 @@ let config = {
   },
 
   Status: {
+    CONFLICT: -409,
     FORBIDDEN: -403,
     ABSENT: -404,
     ERROR: -500,

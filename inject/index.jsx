@@ -50,7 +50,7 @@ function sendMessage(message) {
           sky.send({
             type: 'message',
             id: message.id,
-            status: Status.SEND
+            status: Status.DONE
           })
         })
       })
@@ -137,6 +137,61 @@ function openSettings() {
   $$('#menuItem-userSettings').click()
 }
 
+function invite(contact) {
+  let directoryTimer = true
+  let contactRequestTimer = true
+  function _invited(status) {
+    $$('[role=search]').value = ''
+    clearInterval(directoryTimer)
+    clearInterval(contactRequestTimer)
+    sky.send(extend(contact, {
+      type: 'invite',
+      status
+    }))
+  }
+  if ('string' === typeof contact) {
+    contact = {login: contact}
+  }
+  waiter('[role=search]', function (input) {
+    input.focus()
+    input.value = ''
+    insertText(contact.login)
+    waiter('.searchDirectory', function (button) {
+      button.click()
+      let found
+      if (true === directoryTimer) {
+        directoryTimer = setInterval(function () {
+            if ($$('.directory [data-bind*="emptyListText"]')) {
+              _invited(Status.ABSENT)
+            }
+            else if ($$('.people li[data-title]')) {
+              _invited(Status.CONFLICT)
+            }
+            else if (found = $$('.directory li:nth-child(2)')) {
+              found.click()
+              if (true === contactRequestTimer) {
+                contactRequestTimer = setInterval(function () {
+                    if (found = $$('.contactRequestSend') || $$('.contactRequestOutgoingMessage ~ .buttonRow button')) {
+                      found.click()
+                      _invited(Status.DONE)
+                    }
+                    else if ($$('.contactRequestResendMessage') || $$('.contactRequestOutgoingMessage')) {
+                      _invited(Status.CONFLICT)
+                    }
+                    else {
+                      console.log('Nothing found')
+                    }
+                  },
+                  waiter.DELAY)
+              }
+            }
+          },
+          waiter.DELAY)
+      }
+    })
+  })
+}
+
 addEventListener('load', function () {
   sky.send({type: 'load'})
 })
@@ -151,6 +206,7 @@ const _exports = {
   sendMessage,
   waitSelector,
   confirmIdentity,
+  invite
 }
 
 extend(window, _exports)
