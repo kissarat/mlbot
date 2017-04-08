@@ -128,13 +128,22 @@ export default class Account extends AccountBase {
     /* this.skype = */
     const skype = Skype.open(this)
     const emitUpdates = debounce(() => Contact.emit('update'), 1400)
-    skype.on('contacts', ({contacts}) => {
+    skype.on('contacts', async ({contacts}) => {
       if (contacts instanceof Array && contacts.length > 0) {
-        this.saveContacts(contacts)
+        await this.saveContacts(contacts)
         emitUpdates()
       }
       else {
         console.warn('No contacts received')
+      }
+    })
+    skype.on('conversations', async ({conversations}) => {
+      if (conversations instanceof Array && conversations.length > 0) {
+        await this.saveChats(conversations)
+        emitUpdates()
+      }
+      else {
+        console.warn('No conversations received')
       }
     })
     await skype.load(this)

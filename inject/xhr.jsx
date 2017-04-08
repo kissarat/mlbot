@@ -139,15 +139,16 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
         })
       }
       else {
-        console.error('Unknown contacts response', r)
+        console.error('Unknown contacts response', this.responseText)
       }
     })
   }
 
-  if ('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations'.indexOf(url) >= 0 && 'GET' === method) {
+  const isConversations = 0 == url.indexOf('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations')
+  && url.indexOf('/messages') < 0
+  if (isConversations && 'GET' === method) {
     this.addEventListener('load', function () {
-      const r = JSON.parse(this.responseText)
-      const {conversations} = r
+      const {conversations} = JSON.parse(this.responseText)
       if (conversations instanceof Array) {
         sky.send({
           type: 'conversations',
@@ -155,7 +156,7 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
         })
       }
       else {
-        console.error('Unknown conversations response', r)
+        console.error('Unknown conversations response', this.responseText)
       }
     })
   }
