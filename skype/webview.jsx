@@ -42,21 +42,9 @@ WebView.prototype = extend({
     this.src = 'blank.html'
   },
 
-  invoke(fn, args) {
-    let formatted = []
-    if (args instanceof Array) {
-      args.forEach(function (a) {
-        if ('string' === typeof a) {
-          a = `'${a}'`
-        }
-        else if (isObject(a)) {
-          a = JSON.stringify(a)
-        }
-        formatted.push(a)
-      })
-    }
-    formatted = formatted.join(',')
-    this.executeJavaScript(`${fn}(${formatted})`)
+  invoke(fn, args = []) {
+    args = args.map(a => JSON.stringify(a)).join(',')
+    this.executeJavaScript(`${fn}(${args})`)
   },
 
   onMany(number, event, cb) {
