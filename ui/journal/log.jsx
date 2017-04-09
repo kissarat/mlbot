@@ -59,13 +59,13 @@ export default class Log extends Component {
 
   rows() {
     return this.state.records.map(l => {
-      const JobType = Task[l.task.type]
+      const TaskType = Task[l.task.type]
       return <Table.Row
         key={l.id}
         positive={Status.DONE === l.status}
         negative={Status.ERROR === l.status}
-        title={JobType.title}>
-        <Table.Cell><Icon name={JobType.icon}/></Table.Cell>
+        title={TaskType.title}>
+        <Table.Cell><Icon name={TaskType.icon}/></Table.Cell>
         <Table.Cell className="id">{l.id}</Table.Cell>
         <Table.Cell>{l.name}</Table.Cell>
         <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>

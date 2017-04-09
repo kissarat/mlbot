@@ -265,7 +265,7 @@ class Invite extends Task {
 }
 
 class Clear extends Task {
-  static icon = 'trash'
+  static icon = 'remove user'
   static title = 'Очистка серых контактов'
 
   iterate(contact) {

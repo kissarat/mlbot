@@ -225,7 +225,7 @@ export default class Account extends AccountBase {
   }
 
   getCookiesString(uri) {
-    this.getCookies(uri).map(({key, value}) => key + '=' + value).join('; ')
+    return this.internal.cookieJar.string || this.getCookies(uri).map(({key, value}) => key + '=' + value).join('; ')
   }
 
   /**
