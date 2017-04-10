@@ -27,6 +27,7 @@ export default class Invite extends SkypeComponent {
         contact.account = account.id
         contact.id = contact.account + '~' + contact.login
         contact.status = Status.SCHEDULED
+        // contact.number = 1
       }
       const found = await db.contact
         .filter(c => ids.indexOf(c.id) >= 0)

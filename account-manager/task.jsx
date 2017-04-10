@@ -17,8 +17,10 @@ import {wait} from '../util/index.jsx'
  * @property {Object[]} contacts
  */
 export default class Task {
+  static properties = ['id', 'contacts', 'status', 'after', 'wait', 'number', 'type', 'text']
+
   constructor(state) {
-    merge(this, state)
+    merge(this, pick(state, Task.properties))
     if (!this.type && this.constructor.name !== 'Task') {
       this.type = this.constructor.name
     }
@@ -86,8 +88,10 @@ export default class Task {
   }
 
   async start() {
-    const found = (await db.log.filter(r => r.task === this.id).toArray())
-      .map(r => r.contact)
+    const foundQuery = await db.log
+      .filter(r => r.task === this.id && r.number === this.number)
+      .toArray()
+    const found = foundQuery.map(r => r.contact)
     const queue = await this.contacts.filter(a => !found.find(b => a === b))
     this.started = Date.now()
     for (const id of queue) {
@@ -109,6 +113,7 @@ export default class Task {
           record.status = config.Status.ERROR
           record.message = ex.toString()
         }
+        record.number = this.number
         await db.log.add(record)
         Record.emit('add', record)
       }
@@ -232,7 +237,7 @@ export default class Task {
   }
 
   pick() {
-    const object = pick(this, ['id', 'contacts', 'status', 'after', 'wait', 'number', 'type', 'text'])
+    const object = pick(this, Task.properties)
     if (this.account) {
       object.account = this.account.id || this.account
     }

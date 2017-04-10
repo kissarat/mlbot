@@ -1,9 +1,9 @@
 import api from '../../connect/api.jsx'
 import config from '../../app/config'
 import Editor from '../base/editor.jsx'
-import moment from 'moment'
 import React, {Componen} from 'react'
 import PropTypes from 'prop-types'
+import Task from '../../account-manager/task.jsx'
 import {Form} from 'semantic-ui-react'
 import {range, toArray, map, defaults, keyBy, uniq, isObject, pick} from 'lodash'
 
@@ -50,19 +50,17 @@ export default class Message extends Editor {
 
     let task
     if (state.schedule) {
-      task = {
+      task = new Task.Delivery({
+        ...state,
         after: this.getScheduleTime().getTime()
-      }
+      })
     }
     else {
-      task = {}
+      task = new Task.Delivery(state)
     }
     task.text = value
 
-    this.props.submit({
-      ...state,
-      text: value
-    })
+    this.props.submit(task)
   }
 
   getScheduleTime() {
@@ -117,55 +115,34 @@ export default class Message extends Editor {
   }
 
   scheduleGroup() {
-    if (this.state.timer) {
-      const time = moment(this.getScheduleTime())
-      let d = moment.duration(time.diff(moment()))
-      d = [d.hours(), d.minutes(), d.seconds()].map(v => ('0' + v).slice(-2)).join(':')
-      return <div className="duration">
-        <span>Осталось </span>
-        <strong className="value">{d}</strong>
-        <span> до запуска рассылки</span>
+    return <div>
+      <div className="group time">
+        <Form.Checkbox
+          name="schedule"
+          label="Запустить в "
+          checked={this.state.schedule}
+          onChange={this.onCheckboxChange}
+        />
+        {this.select('hour', hours)}
+        <span>{this.hourPostfix()}</span>
+        {this.select('minute', minutes)}
+        <span>{this.minutePostfix()}</span>
       </div>
-    }
-    else {
-      return <div>
-        <div className="group time">
-          <Form.Checkbox
-            name="schedule"
-            label="Запустить в "
-            checked={this.state.schedule}
-            onChange={this.onCheckboxChange}
-          />
-          {this.select('hour', hours)}
-          <span>{this.hourPostfix()}</span>
-          {this.select('minute', minutes)}
-          <span>{this.minutePostfix()}</span>
-        </div>
-        {config.Type.CHAT === this.props.type ? <div className="group">
-            с задежкой
-            <input
-              name="delay"
-              value={this.state.delay}
-              onChange={this.onChange}/>
-            секунд между рассылками
-          </div> : ''}
-      </div>
-    }
+      {true || config.Type.CHAT === this.props.type ? <div className="group">
+          с задежкой
+          <input
+            name="delay"
+            value={this.state.delay}
+            onChange={this.onChange}/>
+          секунд между рассылками
+        </div> : ''}
+    </div>
   }
 
   scheduleButton() {
-    let content
-    let icon = 'time'
-    if (this.state.timer) {
-      content = 'Отменить'
-    }
-    else if (this.state.schedule) {
-      content = 'Запланировать'
-    }
-    else {
-      content = 'Разослать'
-      icon = 'send'
-    }
+    const [content, icon] = this.state.schedule
+      ? ['Запланировать', 'time']
+      : ['Разослать', 'send']
     return this.submitButton({content, icon})
   }
 

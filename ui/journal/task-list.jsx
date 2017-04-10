@@ -6,6 +6,7 @@ import Task from '../../account-manager/task.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {omit, debounce, isObject} from 'lodash'
+import {timeLeft} from '../../util/index.jsx'
 
 // pause circle outline
 // calendar plus
@@ -21,7 +22,8 @@ const StatusText = {
 export default class TaskList extends Component {
   state = {
     tasks: [],
-    running: false
+    running: false,
+    now: Date.now()
   }
 
   componentDidMount() {
@@ -29,13 +31,17 @@ export default class TaskList extends Component {
     Task.on('add', this.add)
     Task.on('update', this.update)
     addEventListener('resize', this.refreshDebounced)
+    this.timer = setInterval(this.updateNow, 950)
   }
 
   componentWillUnmount() {
+    clearInterval(this.timer)
     removeEventListener('resize', this.refreshDebounced)
     Task.removeListener('update', this.update)
     Task.removeListener('add', this.add)
   }
+
+  updateNow = () =>this.setState({now: Date.now()})
 
   add = task => this.setState({tasks: this.state.tasks.concat([task])})
 
@@ -125,6 +131,9 @@ export default class TaskList extends Component {
   status(t) {
     if (Status.ACCEPTED === t.status) {
       return <img src="images/loading-dots.gif"/>
+    }
+    if (t.after > this.state.now) {
+      return timeLeft(t.after)
     }
     return StatusText[t.status] || 'Неизвестно'
   }

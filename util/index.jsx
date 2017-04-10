@@ -1,6 +1,7 @@
+import moment from 'moment'
 import os from 'os'
-import {Type} from '../app/config'
 import {isObject, omit, defaults, slice, uniq, each, pick} from 'lodash'
+import {Type} from '../app/config'
 
 export const start = new Date()
 
@@ -159,4 +160,14 @@ export function getMri(contact) {
   return Type.CHAT === contact.type
     ? `19:${contact.login}@thread.skype`
     : '8:' + contact.login
+}
+
+export function timeLeft(time) {
+  time = moment(time)
+  let d = moment.duration(time.diff(moment()))
+  let dd = [d.minutes(), d.seconds()]
+  if (d.hours() > 0) {
+    dd.unshift(d.hours())
+  }
+  return dd.map(v => ('0' + v).slice(-2)).join(':')
 }
