@@ -110,13 +110,13 @@ async function saveChats(conversations = this.conversations) {
   this.status = 'contacts'
 }
 
-async function saveGroups() {
+async function saveGroups(groups = this.internal.contactsService.groups) {
   const account = this.id
   const existing = await db.group
     .filter(c => account === c.account)
     .toArray()
   let contacts = await db.contact.filter(c => account === c.account).toArray()
-  const groups = this.internal.contactsService.groups.map(function (g) {
+  groups = groups.map(function (g) {
     const group = {
       account,
       id: g.id,

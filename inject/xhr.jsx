@@ -84,11 +84,13 @@ extend(window, {
       })
   },
 
-  getContacts(username) {
-    sky.getContacts(username)
-      .then(() => sky.send({
+  getContacts(id) {
+    sky.getContacts(id)
+      .then(({contacts, groups}) => sky.send({
         type: 'getContacts',
-        username
+        id,
+        contacts,
+        groups
       }))
   },
 
@@ -131,11 +133,12 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
   const isContacts = 0 === url.indexOf('https://contacts.skype.com/contacts/v2/users/') && url.indexOf('/invites') < 0
   if (isContacts && 'GET' === method) {
     this.addEventListener('load', function () {
-      const {contacts} = JSON.parse(this.responseText)
+      const {contacts, groups} = JSON.parse(this.responseText)
       if (contacts instanceof Array) {
         sky.send({
           type: 'contacts',
-          contacts
+          contacts,
+          groups
         })
       }
       else {
@@ -145,7 +148,7 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
   }
 
   const isConversations = 0 == url.indexOf('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations')
-  && url.indexOf('/messages') < 0
+    && url.indexOf('/messages') < 0
   if (isConversations && 'GET' === method) {
     this.addEventListener('load', function () {
       const {conversations} = JSON.parse(this.responseText)

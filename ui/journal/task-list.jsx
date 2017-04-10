@@ -135,7 +135,7 @@ export default class TaskList extends Component {
       title={Task[t.type].title}>
       <Table.Cell><Icon name={Task[t.type].icon}/></Table.Cell>
       <Table.Cell className="id">{t.id}</Table.Cell>
-      <Table.Cell>{isObject(t.account) ? t.account.toString() : t.account}</Table.Cell>
+      <Table.Cell>{isObject(t.account) ? t.account.id : t.account}</Table.Cell>
       {this.short(t)}
       {this.contactsCount(t)}
       <Table.Cell>{this.status(t)}</Table.Cell>

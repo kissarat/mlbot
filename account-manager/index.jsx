@@ -55,7 +55,7 @@ export default class AccountManager {
       async function () {
         await account.loadContacts()
         await account.saveContacts()
-        // await account.saveGroups()
+        await account.saveGroups()
       },
       async function () {
         await account.loadChats()

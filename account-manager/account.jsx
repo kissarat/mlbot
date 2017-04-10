@@ -128,7 +128,13 @@ export default class Account extends AccountBase {
     /* this.skype = */
     const skype = Skype.open(this)
     const emitUpdates = debounce(() => Contact.emit('update'), 1400)
-    skype.on('contacts', async({contacts}) => {
+    skype.on('contacts', async({contacts, groups}) => {
+      if (groups instanceof Array && groups.length > 0) {
+        await this.saveGroups(groups)
+      }
+      else {
+        console.warn('No groups received')
+      }
       if (contacts instanceof Array && contacts.length > 0) {
         await this.saveContacts(contacts)
         emitUpdates()
@@ -275,18 +281,18 @@ export default class Account extends AccountBase {
 
   async loadContacts() {
     await this.login()
-    let contacts
     if (this.web && this.skype) {
-      contacts = await this.skype.getContacts()
+      const r = await this.skype.getContacts()
+      this.internal.contactsService.contacts = r.contacts
+      this.internal.contactsService.groups = r.groups
     }
     else {
-      contacts = await new Promise((resolve, reject) =>
+      await new Promise((resolve, reject) =>
         this.internal.contactsService.loadContacts(this.internal.skypeAccount, resolve, err => {
           console.error('CANNOT LOAD CONTACTS', this.id, err)
           reject(err)
         }))
     }
-    return contacts
   }
 
   /**
