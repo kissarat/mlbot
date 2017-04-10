@@ -86,7 +86,6 @@ export default class Task {
   }
 
   async start() {
-    // await db.task.update(this.id, {status: config.Status.ACCEPTED})
     const found = (await db.log.filter(r => r.task === this.id).toArray())
       .map(r => r.contact)
     const queue = await this.contacts.filter(a => !found.find(b => a === b))
@@ -94,7 +93,8 @@ export default class Task {
     for (const id of queue) {
       await this.waitForAccount()
       const _task = await db.task.get(this.id)
-      if (config.Status.ACCEPTED === _task.status) {
+      merge(this, pick(_task, 'status'))
+      if (config.Status.ACCEPTED === this.status) {
         this.status = config.Status.ACCEPTED
         const record = new Record()
         record.contact = id
@@ -116,13 +116,18 @@ export default class Task {
         return void 0
       }
     }
-    this.status = config.Status.DONE
-    await db.task.update(this.id, {status: this.status})
+    this.number--
+    this.status = this.number > 0 ? config.Status.SCHEDULED : config.Status.DONE
+    if (this.wait > 0) {
+      this.after = Date.now() + this.wait
+    }
+    await this.save()
     Task.emit('update', this)
   }
 
   stop() {
-    return db.task.update(this.id, {status: config.Status.SCHEDULED})
+    this.status = config.Status.SCHEDULED
+    return this.save()
   }
 
   createMessage(contact) {
@@ -144,14 +149,18 @@ export default class Task {
       // void task.start()
     }
     else {
-      task = await this.getByStatus(config.Status.SCHEDULED)
+      const now = Date.now()
+      task = await db.task
+        .filter(t => config.Status.SCHEDULED === t.status && now > t.after)
+        .desc('id')
+        .first()
       if (task) {
-        console.log('ACCEPTED', task.toString())
         task.status = config.Status.ACCEPTED
-        await db.task.update(task.id, {status: task.status})
+        await task.save()
         await task.initialize()
         task.start()
         this.emit('update', task)
+        console.log('ACCEPTED', task.toString())
       }
     }
   }

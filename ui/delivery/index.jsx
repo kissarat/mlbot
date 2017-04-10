@@ -32,7 +32,7 @@ export default class Delivery extends SkypeComponent {
       task.contacts = contacts.map(c => c.id)
       task.type = Task.Delivery.name
       task.status = Status.SCHEDULED
-      await db.task.add(task)
+      await task.create()
       await this.querySelected().modify({status: Status.NONE})
       Task.emit('add', task)
       this.alert('success', `Рассылка ${contacts.length} контактам запланирована в очередь задач`)
