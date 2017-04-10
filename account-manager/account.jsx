@@ -257,7 +257,7 @@ export default class Account extends AccountBase {
         options.Cookie = cookies
       }
       const r = await fetch(new Request(uri, options))
-      if (r.headers.get('contact-length') > 0 && r.headers.get('contact-type').indexOf('application/json') >= 0) {
+      if (r.headers.has('content-type') && r.headers.get('content-type').indexOf('application/json') >= 0) {
         return r.json()
       }
       return r.status
@@ -366,9 +366,9 @@ export default class Account extends AccountBase {
   async loadChats() {
     const url = 'https://client-s.gateway.messenger.live.com/v1/users/ME/conversations?' +
       'startTime=0&pageSize=200&view=msnp24Equivalent&targetType=Thread'
-    const {conversations} = await this.request('GET', url, null, ['RegistrationToken'])
-    if (conversations instanceof Array) {
-      this.conversations = conversations.filter(c => 0 === c.id.indexOf('19:'))
+    const r = await this.request('GET', url, null, ['RegistrationToken'])
+    if (r.conversations instanceof Array) {
+      this.conversations = r.conversations.filter(c => 0 === c.id.indexOf('19:'))
     }
   }
 
