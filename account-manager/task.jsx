@@ -100,7 +100,8 @@ export default class Task {
         record.contact = id
         record.task = this.id
         try {
-          await this.iterate(id)
+          const contact = await db.contact.get(id)
+          await this.iterate(contact)
           record.status = config.Status.DONE
         }
         catch (ex) {

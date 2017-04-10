@@ -239,7 +239,7 @@ export default class Account extends AccountBase {
    * @param {string} uri
    * @param {Object} body
    * @param {string[]} headerNames
-   * @return {Promise}
+   * @return {Promise|number}
    */
   async request(method, uri, body, headerNames = []) {
     // headerNames.push('User-Agent')
@@ -257,7 +257,10 @@ export default class Account extends AccountBase {
         options.Cookie = cookies
       }
       const r = await fetch(new Request(uri, options))
-      return r.json()
+      if (r.headers.get('contact-length') > 0 && r.headers.get('contact-type').indexOf('application/json') >= 0) {
+        return r.json()
+      }
+      return r.status
     }
     else {
       options.jar = this.internal.cookieJar
@@ -341,7 +344,8 @@ export default class Account extends AccountBase {
       const {statusCode} = await this.request('POST', `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts`, {
         mri: getMri(contact),
         greeting: (contact.text && contact.text.trim()) || ''
-      })
+      },
+        ['RegistrationToken'])
       contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
     }
     return contact
@@ -354,7 +358,7 @@ export default class Account extends AccountBase {
       console.warn('Using string as contact', contact.login)
     }
     const url = `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts/` + getMri(contact)
-    const {statusCode} = await this.request('DELETE', url)
+    const {statusCode} = await this.request('DELETE', url, null, ['X-Skypetoken'])
     contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
     return contact
   }
