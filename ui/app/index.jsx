@@ -44,7 +44,7 @@ export default class App extends SingletonComponent {
   }
 
   render() {
-    return <div className="layout app">
+    return <div data-url={location.hash.slice(1)} className="layout app">
       <Dimmer active={!!this.state.busy} inverted>
         {this.dimmer()}
       </Dimmer>

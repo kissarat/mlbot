@@ -39,7 +39,7 @@ export default class Paginator extends Component {
 
   render() {
     const arrows = this.state.totalPages >= 5
-    return <Menu pagination className="widget paginator">
+    return <Menu pagination size="small" compact className="widget paginator">
       {arrows ? <Menu.Item onClick={() => this.open(1)}>
           <Icon
             name='left chevron'

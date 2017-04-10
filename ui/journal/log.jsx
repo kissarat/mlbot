@@ -2,10 +2,11 @@ import db from '../../store/database.jsx'
 import React, {Component} from 'react'
 import Record from '../../store/record.jsx'
 import Task from '../../account-manager/task.jsx'
-import {isObject} from 'lodash'
+import {isObject, debounce} from 'lodash'
 import {joinLog} from '../../store/utils.jsx'
-import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
+import {Segment, Dimmer, Loader, Header, Table, Icon, Button} from 'semantic-ui-react'
 import {Status} from '../../app/config'
+import Paginator from '../widget/paginator.jsx'
 
 // checkmark
 const StatusText = {
@@ -19,7 +20,10 @@ const StatusText = {
 export default class Log extends Component {
   state = {
     records: [],
-    busy: false
+    busy: false,
+    offset: 0,
+    limit: 60,
+    count: 0
   }
 
   componentDidMount() {
@@ -41,17 +45,21 @@ export default class Log extends Component {
 
   load = async() => {
     this.setState({busy: true})
+    const count = await db.log.count()
     const records = await db.log
-      .orderBy('id', 'desc')
-      .limit(300)
+      .offset(this.state.offset)
+      .limit(this.state.limit)
+      .desc('id')
       .toArray()
-    window._records = records
     await joinLog(records)
     this.setState({
       busy: false,
+      count,
       records
     })
   }
+
+  // loadDebounced = debounce(this.load, 1600)
 
   async remove(id) {
     await db.log.delete(id)
@@ -94,6 +102,28 @@ export default class Log extends Component {
     })
   }
 
+  paginator(isHeader) {
+    if (this.state.count > 0 && this.state.count > this.state.limit) {
+      const row = <Table.Row>
+        <Table.HeaderCell colSpan="6">
+          <Paginator
+            {...this.state}
+            changeOffset={this.changeOffset}
+          />
+        </Table.HeaderCell>
+      </Table.Row>
+
+      return isHeader
+        ? <Table.Header>{row}</Table.Header>
+        : <Table.Footer>{row}</Table.Footer>
+    }
+  }
+
+  changeOffset = offset => {
+    this.setState({offset})
+    setTimeout(this.load, 0)
+  }
+
   render() {
     return <Segment className="widget log">
       <Dimmer active={this.state.busy} inverted>
@@ -101,8 +131,10 @@ export default class Log extends Component {
       </Dimmer>
       <div>
         <Header textAlign="center" as="h2">Журнал</Header>
-        <Table compact="very">
+        <Table compact="very" size="small">
+          {this.paginator(true)}
           <Table.Body>{this.rows()}</Table.Body>
+          {this.paginator(false)}
         </Table>
       </div>
     </Segment>

@@ -740,3 +740,11 @@ footer, textarea, input, .ui.menu {
 .account-list .skype {
     cursor: pointer;
 }
+
+.page.journal {
+    max-height: 100%;
+}
+
+.page.journal > * {
+    overflow-y: scroll;
+}
