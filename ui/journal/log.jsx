@@ -19,7 +19,7 @@ const StatusText = {
 
 export default class Log extends TablePage {
   state = {
-    records: [],
+    rows: [],
     busy: false,
     offset: 0,
     limit: 60,
@@ -40,24 +40,14 @@ export default class Log extends TablePage {
   add = async record => {
     const newRecords = [record]
     await joinLog(newRecords)
-    this.setState({records: this.state.records.concat(newRecords)})
+    this.setState({rows: this.state.rows.concat(newRecords)})
   }
 
-  load = async() => {
-    this.setState({busy: true})
-    const count = await db.log.count()
-    const records = await db.log
-      .offset(this.state.offset)
-      .limit(this.state.limit)
-      .desc('id')
-      .toArray()
-    await joinLog(records)
-    this.setState({
-      busy: false,
-      count,
-      records
-    })
+  query() {
+    return db.log
   }
+
+  load = () => this.loadData(Record.joins)
 
   // loadDebounced = debounce(this.load, 1600)
 
@@ -81,7 +71,7 @@ export default class Log extends TablePage {
   }
 
   rows() {
-    return this.state.records.map(l => {
+    return this.state.rows.map(l => {
       const TaskType = Task[l.task.type]
       return <Table.Row
         key={l.id}

@@ -22,7 +22,7 @@ const StatusText = {
 
 export default class TaskList extends TablePage {
   state = {
-    tasks: [],
+    rows: [],
     running: false,
     now: Date.now(),
     offset: 0,
@@ -30,11 +30,12 @@ export default class TaskList extends TablePage {
     count: 0
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     void this.refresh()
     Task.on('add', this.add)
     Task.on('update', this.update)
     // addEventListener('resize', this.refreshDebounced)
+    await this.load()
     this.timer = setInterval(this.updateNow, 950)
   }
 
@@ -47,13 +48,13 @@ export default class TaskList extends TablePage {
 
   updateNow = () =>this.setState({now: Date.now()})
 
-  add = task => this.setState({tasks: this.state.tasks.concat([task])})
+  add = task => this.setState({rows: this.state.rows.concat([task])})
 
   update = updatedTask => {
-    for (const i in this.state.tasks) {
-      if (updatedTask.id === this.state.tasks[i].id) {
-        this.state.tasks[i] = updatedTask
-        return this.setState({tasks: this.state.tasks})
+    for (const i in this.state.rows) {
+      if (updatedTask.id === this.state.rows[i].id) {
+        this.state.rows[i] = updatedTask
+        return this.setState({rows: this.state.rows})
       }
     }
     return this.refresh()
@@ -63,20 +64,8 @@ export default class TaskList extends TablePage {
 
   refreshDebounced = debounce(this.refresh, 500)
 
-  async load() {
-    this.setState({busy: true})
-    const count = await db.task.count()
-    const tasks = await db.task
-      .offset(this.state.offset)
-      .limit(this.state.limit)
-      .desc('id')
-      .toArray()
-
-    this.setState({
-      busy: false,
-      count,
-      tasks
-    })
+  query() {
+    return db.task
   }
 
   async remove(id) {
@@ -143,7 +132,7 @@ export default class TaskList extends TablePage {
   }
 
   rows() {
-    return this.state.tasks.map(t => <Table.Row
+    return this.state.rows.map(t => <Table.Row
       key={t.id}
       positive={Status.DONE === t.status}
       title={Task[t.type].title}>
@@ -158,7 +147,7 @@ export default class TaskList extends TablePage {
   }
 
   table() {
-    if (this.state.tasks.length > 0) {
+    if (this.state.rows.length > 0) {
       return <div>
         <Help text="Нажмите, чтобы исключить контакт из рассылки">
           <Header textAlign="center" as="h2">

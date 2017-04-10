@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {Menu, Icon, Table} from 'semantic-ui-react'
 import {range} from 'lodash'
+import {load} from '../../store/utils.jsx'
 
 export default class Paginator extends Component {
   state = {}
@@ -60,6 +61,26 @@ export class TablePage extends Component {
     this.setState({offset})
     setTimeout(this.load, 0)
   }
+
+  async loadData(joins) {
+    this.setState({busy: true})
+    const count = await this.query().count()
+    const rows = await this.query()
+      .offset(this.state.offset)
+      .limit(this.state.limit)
+      .desc('id')
+      .toArray()
+    if (joins) {
+      await load(rows, joins)
+    }
+    this.setState({
+      busy: false,
+      count,
+      rows
+    })
+  }
+
+  load = async() => this.loadData()
 
   paginator(isHeader, colSpan) {
     if (this.state.count > 0 && this.state.count > this.state.limit) {

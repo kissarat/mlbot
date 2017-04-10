@@ -5,6 +5,8 @@ import {extend} from 'lodash'
 const n = Symbol.for('name')
 
 export default class Record {
+  static joins = ['task', 'contact']
+
   get name() {
     if (!this[n]) {
       let name
