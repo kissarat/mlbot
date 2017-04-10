@@ -43,7 +43,8 @@ export default class AppMenu extends Component {
         <Menu.Item
           name="Чат-рассылка"
           className="chat-delivery"
-          icon="comments" {...itemUrl('/delivery/chat')}
+          icon="comments"
+          {...itemUrl('/delivery/chat')}
           title="Рассылайте рекламу по чатам, задав необходимое количество циклов"/>
         <Menu.Item
           name="Добавить друзей"

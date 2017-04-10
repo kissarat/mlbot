@@ -11,12 +11,6 @@
     color: #0d5b81 !important;
 }
 
-.menu .chat-delivery {
-    background-position: right top !important;
-    background-repeat: no-repeat !important;
-    background-image: url("images/new.png") !important;
-}
-
 .ui.segment.text-back {
     /*background-color: rgba(80, 180, 219, 0.4);*/
 }

@@ -10,10 +10,14 @@ try {
 catch (ex) {
 }
 
+// const vendor = 'inbisoft'
+const vendor = 'club-leader'
+// const vendor = 'lsproject'
+
 let config = {
   dev: true,
   reset: false,
-  origin: 'https://ls.inbisoft.com',
+  origin: 'lsproject' === vendor ? 'https://ls.inbisoft.com' : 'https://app.inbisoft.com',
   window: {
     minWidth: 960,
     minHeight: 680,
@@ -24,9 +28,7 @@ let config = {
 
   exclude: ['echo123', 'kissarat'],
 
-  // vendor: 'inbisoft',
-  // vendor: 'club-leader',
-  vendor: 'lsproject',
+  vendor,
 
   request: {
     type: 'fetch'

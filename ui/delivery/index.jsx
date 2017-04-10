@@ -63,6 +63,12 @@ export default class Delivery extends SkypeComponent {
     // }
   }
 
+  taskList() {
+    if (innerHeight > 800) {
+      return <TaskList filter={c => c.status !== Status.DONE}/>
+    }
+  }
+
   render() {
     const type = this.type()
     const isChat = Type.CHAT === type
@@ -77,7 +83,7 @@ export default class Delivery extends SkypeComponent {
           submit={this.send}>
           {this.repeat()}
         </Message>
-        <TaskList filter={c => c.status !== Status.DONE}/>
+        {this.taskList()}
       </Segment>
 
       <Segment className="contact-list-segment">

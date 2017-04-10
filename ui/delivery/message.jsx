@@ -1,8 +1,9 @@
 import api from '../../connect/api.jsx'
 import config from '../../app/config'
 import Editor from '../base/editor.jsx'
-import React, {Componen} from 'react'
+import Help from '../widget/help.jsx'
 import PropTypes from 'prop-types'
+import React, {Componen} from 'react'
 import Task from '../../account-manager/task.jsx'
 import {Form} from 'semantic-ui-react'
 import {range, toArray, map, defaults, keyBy, uniq, isObject, pick} from 'lodash'
@@ -22,7 +23,7 @@ export default class Message extends Editor {
 
   state = {
     sign: false,
-    signature: 'https://club-leader.com/',
+    signature: '',
     wait: 10,
   }
 
@@ -32,19 +33,21 @@ export default class Message extends Editor {
 
   componentWillMount() {
     const now = new Date()
-    const isClubLeader = 'club-leader' === config.vendor
-    const refURL = isClubLeader ? 'https://club-leader.com/?r=' : 'https://inbisoft.com/mlbot/ref/'
-    const nick = isClubLeader ? api.config.user.nick : api.config.user.nick.replace(/^inbisoft_/, '')
+    let signature = ''
+    if ('club-leader' === config.vendor) {
+      signature = 'Сообщение отправлено с помощью программы: https://club-leader.com/?r=' + api.config.user.nick
+    }
     this.setup({
-      signature: 'Сообщение отправлено с помощью программы: ' + refURL + nick,
+      signature,
       hour: (1 + now.getHours()) % 24,
       minute: (5 + now.getMinutes()) % 60,
-      schedule: false
+      schedule: false,
+      sign: false
     })
   }
 
   submit(value, state) {
-    if (this.state.sign) {
+    if ('club-leader' === config.vendor && this.state.sign) {
       value += '\n▁▁▁▁▁▁▁▁▁▁▁▁▁\n' + this.state.signature
     }
 
@@ -146,6 +149,18 @@ export default class Message extends Editor {
     return this.submitButton({content, icon})
   }
 
+  signature() {
+    if ('club-leader' === config.vendor) {
+      return <Help text={this.state.signature}>
+        <Form.Checkbox
+          label="добавить подпись"
+          name="sign"
+          checked={this.state.sign}
+          onChange={this.onCheckboxChange}/>
+      </Help>
+    }
+  }
+
   render() {
     return <Form
       className="widget delivery-message"
@@ -154,6 +169,7 @@ export default class Message extends Editor {
         label: 'Введите сообщение',
         placeholder: 'Введите сообщение для его рассылки по выбраным контактам'
       })}
+      {this.signature()}
       <div className="container">{this.props.children}</div>
 
       {this.scheduleGroup()}
