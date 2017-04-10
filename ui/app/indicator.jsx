@@ -8,13 +8,19 @@ export default class Indicator extends Component {
     cpu: 0
   }
 
-  updateInfo = () => {
+  updateInfo = async() => {
     const state = {
-      memory: Math.ceil(process.getProcessMemoryInfo().workingSetSize / 1024),
+      memory: process.getProcessMemoryInfo().workingSetSize / 1024,
       free: Math.ceil(process.getSystemMemoryInfo().free / 1024),
       // cpu: Math.ceil(os.loadavg()[0] * 100 / os.cpus().length)
       // free: Math.ceil(os.freemem() / (1024 * 1024))
     }
+    const webviews = document.querySelectorAll('webview')
+    for (let i = 0; i < webviews.length; i++) {
+      const {memory} = await webviews[i].getPerformance()
+      state.memory += memory.usedJSHeapSize / (1024 * 1024)
+    }
+    state.memory = Math.ceil(state.memory)
     this.setState(state)
   }
 

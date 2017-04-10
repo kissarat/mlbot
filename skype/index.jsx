@@ -89,6 +89,13 @@ extend(Skype.prototype, {
     })
   },
 
+  getPerformance() {
+    return new Promise(resolve => {
+      this.once('getPerformance', resolve)
+      this.invoke('getPerformance')
+    })
+  },
+
   reloadProfile() {
     if (this.profile) {
       this.profile = null

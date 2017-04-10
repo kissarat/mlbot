@@ -29,7 +29,7 @@ WebView.prototype = extend({
   },
 
   receiveData(data) {
-    console.log(data)
+    // console.log(data)
     if ('string' === typeof data.type) {
       this.emit(data.type, data)
     }

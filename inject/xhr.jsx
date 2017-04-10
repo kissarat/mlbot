@@ -1,4 +1,4 @@
-import {defaultsDeep, merge, extend} from 'lodash'
+import {defaultsDeep, merge, extend, pick} from 'lodash'
 import {sky} from './sky.jsx'
 import {Status} from '../app/config'
 
@@ -100,6 +100,13 @@ extend(window, {
         type: 'contact.remove',
         username
       }))
+  },
+
+  getPerformance() {
+    sky.send({
+      type: 'getPerformance',
+      memory: pick(performance.memory, 'jsHeapSizeLimit', 'totalJSHeapSize', 'usedJSHeapSize')
+    })
   }
 })
 
