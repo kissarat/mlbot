@@ -315,7 +315,6 @@ export default class Account extends AccountBase {
   async send(message) {
     await this.login()
     if (this.web && Type.PERSON === message.type) {
-      console.log(message.type, message.login, message.text)
       return this.skype.sendMessage(message)
     }
     else {
@@ -325,7 +324,8 @@ export default class Account extends AccountBase {
           clientmessageid: Date.now().toString(),
           content: message.text,
           contenttype: 'text', // 'RichText',
-          imdisplayname: message.name || ''
+          imdisplayname: message.name || '',
+          messagetype: "RichText"
         },
         ['RegistrationToken'])
     }
@@ -342,9 +342,9 @@ export default class Account extends AccountBase {
     }
     else {
       const {statusCode} = await this.request('POST', `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts`, {
-        mri: getMri(contact),
-        greeting: (contact.text && contact.text.trim()) || ''
-      },
+          mri: getMri(contact),
+          greeting: (contact.text && contact.text.trim()) || ''
+        },
         ['X-Skypetoken'])
       contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
     }

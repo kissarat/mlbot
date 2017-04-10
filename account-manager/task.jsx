@@ -129,6 +129,7 @@ export default class Task {
     const login = 'string' === typeof contact ? contact.split('~')[1] : contact.login
     return {
       login,
+      name: contact.name,
       type: /[0-9a-f]{32}/.test(login) ? config.Type.CHAT : config.Type.PERSON,
       text: substitute(this.text)
     }
