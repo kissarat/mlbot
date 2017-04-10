@@ -55,7 +55,12 @@ export default class AccountManager {
       async function () {
         await account.loadContacts()
         await account.saveContacts()
-        await account.saveGroups()
+        if (account.internal.contactsService.groups instanceof Array) {
+          await account.saveGroups()
+        }
+        else {
+          console.error('Groups not found')
+        }
       },
       async function () {
         await account.loadChats()

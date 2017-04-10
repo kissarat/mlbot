@@ -282,7 +282,7 @@ export default class Account extends AccountBase {
   async loadContacts() {
     await this.login()
     if (this.web && this.skype) {
-      const r = await this.skype.getContacts()
+      const r = await this.skype.getContacts(this.id)
       this.internal.contactsService.contacts = r.contacts
       this.internal.contactsService.groups = r.groups
     }

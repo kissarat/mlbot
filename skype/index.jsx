@@ -71,10 +71,10 @@ extend(Skype.prototype, {
     })
   },
 
-  getContacts() {
+  getContacts(id) {
     return new Promise(resolve => {
       this.once('getContacts', resolve)
-      this.invoke('getContacts')
+      this.invoke('getContacts', [id])
     })
   },
 

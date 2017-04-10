@@ -66,6 +66,7 @@ export default class Settings extends Component {
   clearContacts = async() => {
     this.setState({clearContacts: true})
     await db.contact.clear()
+    await db.group.clear()
     await this.countAccounts()
     await this.countContacts()
     this.setState({clearContacts: false})

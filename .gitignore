@@ -3,6 +3,7 @@
 app/dist/
 app/js/
 app/rat
+extensions/*
 images
 local.js*
 node_modules

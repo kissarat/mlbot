@@ -46,6 +46,8 @@ app.on('ready', function () {
   })
   if (config.dev) {
     win.webContents.openDevTools()
+    // BrowserWindow.addDevToolsExtension(__dirname + '/../extensions/react')
+    // BrowserWindow.addDevToolsExtension(__dirname + '/../extensions/imacros')
   }
 })
 
