@@ -1,11 +1,11 @@
 import db from '../../store/database.jsx'
 import React, {Component} from 'react'
-import PropTypes from 'prop-types'
 import Record from '../../store/record.jsx'
+import Task from '../../account-manager/task.jsx'
+import {isObject} from 'lodash'
 import {joinLog} from '../../store/utils.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
-import Task from '../../account-manager/task.jsx'
 
 // checkmark
 const StatusText = {
@@ -70,6 +70,7 @@ export default class Log extends Component {
         <Table.Cell className="id">{l.id}</Table.Cell>
         <Table.Cell>{l.name}</Table.Cell>
         <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>
+        <Table.Cell>задача <span className="id">{isObject(l.task) ? l.task.id : l.task}</span></Table.Cell>
         <Table.Cell className="action">
           <Icon
             name="trash"
