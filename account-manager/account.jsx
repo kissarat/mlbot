@@ -21,7 +21,8 @@ function AccountBase() {
 
 AccountBase.prototype = {
   __proto__: config.account,
-  ...saveFunctions
+  ...saveFunctions,
+  ...desktop
 }
 
 /**

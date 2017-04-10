@@ -15,6 +15,9 @@ export default class Login extends FormComponent {
   }
 
   async submit() {
+    // const = {
+    //
+    // }
     if (this.state.email.length < 3) {
       this.setState({alert: 'Введите Email'})
     }
@@ -37,7 +40,7 @@ export default class Login extends FormComponent {
         }
         else {
           if ('ABSENT' === error.status) {
-            alert = 'Неверные логин или пароль'
+            alert = 'Неверные email или пароль'
           }
           else if ('ALERT' === error.status) {
             alert = error.message
@@ -88,18 +91,18 @@ export default class Login extends FormComponent {
           <div>
             <p>
               Восстановить пароль вы можете на сайте&nbsp;
-              <BrowserLink href="http://my.inbisoft.com/password/recovery">my.inbisoft.com</BrowserLink>
+              <BrowserLink href="https://my.inbisoft.com/">my.inbisoft.com</BrowserLink>
             </p>
             <Message className="buy">
               <Icon name="dollar" size="big"/>
               <p>
                 Для использования программы необходимо приобрести лицензию за $22 у разработчика на сайте&nbsp;
-                <BrowserLink href="http://my.inbisoft.com/">my.inbisoft.com</BrowserLink>&nbsp;
+                <BrowserLink href="https://my.inbisoft.com/">my.inbisoft.com</BrowserLink>&nbsp;
                 и войти под Email/Пароль от личного кабинета.
               </p>
             </Message>
           </div>
-          {this.descriptionLink('http://inbisoft.com/mlbot/')}
+          {this.descriptionLink('https://inbisoft.com/mlbot/')}
         </Grid.Column>
 
       case 'lsproject':
@@ -114,7 +117,7 @@ export default class Login extends FormComponent {
               Скайп администрации
             </BrowserLink>
           </div>
-          {this.descriptionLink('http://inbisoft.com/mlbot/')}
+          {this.descriptionLink('https://inbisoft.com/mlbot/')}
         </Grid.Column>
     }
   }
