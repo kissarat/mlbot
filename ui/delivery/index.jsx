@@ -32,6 +32,8 @@ export default class Delivery extends SkypeComponent {
       task.contacts = contacts.map(c => c.id)
       task.type = Task.Delivery.name
       task.status = Status.SCHEDULED
+      task.number = Repeat.state.repeat > 1 ? Repeat.state.repeat : 1
+      task.repeat = task.number
       await task.create()
       await this.querySelected().modify({status: Status.NONE})
       Task.emit('add', task)
@@ -56,9 +58,9 @@ export default class Delivery extends SkypeComponent {
   }
 
   repeat() {
-    if (Type.CHAT === this.type()) {
+    // if (Type.CHAT === this.type()) {
       return <Repeat/>
-    }
+    // }
   }
 
   render() {

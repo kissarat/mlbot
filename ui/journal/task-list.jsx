@@ -84,9 +84,10 @@ export default class TaskList extends Component {
   }
 
   async copy(t) {
-    const newTask = omit(t, 'id')
+    const newTask = new Task[t.type](omit(t, 'id'))
     newTask.status = Status.SCHEDULED
-    await db.task.add(newTask)
+    newTask.number = newTask.repeat
+    await newTask.create()
     this.setState({running: true})
     return this.refresh()
   }

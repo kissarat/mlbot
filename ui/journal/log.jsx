@@ -58,6 +58,20 @@ export default class Log extends Component {
     return this.load()
   }
 
+  taskNumber(l) {
+    const id = isObject(l.task) ? l.task.id : l.task
+    const repeat = isObject(l.task) ? l.task.repeat : 1
+    const number = repeat > 1 ? repeat - l.number + 1 : 1
+
+    if (isObject) {
+      return <Table.Cell>
+        задача&nbsp;
+        <span className="id">{id}</span>&nbsp;
+        {repeat > 1 ? <span>цикл {number}</span> : ''}
+      </Table.Cell>
+    }
+  }
+
   rows() {
     return this.state.records.map(l => {
       const TaskType = Task[l.task.type]
@@ -70,7 +84,7 @@ export default class Log extends Component {
         <Table.Cell className="id">{l.id}</Table.Cell>
         <Table.Cell>{l.name}</Table.Cell>
         <Table.Cell>{l.message || StatusText[l.status] || 'Неизвестно'}</Table.Cell>
-        <Table.Cell>задача <span className="id">{isObject(l.task) ? l.task.id : l.task}</span></Table.Cell>
+        {this.taskNumber(l)}
         <Table.Cell className="action">
           <Icon
             name="trash"

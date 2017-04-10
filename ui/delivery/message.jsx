@@ -23,7 +23,7 @@ export default class Message extends Editor {
   state = {
     sign: false,
     signature: 'https://club-leader.com/',
-    delay: 10,
+    wait: 10,
   }
 
   static propTypes = {
@@ -131,8 +131,8 @@ export default class Message extends Editor {
       {true || config.Type.CHAT === this.props.type ? <div className="group">
           с задежкой
           <input
-            name="delay"
-            value={this.state.delay}
+            name="wait"
+            value={this.state.wait}
             onChange={this.onChange}/>
           секунд между рассылками
         </div> : ''}

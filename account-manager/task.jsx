@@ -4,7 +4,7 @@ import config from '../app/config'
 import db from '../store/database.jsx'
 import Record from '../store/record.jsx'
 import {EventEmitter} from 'events'
-import {extend, random, merge, pick} from 'lodash'
+import {extend, random, merge, pick, each} from 'lodash'
 import {substitute} from '../util/linguistics.jsx'
 import {wait} from '../util/index.jsx'
 
@@ -17,32 +17,24 @@ import {wait} from '../util/index.jsx'
  * @property {Object[]} contacts
  */
 export default class Task {
-  static properties = ['id', 'contacts', 'status', 'after', 'wait', 'number', 'type', 'text']
+  static properties = ['id', 'account', 'contacts', 'status', 'after', 'wait', 'number', 'type', 'text', 'repeat']
 
   constructor(state) {
     merge(this, pick(state, Task.properties))
-    if (!this.type && this.constructor.name !== 'Task') {
+    if (!this.type) {
       this.type = this.constructor.name
     }
-    else if ('string' === typeof this.type) {
-      throw new Error('Task.type is not string', this.type)
+
+    const _defaults = {
+      status: config.Status.SCHEDULED,
+      number: 1,
+      after: 0,
+      wait: 0
     }
 
-    if ('number' !== typeof this.status) {
-      this.status = config.Status.SCHEDULED
-    }
-
-    if ('number' !== typeof this.number) {
-      this.number = 1
-    }
-
-    if ('number' !== typeof this.after) {
-      this.after = 0
-    }
-
-    if ('number' !== typeof this.wait) {
-      this.wait = 0
-    }
+    each(_defaults, (value, key) => {
+      this[key] = isFinite(this[key]) ? +this[key] : value
+    })
 
     console.log('STATE MERGED', this.type, state)
   }
@@ -123,8 +115,8 @@ export default class Task {
     }
     this.number--
     this.status = this.number > 0 ? config.Status.SCHEDULED : config.Status.DONE
-    if (this.wait > 0) {
-      this.after = Date.now() + this.wait
+    if (this.wait > 0 && this.number > 0) {
+      this.after = Date.now() + this.wait * 1000
     }
     await this.save()
     Task.emit('update', this)
@@ -136,12 +128,15 @@ export default class Task {
   }
 
   createMessage(contact) {
+    if (isFinite(contact.birthday)) {
+      contact.age = Math.floor((Date.now() - contact.birthday) / (1000 * 3600 * 24 * 365))
+    }
     const login = 'string' === typeof contact ? contact.split('~')[1] : contact.login
     return {
       login,
       name: contact.name,
       type: /[0-9a-f]{32}/.test(login) ? config.Type.CHAT : config.Type.PERSON,
-      text: substitute(this.text)
+      text: substitute(this.text, contact)
     }
   }
 
@@ -163,7 +158,7 @@ export default class Task {
         task.status = config.Status.ACCEPTED
         await task.save()
         await task.initialize()
-        task.start()
+        void task.start()
         this.emit('update', task)
         console.log('ACCEPTED', task.toString())
       }

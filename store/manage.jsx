@@ -10,13 +10,13 @@ db.create = function create() {
   this.version(3)
     .stores({
       contact: `&id, login, name, &time, [status+authorized], [account+authorized+status], type,
-        favorite, created, country, city, phones, language, avatar, sex, site, groups`,
+        favorite, created, country, city, phones, language, avatar, sex, site, groups, birthday`,
       group: '&id, account, name, contacts',
     })
 
   this.version(4)
     .stores({
-      task: '++&id, contacts, after, wait, number, type, text, time',
+      task: '++&id, contacts, after, wait, number, repeat, type, text, time',
       log: '++&id, contact, task, status, number, message, time',
       account: '&id, password, min, max, desktop, max_invite, web, server, headers, time',
     })

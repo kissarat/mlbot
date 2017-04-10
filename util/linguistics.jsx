@@ -41,7 +41,8 @@ export function evaluation(text, vars) {
     s = s.slice(1, -1)
     if (!_.isEmpty(vars)) {
       s = s.replace(/[a-z_]+/g, function (name) {
-        return name in vars ? JSON.stringify(vars[name]) :  ''
+        const v = vars[name]
+        return undefined !== v && null !== v ? JSON.stringify(vars[name]) :  ''
       })
     }
     return eval(s)

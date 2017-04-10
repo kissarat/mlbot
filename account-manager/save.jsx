@@ -10,7 +10,7 @@ async function saveContacts(rawContacts = this.contacts) {
   const existing = await db.contact
     .filter(c => this.id === c.account && Type.PERSON === c.type)
     .toArray()
-  for(const c of rawContacts) {
+  for (const c of rawContacts) {
     const match = /^8:(.*)$/.exec(c.mri)
     if (match && !c.blocked && isSkypeUsername(match[1]) && exclude.indexOf(match[1])) {
       const login = match[1]
@@ -38,7 +38,13 @@ async function saveContacts(rawContacts = this.contacts) {
         ['country', 'city'].forEach(name => contact[name] = c.locations[0][name])
       }
       if ('string' === typeof c.profile.language) {
-        contact.language = c.profile.language
+        contact.language = c.profile.language.toUpperCase()
+      }
+      if ('string' === typeof c.profile.birthday) {
+        const birthday = new Date(c.profile.birthday).getTime()
+        if (isFinite(birthday)) {
+          contact.birthday = birthday
+        }
       }
       if ('string' === typeof c.profile.gender) {
         contact.sex = c.profile.gender
@@ -69,7 +75,7 @@ async function saveChats(conversations = this.conversations) {
   const absent = []
 
   const entities = new AllHtmlEntities()
-  for(const c of conversations) {
+  for (const c of conversations) {
     const chatId = /19:([0-9a-f]+)@thread\.skype/.exec(c.id)
     if (chatId) {
       const login = chatId[1]
