@@ -33,7 +33,7 @@ export default class Task {
     }
 
     each(_defaults, (value, key) => {
-      this[key] = isFinite(this[key]) ? +this[key] : value
+      this[key] = isFinite(this[key]) && this[key] >= value ? +this[key] : value
     })
 
     console.log('STATE MERGED', this.type, state)

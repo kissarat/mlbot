@@ -43,7 +43,8 @@ WebView.prototype = extend({
   },
 
   invoke(fn, args = []) {
-    args = args.map(a => JSON.stringify(a)).join(',')
+    console.log(args)
+    args = args.map(a => undefined === a ? 'undefined' : JSON.stringify(a)).join(',')
     this.executeJavaScript(`${fn}(${args})`)
   },
 

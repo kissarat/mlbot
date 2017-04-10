@@ -24,7 +24,7 @@ export default class Message extends Editor {
   state = {
     sign: false,
     signature: '',
-    wait: 10,
+    wait: 0,
   }
 
   static propTypes = {

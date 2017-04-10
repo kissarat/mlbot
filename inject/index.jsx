@@ -28,6 +28,7 @@ function sendMessage(message) {
   // $all('swx-recent-item').forEach(function (item) {
   //   item.remove()
   // })
+  openSettings()
   waiter('[role=search]', function (input) {
     input.value = ''
     input.focus()
