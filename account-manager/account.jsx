@@ -345,7 +345,7 @@ export default class Account extends AccountBase {
         mri: getMri(contact),
         greeting: (contact.text && contact.text.trim()) || ''
       },
-        ['RegistrationToken'])
+        ['X-Skypetoken'])
       contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
     }
     return contact

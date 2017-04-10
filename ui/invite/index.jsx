@@ -1,3 +1,4 @@
+import AccountManager from '../../account-manager/index.jsx'
 import Alert from '../widget/alert.jsx'
 import db from '../../store/database.jsx'
 import Help from '../widget/help.jsx'
@@ -7,35 +8,34 @@ import React from 'react'
 import SkypeComponent from '../base/skype-component.jsx'
 import Task from '../../account-manager/task.jsx'
 import TextContactEditor from './text-contact-editor.jsx'
-import {Segment, Header} from 'semantic-ui-react'
+import {Segment, Header, Button} from 'semantic-ui-react'
 import {Status, Type} from '../../app/config'
 import {toArray, defaults, keyBy, uniq} from 'lodash'
-import AccountManager from '../account/index.jsx'
 
 export default class Invite extends SkypeComponent {
   name = 'Invite'
 
   invite = async text => {
-    const account = await AccountManager.get(this.props.account)
+    const account = await AccountManager.get(this.state.account)
     let contacts = await Task.Invite.query()
       .limit(account.max_invite)
       .toArray()
     if (contacts.length > 0) {
       let ids = contacts.map(c => c.id)
-      await db.contacts.filter(c => ids.indexOf(c.id) >= 0).delete()
+      await db.contact.filter(c => ids.indexOf(c.id) >= 0).delete()
       for (const contact of contacts) {
-        contact.account = this.props.account
+        contact.account = account.id
         contact.id = contact.account + '~' + contact.login
         contact.status = Status.SCHEDULED
       }
-      const found = await db.contacts
+      const found = await db.contact
         .filter(c => ids.indexOf(c.id) >= 0)
         .toArray()
       ids = found.map(c => c.id)
       contacts = contacts.filter(c => ids.indexOf(c.id) < 0)
-      await db.contacts.bulkPut(contacts)
-      const task = Task.Invite({
-        account: this.props.account,
+      await db.contact.bulkPut(contacts)
+      const task = new Task.Invite({
+        account: account.id,
         contacts: contacts.map(c => c.id),
         text
       })
@@ -43,6 +43,20 @@ export default class Invite extends SkypeComponent {
     }
     else {
       this.alert('error', 'Вы не выбрали ни одного контакта')
+    }
+  }
+
+  submitBlock() {
+    if (this.state.account) {
+      if (this.state.data && this.state.data.web) {
+        return <Button
+          onClick={() => this.invite('')}
+          type="button">Добавить в друзья</Button>
+      }
+      else {
+        return <InviteGreeting
+          submit={this.invite}/>
+      }
     }
   }
 
@@ -56,9 +70,7 @@ export default class Invite extends SkypeComponent {
             <Segment>
               <h2>Выберите Skype</h2>
               {this.accountSelect()}
-              <InviteGreeting
-                disabled={!this.state.account}
-                submit={this.invite}/>
+              {this.submitBlock()}
             </Segment>
           </Segment.Group>
 

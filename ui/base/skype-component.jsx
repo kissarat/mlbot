@@ -1,9 +1,9 @@
+import AccountManager from '../../account-manager/index.jsx'
 import Alert from '../widget/alert.jsx'
 import App from '../app/index.jsx'
 import Persistent from '../../util/persistence.jsx'
 import React, {Component} from 'react'
 import SelectAccount from '../account/select.jsx'
-import AccountManager from '../../account-manager/index.jsx'
 import {Status} from '../../app/config'
 import {toArray, merge, defaults, isObject} from 'lodash'
 
@@ -27,7 +27,13 @@ export default class SkypeComponent extends Component {
   }
 
   async checkSkype() {
-    if (this.state.account && !await AccountManager.get(this.state.account)) {
+    let data
+    if (this.state.account && (data = await AccountManager.get(this.state.account))) {
+      if (!this.state.data || this.state.account !== this.state.data.id) {
+        this.setState({data})
+      }
+    }
+    else {
       this.setState({account: ''})
     }
   }
@@ -37,6 +43,7 @@ export default class SkypeComponent extends Component {
       this.setState({
         account: account.id
       })
+      setTimeout(() => this.checkSkype(), 0)
     }
   }
 
