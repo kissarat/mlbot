@@ -1,7 +1,7 @@
 import BrowseFile from '../widget/browse-file.jsx'
 import Contact from '../../store/contact.jsx'
 import Editor from '../base/editor.jsx'
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
 import {filterSkypeUsernames} from '../../util/index.jsx'
 import {Form, Segment} from 'semantic-ui-react'
 

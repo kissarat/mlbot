@@ -1,5 +1,5 @@
-import React, {Component, PropTypes} from 'react'
-import {Form, TextArea, Button} from 'semantic-ui-react'
+import React, {Component} from 'react'
+import {Form} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {toArray, defaults, keyBy, uniq} from 'lodash'
 import Editor from '../base/editor.jsx'

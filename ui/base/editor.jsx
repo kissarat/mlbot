@@ -1,6 +1,7 @@
 import FormComponent from '../base/form-component.jsx'
 import Persistence from '../../util/persistence.jsx'
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import {Form} from 'semantic-ui-react'
 import {merge} from 'lodash'
 

@@ -41,7 +41,7 @@
     "lodash": "^4.17.2",
     "moment": "^2.17.1",
     "prop-types": "^15.5.6",
-    "react": "^15.4.1",
+    "react": "^15.4.0",
     "react-dom": "^15.4.1",
     "react-router": "^3.0.3",
     "request": "^2.81.0",

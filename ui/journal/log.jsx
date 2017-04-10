@@ -1,5 +1,6 @@
 import db from '../../store/database.jsx'
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import Record from '../../store/record.jsx'
 import {joinLog} from '../../store/utils.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'

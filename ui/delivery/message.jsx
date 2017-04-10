@@ -1,9 +1,9 @@
 import api from '../../connect/api.jsx'
 import config from '../../app/config'
 import Editor from '../base/editor.jsx'
-import Help from '../widget/help.jsx'
 import moment from 'moment'
-import React, {Component, PropTypes} from 'react'
+import React, {Componen} from 'react'
+import PropTypes from 'prop-types'
 import {Form} from 'semantic-ui-react'
 import {range, toArray, map, defaults, keyBy, uniq, isObject, pick} from 'lodash'
 

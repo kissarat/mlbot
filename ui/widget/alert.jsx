@@ -1,4 +1,5 @@
-import React, {PureComponent, PropTypes} from 'react'
+import React, {PureComponent} from 'react'
+import PropTypes from 'prop-types'
 import {Message} from 'semantic-ui-react'
 import {omit, pick} from 'lodash'
 import Persistence from '../../util/persistence.jsx'

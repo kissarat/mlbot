@@ -1,6 +1,6 @@
 import db from '../../store/database.jsx'
 import Help from '../widget/help.jsx'
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
 import Record from '../../store/record.jsx'
 import Task from '../../account-manager/task.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
