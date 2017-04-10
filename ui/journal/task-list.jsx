@@ -81,6 +81,7 @@ export default class TaskList extends Component {
     const newTask = omit(t, 'id')
     newTask.status = Status.SCHEDULED
     await db.task.add(newTask)
+    this.setState({running: true})
     return this.refresh()
   }
 

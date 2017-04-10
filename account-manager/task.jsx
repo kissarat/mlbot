@@ -121,7 +121,9 @@ export default class Task {
     Task.emit('update', this)
   }
 
-  stop = () => db.task.update(this.id, {status: config.Status.SCHEDULED})
+  stop() {
+    return db.task.update(this.id, {status: config.Status.SCHEDULED})
+  }
 
   createMessage(contact) {
     const login = 'string' === typeof contact ? contact.split('~')[1] : contact.login
