@@ -6,7 +6,7 @@ import {isObject, debounce} from 'lodash'
 import {joinLog} from '../../store/utils.jsx'
 import {Segment, Dimmer, Loader, Header, Table, Icon, Button} from 'semantic-ui-react'
 import {Status} from '../../app/config'
-import Paginator from '../widget/paginator.jsx'
+import {TablePage} from '../widget/paginator.jsx'
 
 // checkmark
 const StatusText = {
@@ -17,7 +17,7 @@ const StatusText = {
   [Status.DONE]: 'Сделано',
 }
 
-export default class Log extends Component {
+export default class Log extends TablePage {
   state = {
     records: [],
     busy: false,
@@ -102,28 +102,6 @@ export default class Log extends Component {
     })
   }
 
-  paginator(isHeader) {
-    if (this.state.count > 0 && this.state.count > this.state.limit) {
-      const row = <Table.Row>
-        <Table.HeaderCell colSpan="6">
-          <Paginator
-            {...this.state}
-            changeOffset={this.changeOffset}
-          />
-        </Table.HeaderCell>
-      </Table.Row>
-
-      return isHeader
-        ? <Table.Header>{row}</Table.Header>
-        : <Table.Footer>{row}</Table.Footer>
-    }
-  }
-
-  changeOffset = offset => {
-    this.setState({offset})
-    setTimeout(this.load, 0)
-  }
-
   render() {
     return <Segment className="widget log">
       <Dimmer active={this.state.busy} inverted>
@@ -132,9 +110,9 @@ export default class Log extends Component {
       <div>
         <Header textAlign="center" as="h2">Журнал</Header>
         <Table compact="very" size="small">
-          {this.paginator(true)}
+          {this.paginator(true, 6)}
           <Table.Body>{this.rows()}</Table.Body>
-          {this.paginator(false)}
+          {this.paginator(false, 6)}
         </Table>
       </div>
     </Segment>

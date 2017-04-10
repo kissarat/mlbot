@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Menu, Icon} from 'semantic-ui-react'
+import {Menu, Icon, Table} from 'semantic-ui-react'
 import {range} from 'lodash'
 
 export default class Paginator extends Component {
@@ -52,5 +52,29 @@ export default class Paginator extends Component {
       </Menu.Item>
       <Menu.Item as="strong">{this.props.count}</Menu.Item>
     </Menu>
+  }
+}
+
+export class TablePage extends Component {
+  changeOffset = offset => {
+    this.setState({offset})
+    setTimeout(this.load, 0)
+  }
+
+  paginator(isHeader, colSpan) {
+    if (this.state.count > 0 && this.state.count > this.state.limit) {
+      const row = <Table.Row>
+        <Table.HeaderCell colSpan={colSpan}>
+          <Paginator
+            {...this.state}
+            changeOffset={this.changeOffset}
+          />
+        </Table.HeaderCell>
+      </Table.Row>
+
+      return isHeader
+        ? <Table.Header>{row}</Table.Header>
+        : <Table.Footer>{row}</Table.Footer>
+    }
   }
 }

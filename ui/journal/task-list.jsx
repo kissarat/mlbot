@@ -7,6 +7,7 @@ import {Segment, Dimmer, Loader, Header, Table, Icon} from 'semantic-ui-react'
 import {Status} from '../../app/config'
 import {omit, debounce, isObject} from 'lodash'
 import {timeLeft} from '../../util/index.jsx'
+import {TablePage} from '../widget/paginator.jsx'
 
 // pause circle outline
 // calendar plus
@@ -19,24 +20,27 @@ const StatusText = {
   [Status.DONE]: 'Завершено',
 }
 
-export default class TaskList extends Component {
+export default class TaskList extends TablePage {
   state = {
     tasks: [],
     running: false,
-    now: Date.now()
+    now: Date.now(),
+    offset: 0,
+    limit: 60,
+    count: 0
   }
 
   componentDidMount() {
     void this.refresh()
     Task.on('add', this.add)
     Task.on('update', this.update)
-    addEventListener('resize', this.refreshDebounced)
+    // addEventListener('resize', this.refreshDebounced)
     this.timer = setInterval(this.updateNow, 950)
   }
 
   componentWillUnmount() {
     clearInterval(this.timer)
-    removeEventListener('resize', this.refreshDebounced)
+    // removeEventListener('resize', this.refreshDebounced)
     Task.removeListener('update', this.update)
     Task.removeListener('add', this.add)
   }
@@ -59,19 +63,18 @@ export default class TaskList extends Component {
 
   refreshDebounced = debounce(this.refresh, 500)
 
-  async load(props) {
+  async load() {
     this.setState({busy: true})
-    const q = db.task
-    if (props.filter instanceof Function) {
-      q.filter(props.filter)
-    }
-    const tasks = await q
+    const count = await db.task.count()
+    const tasks = await db.task
+      .offset(this.state.offset)
+      .limit(this.state.limit)
+      .desc('id')
       .toArray()
-
-    tasks.sort((a, b) => b.id - a.id)
 
     this.setState({
       busy: false,
+      count,
       tasks
     })
   }
@@ -165,8 +168,10 @@ export default class TaskList extends Component {
             Список задач
           </Header>
         </Help>
-        <Table compact="very">
+        <Table size="small" compact="very">
+          {this.paginator(true, 7)}
           <Table.Body>{this.rows()}</Table.Body>
+          {this.paginator(true, 7)}
         </Table>
       </div>
     }

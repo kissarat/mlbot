@@ -64,9 +64,9 @@ export default class Delivery extends SkypeComponent {
   }
 
   taskList() {
-    if (innerHeight > 800) {
-      return <TaskList filter={c => c.status !== Status.DONE}/>
-    }
+    // if (innerHeight > 800) {
+      {/*return <TaskList filter={c => c.status !== Status.DONE}/>*/}
+    // }
   }
 
   render() {
