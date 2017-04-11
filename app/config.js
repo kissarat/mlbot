@@ -10,8 +10,8 @@ try {
 catch (ex) {
 }
 
-// const vendor = 'inbisoft'
-const vendor = 'club-leader'
+const vendor = 'inbisoft'
+// const vendor = 'club-leader'
 // const vendor = 'lsproject'
 
 let config = {

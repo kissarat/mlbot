@@ -4,14 +4,15 @@ import api from '../../connect/api.jsx'
 import React, {Component} from 'react'
 import {Link} from 'react-router'
 import {Loader, Icon, Segment} from 'semantic-ui-react'
+import db from '../../store/database.jsx'
 
 export default class AccountList extends Component {
   state = {
     accounts: false,
   }
 
-  async load() {
-    const accounts = await AccountManager.getList()
+  async load(refresh = false) {
+    const accounts = await AccountManager.getList(refresh)
     this.setState({accounts})
   }
 
@@ -30,9 +31,9 @@ export default class AccountList extends Component {
 
   changeTime = () => this.setState({time: Date.now()})
 
-  async remove({login}) {
-    await api.del('skype/remove', {login})
-    await this.load()
+  async remove({id}) {
+    await db.account.delete(id)
+    await this.load(true)
   }
 
   addSkype() {
