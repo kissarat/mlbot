@@ -35,6 +35,10 @@ export class Sky extends Emitter {
     }
   }
 
+  invoke(options) {
+    this[options.action](options)
+  }
+
   send(data) {
     data.time = Date.now()
     console.log(JSON.stringify(data))
@@ -42,5 +46,7 @@ export class Sky extends Emitter {
 }
 
 export const sky = new Sky();
+
+window.sky = sky
 
 // extend(window, {Emitter, Sky, sky})

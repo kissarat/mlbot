@@ -14,6 +14,18 @@ function insertText(text) {
   document.execCommand('insertText', true, text)
 }
 
+function resetSearch() {
+  $$('.searchReset').click()
+}
+
+HTMLInputElement.prototype.paste = function (text, clear) {
+  if (clear) {
+    this.value = ''
+  }
+  this.focus()
+  document.execCommand('insertText', true, text)
+}
+
 function insertTextIntoInput(input, text) {
   if ('string' === typeof input) {
     input = $$(input)
@@ -139,57 +151,43 @@ function openSettings() {
 }
 
 function invite(contact) {
-  let directoryTimer = true
-  let contactRequestTimer = true
-  function _invited(status) {
-    $$('[role=search]').value = ''
-    clearInterval(directoryTimer)
-    clearInterval(contactRequestTimer)
-    openSettings()
-    sky.send(extend(contact, {
-      type: 'invite',
-      status
-    }))
-  }
   if ('string' === typeof contact) {
     contact = {login: contact}
   }
   waiter('[role=search]', function (input) {
-    input.focus()
-    input.value = ''
-    insertText(contact.login)
+    function _invited(status) {
+      // input.focus()
+      resetSearch()
+      sky.send(extend(contact, {
+        type: 'invite',
+        status
+      }))
+    }
+
+    resetSearch()
+    input.paste(contact.login, true)
     waiter('.searchDirectory', function (button) {
       button.click()
-      let found
-      if (true === directoryTimer) {
-        directoryTimer = setInterval(function () {
-            if ($$('.directory [data-bind*="emptyListText"]')) {
-              _invited(Status.ABSENT)
-            }
-            else if ($$('.people li[data-title]')) {
+      waiter.fork({
+        '.directory [data-bind*="emptyListText"]'() {
+          _invited(Status.ABSENT)
+        },
+
+        // .people li[data-title]
+        [`.searchItem[data-title*="${contact.login}"]`](contactItem) {
+          contactItem.click()
+          waiter.fork({
+            '.contactRequestSend  |  .contactRequestOutgoingMessage ~ .buttonRow button'(button) {
+              button.click()
+              _invited(Status.DONE)
+            },
+
+            '.contactRequestResendMessage  |  .contactRequestOutgoingMessage'() {
               _invited(Status.CONFLICT)
             }
-            else if (found = $$('.directory li:nth-child(2)')) {
-              found.click()
-              if (true === contactRequestTimer) {
-                contactRequestTimer = setInterval(function () {
-                    if (found = $$('.contactRequestSend') || $$('.contactRequestOutgoingMessage ~ .buttonRow button')) {
-                      found.click()
-                      _invited(Status.DONE)
-                    }
-                    else if ($$('.contactRequestResendMessage') || $$('.contactRequestOutgoingMessage')) {
-                      _invited(Status.CONFLICT)
-                    }
-                    else {
-                      console.log('Nothing found')
-                    }
-                  },
-                  waiter.DELAY)
-              }
-            }
-          },
-          waiter.DELAY)
-      }
+          })
+        }
+      })
     })
   })
 }
@@ -210,6 +208,11 @@ const _exports = {
   confirmIdentity,
   invite
 }
+
+extend(sky, {
+  sendMessage,
+  invite
+})
 
 extend(window, _exports)
 

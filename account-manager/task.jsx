@@ -60,6 +60,7 @@ export default class Task {
 
   static boot() {
     if (!this._timer && config.task.enabled) {
+      this.restart(true)
       this._timer = setInterval(this.serve, config.task.interval)
     }
   }
@@ -131,6 +132,7 @@ export default class Task {
     if (isFinite(contact.birthday)) {
       contact.age = Math.floor((Date.now() - contact.birthday) / (1000 * 3600 * 24 * 365))
     }
+    contact.time = new Date().toLocaleString('ru-RU')
     const login = 'string' === typeof contact ? contact.split('~')[1] : contact.login
     return {
       login,
@@ -183,13 +185,13 @@ export default class Task {
     return db.task.filter(t => config.Status.ACCEPTED === t.status).toArray()
   }
 
-  static async restart() {
+  static async restart(force = false) {
     const now = Date.now()
     const accepted = await this.getAccepted()
     for (const task of accepted) {
-      if (task.account.timeout > now - task.started) {
-        task.stop()
-        task.start()
+      if (true === force || task.account.timeout > now - task.started) {
+        await task.stop()
+        void task.start()
       }
     }
   }
@@ -264,8 +266,12 @@ class Invite extends Task {
   static icon = 'add user'
   static title = 'Приглашения'
 
-  iterate(contact) {
-    return this.account.invite(this.createMessage(contact))
+  async iterate(contact) {
+    let {status} = await this.account.invite(this.createMessage(contact))
+    if (config.Status.DONE === status) {
+      status = config.Status.NONE
+    }
+    return db.contact.update(contact.id, {status})
   }
 
   static query(status = config.Status.SELECTED) {
@@ -281,8 +287,14 @@ class Clear extends Task {
   static icon = 'remove user'
   static title = 'Очистка серых контактов'
 
-  iterate(contact) {
-    return this.account.remove(contact)
+  async iterate(contact) {
+    const {status} = await this.account.remove(contact)
+    if (config.Status.DONE === status) {
+      await db.contact.delete(contact.id)
+    }
+    else {
+      throw new Error('Контакт не найден')
+    }
   }
 }
 

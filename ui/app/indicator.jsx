@@ -15,11 +15,11 @@ export default class Indicator extends Component {
       // cpu: Math.ceil(os.loadavg()[0] * 100 / os.cpus().length)
       // free: Math.ceil(os.freemem() / (1024 * 1024))
     }
-    const webviews = document.querySelectorAll('webview')
-    for (let i = 0; i < webviews.length; i++) {
-      const {memory} = await webviews[i].getPerformance()
-      state.memory += memory.usedJSHeapSize / (1024 * 1024)
-    }
+    // const webviews = document.querySelectorAll('webview')
+    // for (let i = 0; i < webviews.length; i++) {
+    //   const {memory} = await webviews[i].getPerformance()
+    //   state.memory += memory.usedJSHeapSize / (1024 * 1024)
+    // }
     state.memory = Math.ceil(state.memory)
     this.setState(state)
   }

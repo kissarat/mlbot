@@ -16,6 +16,7 @@ require('electron-context-menu')({
   },
   labels
 })
+
 /*
 switch (process.platform) {
   case 'darwin':

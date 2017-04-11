@@ -32,7 +32,7 @@ extend(sky, {
   getMembers(chatId) {
     return sky.fetch(`https://client-s.gateway.messenger.live.com/v1/threads/19:${chatId}@thread.skype?view=msnp24Equivalent`)
   },
-
+/*
   invite(username, greeting = '') {
     return fetch(`https://contacts.skype.com/contacts/v2/users/${sky.profile.username}/contacts`, {
       method: 'POST',
@@ -45,7 +45,7 @@ extend(sky, {
       })
     })
   },
-
+*/
   removeContact(username) {
     const fetch = url => this.fetch(url + username, {
       method: 'DELETE'
@@ -56,6 +56,7 @@ extend(sky, {
 })
 
 extend(window, {
+  /*
   invite(username, greeting) {
     sky.invite(username, greeting)
       .then(function ({status}) {
@@ -67,7 +68,7 @@ extend(window, {
         })
       })
   },
-
+*/
   getMembers(chatId) {
     sky.getMembers(chatId)
       .then(function (r) {
@@ -171,10 +172,10 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
     })
   }
 
-  if ('https://client-s.gateway.messenger.live.com/v1/users/ME/endpoints/SELF/subscriptions/0/poll' === url) {
-    console.log(url)
-    this.send = Function()
-  }
+  // if ('https://client-s.gateway.messenger.live.com/v1/users/ME/endpoints/SELF/subscriptions/0/poll' === url) {
+  //   console.log(url)
+  //   this.send = Function()
+  // }
 
   if ('https://api.skype.com/users/self/profile' === url && 'GET' === method && !sky.profile && sky.fetchOptions.headers['X-Skypetoken']) {
     this.addEventListener('load', function () {

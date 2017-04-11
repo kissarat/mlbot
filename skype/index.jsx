@@ -1,6 +1,6 @@
 import processProfile from './process-profile.jsx'
 import Skype from './static.jsx'
-import {extend} from 'lodash'
+import {extend, defaults} from 'lodash'
 import {Status, Type, start} from '../app/config'
 import load from './load.jsx'
 
@@ -43,18 +43,17 @@ extend(Skype.prototype, {
     })
   },
 
-  sendMessage(message) {
-    return new Promise(resolve => {
-      this.once('message', resolve)
-      this.invoke('sendMessage', [message])
-    })
+  sendMessage(options) {
+    return this.promise(defaults(options, {
+      action: 'sendMessage',
+      event: 'message'
+    }))
   },
 
-  invite(username, greeting) {
-    return new Promise(resolve => {
-      this.once('invite', resolve)
-      this.invoke('invite', [username, greeting])
-    })
+  invite(options) {
+    return this.promise(defaults(options, {
+      action: 'invite'
+    }))
   },
 
   getMembers(chatId) {

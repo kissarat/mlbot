@@ -347,7 +347,7 @@ export default class Account extends AccountBase {
           greeting: (contact.text && contact.text.trim()) || ''
         },
         ['X-Skypetoken'])
-      contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
+      contact.status = 200 === statusCode ? Status.DONE : Status.ABSENT
     }
     return contact
   }
@@ -359,8 +359,8 @@ export default class Account extends AccountBase {
       console.warn('Using string as contact', contact.login)
     }
     const url = `https://contacts.skype.com/contacts/v2/users/${this.username}/contacts/` + getMri(contact)
-    const {statusCode} = await this.request('DELETE', url, null, ['X-Skypetoken'])
-    contact.status = 200 === statusCode ? Status.NONE : Status.ABSENT
+    const statusCode = await this.request('DELETE', url, null, ['X-Skypetoken'])
+    contact.status = 200 === statusCode ? Status.DONE : Status.ABSENT
     return contact
   }
 

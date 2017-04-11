@@ -38,6 +38,7 @@ extend(Skype, {
   open(data) {
     let skype = Skype.get(data.id) || Skype.create(data.id)
     Skype.emit('open', {skype, ...data})
+    skype.timeout = data.timeout
     return skype
   },
 

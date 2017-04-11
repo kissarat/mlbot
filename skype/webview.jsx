@@ -1,6 +1,6 @@
 import  config from '../app/config'
 import {EventEmitter} from 'events'
-import {extend, isObject, toArray} from 'lodash'
+import {extend, isObject, toArray, defaults} from 'lodash'
 import UserAgent from '../util/user-agent.jsx'
 
 window.profiles = {}
@@ -43,9 +43,31 @@ WebView.prototype = extend({
   },
 
   invoke(fn, args = []) {
-    console.log(args)
     args = args.map(a => undefined === a ? 'undefined' : JSON.stringify(a)).join(',')
     this.executeJavaScript(`${fn}(${args})`)
+  },
+
+  promise(options) {
+    return new Promise((resolve, reject) => {
+      defaults(options, {
+        timeout: this.timeout
+      })
+      setTimeout(() => {
+        this.remove()
+        reject(new Error(`Web Skype не отвечат ${options.timeout/1000} секунд`))
+      }, options.timeout)
+      this.once(options.event || options.action, function (data) {
+        if (data.error) {
+          reject(data)
+        }
+        else {
+          resolve(data)
+        }
+      })
+      const string = JSON.stringify(options)
+      console.log('INVOKE', options)
+      this.executeJavaScript(`sky.${options.action}(${string})`)
+    })
   },
 
   onMany(number, event, cb) {

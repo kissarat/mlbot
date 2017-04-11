@@ -3,19 +3,12 @@ const merge = require('deepmerge')
 const package_json = require('./package.json')
 const {cloneDeep} = require('lodash')
 
-var local
-try {
-  local = require('../local')
-}
-catch (ex) {
-}
-
 const vendor = 'inbisoft'
 // const vendor = 'club-leader'
 // const vendor = 'lsproject'
 
 let config = {
-  dev: true,
+  dev: false,
   reset: false,
   origin: 'lsproject' === vendor ? 'https://ls.inbisoft.com' : 'https://app.inbisoft.com',
   window: {
@@ -98,6 +91,16 @@ if ('undefined' !== typeof localStorage) {
   catch (ex) {
     console.warn('Local configuration not loaded', ex)
   }
+}
+
+var local
+try {
+  if ('undefined' !== typeof process && process.env && 'dev' === process.env.MLBOT) {
+    local = require('../local')
+    config = merge(config, local)
+  }
+}
+catch (ex) {
 }
 
 // module.exports = freeze(local ? merge(config, local) : config)
