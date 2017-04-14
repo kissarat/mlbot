@@ -52,8 +52,8 @@ WebView.prototype = extend({
       defaults(options, {
         timeout: this.timeout
       })
-      setTimeout(() => {
-        this.remove()
+      const timer = setTimeout(() => {
+        this.reload()
         reject(new Error(`Web Skype не отвечат ${options.timeout/1000} секунд`))
       }, options.timeout)
       this.once(options.event || options.action, function (data) {
@@ -61,6 +61,7 @@ WebView.prototype = extend({
           reject(data)
         }
         else {
+          clearTimeout(timer)
           resolve(data)
         }
       })

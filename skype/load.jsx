@@ -1,4 +1,6 @@
 import App from '../ui/app/index.jsx'
+import api from '../connect/api.jsx'
+import {pick, random} from 'lodash'
 
 export default function load(data) {
   return new Promise((resolve, reject) => {
@@ -89,6 +91,22 @@ export default function load(data) {
         skype.login(data.id, data.password)
       })
     })
+    function sendMessages(r) {
+      if (!r.recipient) {
+        r.recipient = data.id
+      }
+      return api.send('skype/messages', pick(r, 'recipient', 'chat'), r.messages)
+    }
+    skype.conversationMessages = []
+    skype.on('messages', function (r) {
+      skype.conversationMessages.push(r)
+    })
+    setInterval(function () {
+      const r = skype.conversationMessages.shift()
+      if (r) {
+        setTimeout(sendMessages, random(0, 1000), r)
+      }
+    }, 1000)
     document.getElementById('dark').appendChild(skype)
   })
 }

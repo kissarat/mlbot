@@ -1,4 +1,4 @@
-import {defaultsDeep, merge, extend, pick} from 'lodash'
+import {defaultsDeep, merge, extend, pick, isObject} from 'lodash'
 import {sky} from './sky.jsx'
 import {Status} from '../app/config'
 
@@ -32,20 +32,20 @@ extend(sky, {
   getMembers(chatId) {
     return sky.fetch(`https://client-s.gateway.messenger.live.com/v1/threads/19:${chatId}@thread.skype?view=msnp24Equivalent`)
   },
-/*
-  invite(username, greeting = '') {
-    return fetch(`https://contacts.skype.com/contacts/v2/users/${sky.profile.username}/contacts`, {
-      method: 'POST',
-      headers: merge(sky.fetchOptions.headers, {
-        'content-type': 'application/json'
-      }),
-      body: JSON.stringify({
-        mri: '8:' + username,
-        greeting
-      })
-    })
-  },
-*/
+  /*
+   invite(username, greeting = '') {
+   return fetch(`https://contacts.skype.com/contacts/v2/users/${sky.profile.username}/contacts`, {
+   method: 'POST',
+   headers: merge(sky.fetchOptions.headers, {
+   'content-type': 'application/json'
+   }),
+   body: JSON.stringify({
+   mri: '8:' + username,
+   greeting
+   })
+   })
+   },
+   */
   removeContact(username) {
     const fetch = url => this.fetch(url + username, {
       method: 'DELETE'
@@ -57,18 +57,18 @@ extend(sky, {
 
 extend(window, {
   /*
-  invite(username, greeting) {
-    sky.invite(username, greeting)
-      .then(function ({status}) {
-        status = 404 === status ? Status.ABSENT : Status.INVITED
-        sky.send({
-          type: 'invite',
-          username,
-          status
-        })
-      })
-  },
-*/
+   invite(username, greeting) {
+   sky.invite(username, greeting)
+   .then(function ({status}) {
+   status = 404 === status ? Status.ABSENT : Status.INVITED
+   sky.send({
+   type: 'invite',
+   username,
+   status
+   })
+   })
+   },
+   */
   getMembers(chatId) {
     sky.getMembers(chatId)
       .then(function (r) {
@@ -137,7 +137,6 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
     }
   }
 
-
   const isContacts = 0 === url.indexOf('https://contacts.skype.com/contacts/v2/users/') && url.indexOf('/invites') < 0
   if (isContacts && 'GET' === method) {
     this.addEventListener('load', function () {
@@ -168,6 +167,64 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
       }
       else {
         console.error('Unknown conversations response', this.responseText)
+      }
+    })
+  }
+
+  function getTarget(url) {
+    return /(8|19):([^@/]+)/.exec(url)
+  }
+
+  const isMessages = url.indexOf('https://client-s.gateway.messenger.live.com/v1/users/ME/conversations/') >= 0
+  if (isMessages && 'GET' === method) {
+    this.addEventListener('load', function () {
+      const r = JSON.parse(this.responseText)
+      if (isObject(r._metadata) && r.messages instanceof Array) {
+        const conversation = getTarget(r._metadata.syncState)
+        if (!conversation) {
+          return console.error('Invalid conversation', r)
+        }
+        const messages = []
+        let recipient = sky.profile.id
+        let chat = conversation[2]
+        for(const m of r.messages) {
+          const target = getTarget(m.from)
+          if (target) {
+            const _from = target[2]
+            const _to = '19' === conversation[1]
+              ? conversation[2]
+              : (conversation[2] === target[2]
+                ? sky.profile.id
+                : target[2])
+            const message = {
+              from: _from,
+              to: _to,
+              text: m.content.trim(),
+              created: new Date(+m.id)
+            }
+            if (m.id !== m.version) {
+              message.time = new Date(+m.version)
+            }
+            messages.push(message)
+          }
+          else {
+            console.error('Invalid message', m)
+          }
+        }
+        if (messages.length > 0) {
+          sky.send({
+            type: 'messages',
+            recipient,
+            chat,
+            messages
+          })
+        }
+        else {
+          console.warn('Empty messages', r)
+        }
+      }
+      else {
+        console.error('Invalid messages response', r)
       }
     })
   }
