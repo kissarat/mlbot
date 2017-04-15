@@ -30,12 +30,20 @@ async function saveContacts(rawContacts = this.contacts) {
         time: found ? found.time : this.nextId(),
         groups: []
       }
-      if (isObject(c.profile.phones) && isEmpty(c.profile.phones)) {
+      if (c.emails instanceof Array && c.emails.length > 0) {
+        contact.emails = c.emails
+      }
+      if (isObject(c.profile.phones) && !isEmpty(c.profile.phones)) {
         contact.phones = {}
         c.profile.phones.forEach(p => contact.phones[p.type] = p.number)
       }
-      if (c.locations instanceof Array && c.locations.length > 0) {
-        ['country', 'city'].forEach(name => contact[name] = c.locations[0][name])
+      if (c.profile.locations instanceof Array && c.profile.locations.length > 0) {
+        if (c.profile.locations[0].country) {
+          contact.country = c.profile.locations[0].country.toUpperCase()
+        }
+        if (c.profile.locations[0].city) {
+          contact.city = c.profile.locations[0].city
+        }
       }
       if ('string' === typeof c.profile.language) {
         contact.language = c.profile.language.toUpperCase()
@@ -46,14 +54,19 @@ async function saveContacts(rawContacts = this.contacts) {
           contact.birthday = birthday
         }
       }
-      if ('string' === typeof c.profile.gender) {
-        contact.sex = c.profile.gender
+      const stringMap = {
+        sex: 'gender',
+        nick: 'nick',
+        avatar: 'avatar_url',
+        site: 'website',
+        about: 'about',
+        mood: 'mood'
       }
-      if ('string' === typeof c.profile.nick) {
-        contact.nick = c.profile.nick
-      }
-      if ('string' === typeof c.profile.avatar_url) {
-        contact.avatar = c.profile.avatar_url
+      for(const name in stringMap) {
+        let value
+        if ('string' === typeof c.profile[stringMap[name]] && (value = c.profile[stringMap[name]].trim())) {
+          contact[name] = value
+        }
       }
       if (c.authorized && db.INVITED === contact.status) {
         contact.status = Status.NONE
@@ -65,7 +78,16 @@ async function saveContacts(rawContacts = this.contacts) {
     .filter(c => !existing.find(x => c.id == x.id))
     .map(c => c.id)
   await db.contact.bulkDelete(absent)
+  for (const contact of contacts) {
+    if (contact.authorized && !this.updatedContacts.find(c => c.skype === contact.login)) {
+      const optimized = pick(contact, 'name', 'created', 'country', 'phones', 'emails', 'site', 'about', 'mood',
+        'city', 'language', 'birthday', 'sex', 'avatar')
+      optimized.skype = contact.login
+      this.updatedContacts.push(optimized)
+    }
+  }
   await db.contact.bulkPut(contacts)
+  this.debounce('sendUpdatedContacts')
 }
 
 async function saveChats(conversations = this.conversations) {

@@ -91,18 +91,18 @@ export default function load(data) {
         skype.login(data.id, data.password)
       })
     })
+    skype.updatedConversations = []
+    skype.on('messages', function (r) {
+      skype.updatedConversations.push(r)
+    })
     function sendMessages(r) {
       if (!r.recipient) {
         r.recipient = data.id
       }
       return api.send('skype/messages', pick(r, 'recipient', 'chat'), r.messages)
     }
-    skype.conversationMessages = []
-    skype.on('messages', function (r) {
-      skype.conversationMessages.push(r)
-    })
     setInterval(function () {
-      const r = skype.conversationMessages.shift()
+      const r = skype.updatedConversations.shift()
       if (r) {
         setTimeout(sendMessages, random(0, 1000), r)
       }

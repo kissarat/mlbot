@@ -10,7 +10,7 @@ db.create = function create() {
   this.version(3)
     .stores({
       contact: `&id, login, name, &time, [status+authorized], [account+authorized+status], type,
-        favorite, created, country, city, phones, language, avatar, sex, site, groups, birthday`,
+        favorite, created, country, city, phones, language, avatar, sex, site, groups`,
       group: '&id, account, name, contacts',
     })
 

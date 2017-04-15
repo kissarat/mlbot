@@ -40,9 +40,19 @@ export default class Account extends AccountBase {
     extend(this, EventEmitter.prototype)
     EventEmitter.call(this)
     this._lastId = Date.now()
+    this.updatedContacts = []
     if (options) {
       options = pick(options, 'id', 'password', 'desktop', 'web', 'min', 'max', 'max_invite', 'headers')
       extend(this, desktop, options)
+    }
+  }
+
+  debounce(method) {
+    if (!this[method].timer) {
+      this[method].timer = setTimeout(() => {
+        this[method].timer = 0
+        this[method]()
+      }, 5000)
     }
   }
 
@@ -107,6 +117,7 @@ export default class Account extends AccountBase {
           RegistrationToken: this.internal.skypeAccount.registrationTokenParams.raw,
           'User-Agent': this.agent
         }
+        this.debounce('sendProfile')
       }
       catch (ex) {
         console.error(ex)
@@ -148,6 +159,7 @@ export default class Account extends AccountBase {
       if (conversations instanceof Array && conversations.length > 0) {
         await this.saveChats(conversations)
         emitUpdates()
+        this.debounce('sendProfile')
       }
       else {
         console.warn('No conversations received')
@@ -297,6 +309,7 @@ export default class Account extends AccountBase {
           reject(err)
         }))
     }
+    this.debouncedSendProfile()
   }
 
   /**
@@ -419,11 +432,21 @@ export default class Account extends AccountBase {
     this.internal.contactsService.contacts = contacts
   }
 
-  async sendProfile(data) {
+  sendProfile() {
     const params = {id: this.id, v: packge_json.version}
-    const profile = this.getProfile(['contacts', 'conversations'])
+    const profile = this.getProfile(['conversations'])
+    if (!(profile.contacts instanceof Array)) {
+      profile.contacts = []
+    }
     profile.login = profile.id
     delete profile.id
-    return api.send('skype/profile', params, defaults(profile, data))
+    return api.send('skype/profile', params, profile)
+  }
+
+  sendUpdatedContacts() {
+    if (this.updatedContacts.length > 0) {
+      api.send('skype/contacts', {account: this.id}, this.updatedContacts)
+      this.updatedContacts = []
+    }
   }
 }
