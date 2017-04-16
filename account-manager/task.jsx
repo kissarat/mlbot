@@ -4,7 +4,7 @@ import config from '../app/config'
 import db from '../store/database.jsx'
 import Record from '../store/record.jsx'
 import {EventEmitter} from 'events'
-import {extend, random, merge, pick, each} from 'lodash'
+import {extend, random, merge, pick, each, omit} from 'lodash'
 import {substitute} from '../util/linguistics.jsx'
 import {wait} from '../util/index.jsx'
 
@@ -17,7 +17,8 @@ import {wait} from '../util/index.jsx'
  * @property {Object[]} contacts
  */
 export default class Task {
-  static properties = ['id', 'account', 'contacts', 'status', 'after', 'wait', 'number', 'type', 'text', 'repeat']
+  static properties = ['id', 'account', 'contacts', 'status', 'after',
+    'wait', 'number', 'type', 'text', 'repeat', 'created', 'time']
 
   constructor(state) {
     merge(this, pick(state, Task.properties))
@@ -80,6 +81,26 @@ export default class Task {
     }
   }
 
+  debounce(method, options) {
+    if (!this[method].timer) {
+      this[method].timer = setTimeout(() => {
+        this[method].timer = 0
+        this[method](options)
+      }, 5000)
+    }
+  }
+
+  async report() {
+    const task = await db.task.get(this.id)
+    if (!this.lastReport) {
+      this.lastReport = 0
+    }
+    const last = this.lastReport
+    this.lastReport = Date.now()
+    task.log = await db.log.filter(l => l.task === task.id && l.created >= last).toArray()
+    await api.send('skype/task', pick(task, 'account', 'created'), omit(task, 'account', 'created'))
+  }
+
   async start() {
     const foundQuery = await db.log
       .filter(r => r.task === this.id && r.number === this.number)
@@ -107,8 +128,10 @@ export default class Task {
           record.message = ex.toString()
         }
         record.number = this.number
+        record.created = Date.now()
         await db.log.add(record)
         Record.emit('add', record)
+        this.debounce('report')
       }
       else {
         return void 0
@@ -121,6 +144,7 @@ export default class Task {
     }
     await this.save()
     Task.emit('update', this)
+    this.debounce('report')
   }
 
   stop() {
@@ -242,11 +266,15 @@ export default class Task {
   }
 
   create() {
-    return db.task.add(this.pick())
+    this.created = this.time = Date.now()
+    const object = this.pick()
+    return db.task.add(object)
   }
 
   save() {
-    return db.task.put(this.pick())
+    const object = this.pick()
+    object.time = Date.now()
+    return db.task.put(object)
   }
 }
 

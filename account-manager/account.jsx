@@ -12,7 +12,7 @@ import SkypeAccount from '../rat/src/skype_account.ts'
 import Skyweb from '../rat/src/skyweb.ts'
 import UserAgent from '../util/user-agent.jsx'
 import {getMri, wait} from '../util/index.jsx'
-import {pick, defaults, extend, isObject, isEmpty, identity, merge, debounce} from 'lodash'
+import {pick, defaults, extend, isObject, isEmpty, identity, merge, debounce, omit} from 'lodash'
 import {Type, Status} from '../app/config'
 import Contact from '../store/contact.jsx'
 
@@ -309,7 +309,6 @@ export default class Account extends AccountBase {
           reject(err)
         }))
     }
-    this.debouncedSendProfile()
   }
 
   /**

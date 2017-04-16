@@ -76,7 +76,7 @@ export default class TaskList extends TablePage {
   }
 
   async copy(t) {
-    const newTask = new Task[t.type](omit(t, 'id'))
+    const newTask = new Task[t.type](omit(t, 'id', 'created', 'time', 'status'))
     newTask.status = Status.SCHEDULED
     newTask.number = newTask.repeat
     await newTask.create()

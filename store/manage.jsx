@@ -16,8 +16,8 @@ db.create = function create() {
 
   this.version(4)
     .stores({
-      task: '++&id, contacts, after, wait, number, repeat, type, text, time',
-      log: '++&id, contact, task, status, number, time',
+      task: '++&id, contacts, after, wait, number, repeat, type, text, created, time',
+      log: '++&id, contact, task, status, number, message, created',
       account: '&id, password, min, max, desktop, max_invite, web, server, headers, time',
     })
 
