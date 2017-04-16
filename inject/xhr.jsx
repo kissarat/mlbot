@@ -188,21 +188,24 @@ XMLHttpRequest.prototype.open = function (method, url, sync) {
         let recipient = sky.profile.id
         let chat = conversation[2]
         for(const m of r.messages) {
+          if (!m.content) {
+            continue
+          }
           const target = getTarget(m.from)
           if (target) {
             const _from = target[2]
             const _to = '19' === conversation[1]
               ? conversation[2]
               : (conversation[2] === target[2]
-                ? sky.profile.id
-                : target[2])
+                ? sky.profile.id || sky.profile.username
+                : conversation[2])
             const message = {
               from: _from,
               to: _to,
               text: m.content.trim(),
               created: new Date(+m.id)
             }
-            if (m.id !== m.version) {
+            if (m.version !== m.id && new Date(message.time) !== new Date(+m.version)) {
               message.time = new Date(+m.version)
             }
             messages.push(message)

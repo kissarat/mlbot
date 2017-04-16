@@ -51,7 +51,7 @@ async function saveContacts(rawContacts = this.contacts) {
       if ('string' === typeof c.profile.birthday) {
         const birthday = new Date(c.profile.birthday).getTime()
         if (isFinite(birthday)) {
-          contact.birthday = birthday
+          contact.birthday = +birthday
         }
       }
       const stringMap = {
@@ -78,15 +78,19 @@ async function saveContacts(rawContacts = this.contacts) {
     .filter(c => !existing.find(x => c.id == x.id))
     .map(c => c.id)
   await db.contact.bulkDelete(absent)
+  await db.contact.bulkPut(contacts)
   for (const contact of contacts) {
     if (contact.authorized && !this.updatedContacts.find(c => c.skype === contact.login)) {
-      const optimized = pick(contact, 'name', 'created', 'country', 'phones', 'emails', 'site', 'about', 'mood',
-        'city', 'language', 'birthday', 'sex', 'avatar')
+      const optimized = pick(contact, 'name', 'country', 'phones', 'emails', 'site', 'about', 'mood',
+        'city', 'language', 'sex', 'avatar')
+      optimized.created = new Date(contact.created)
+      if (contact.birthday) {
+        optimized.birthday = new Date(+contact.birthday)
+      }
       optimized.skype = contact.login
       this.updatedContacts.push(optimized)
     }
   }
-  await db.contact.bulkPut(contacts)
   this.debounce('sendUpdatedContacts')
 }
 
