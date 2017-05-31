@@ -1,13 +1,12 @@
-const freeze = require('deep-freeze')
-const merge = require('deepmerge')
-const package_json = require('./package.json')
-const {cloneDeep} = require('lodash')
+var merge = require('deepmerge')
+var package_json = require('./package.json')
+var _ = require('lodash')
 
-const vendor = 'inbisoft'
-// const vendor = 'club-leader'
-// const vendor = 'lsproject'
+var vendor = 'inbisoft'
+// var vendor = 'club-leader'
+// var vendor = 'lsproject'
 
-let config = {
+var config = {
   dev: false,
   reset: false,
   origin: 'lsproject' === vendor ? 'https://ls.inbisoft.com' : 'https://app.inbisoft.com',
@@ -73,11 +72,11 @@ let config = {
 }
 
 if ('undefined' !== typeof localStorage) {
-  config[Symbol.for('default')] = cloneDeep(config)
+  config[Symbol.for('default')] = _.cloneDeep(config)
   try {
-    const string = localStorage.getItem('config')
+    var string = localStorage.getItem('config')
     if (string) {
-      const _config = JSON.parse(string)
+      var _config = JSON.parse(string)
       config.version = package_json.version
       if (config.version === _config.version) {
         config = merge(config, _config)
@@ -103,5 +102,4 @@ try {
 catch (ex) {
 }
 
-// module.exports = freeze(local ? merge(config, local) : config)
 module.exports = config

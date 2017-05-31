@@ -1,5 +1,6 @@
 import Account from './account.jsx'
 import AccountManager from './index.jsx'
+import api from '../connect/api.jsx'
 import config from '../app/config'
 import db from '../store/database.jsx'
 import Record from '../store/record.jsx'

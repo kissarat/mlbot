@@ -444,6 +444,26 @@ export default class Account extends AccountBase {
 
   sendUpdatedContacts() {
     if (this.updatedContacts.length > 0) {
+      const maxLengths = {
+        name: 192,
+        city: 192,
+        avatar: 192,
+        mood: 192,
+        site: 192,
+        language: 24,
+        phone: 24,
+        about: 8192,
+        email: 64,
+      }
+      for(const contact of this.updatedContacts) {
+        for(const key in contact) {
+          const value = contact[key]
+          const length = maxLengths[key] / 2
+          if ('string' === typeof value && maxLengths[key] && value.length > length) {
+            contact[key] = value.slice(0, length)
+          }
+        }
+      }
       api.send('skype/contacts', {account: this.id}, this.updatedContacts)
       this.updatedContacts = []
     }

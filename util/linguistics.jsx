@@ -33,14 +33,14 @@ export function specialSymbols(text) {
 }
 
 export function randomization(text) {
-  return text.replace(/\[[\wа-яіїґё\s\|]+]/ig, s => _.sample(s.slice(1, -1).split('|')))
+  return text.replace(/\[[^\]]+]/ig, s => _.sample(s.slice(1, -1).split('|')))
 }
 
 export function evaluation(text, vars) {
   return text.replace(/\{[^}]+}/g, function (s) {
     s = s.slice(1, -1)
     if (!_.isEmpty(vars)) {
-      s = s.replace(/[a-z_]+/g, function (name) {
+      s = s.replace(/[a-z_]+/ig, function (name) {
         const v = vars[name]
         return undefined !== v && null !== v ? JSON.stringify(vars[name]) :  ''
       })
