@@ -10,8 +10,11 @@ import {Promise} from "es6-promise";
 import {EventEmitter} from "./utils";
 
 const rejectWithError = (reject: (reason?: any) => void, error: string, eventEmitter: EventEmitter) => {
-    eventEmitter.fire('error', error);
-    reject(error);
+    console.error(error)
+    reject(error)
+    if (eventEmitter) {
+        eventEmitter.fire('error', error)
+    }
 };
 
 export class Login {
@@ -27,7 +30,7 @@ export class Login {
             //     'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:50.0) Gecko/20100101 Firefox/50.0"
             // }
         });
-        this.eventEmitter = eventEmitter;
+        this.eventEmitter = eventEmitter || new EventEmitter();
     }
 
     public doLogin(skypeAccount: SkypeAccount) {
@@ -44,7 +47,7 @@ export class Login {
 
     private sendLoginRequestOauth(skypeAccount: SkypeAccount, resolve: any, reject: any) {
         this.requestWithJar.get(Consts.SKYPEWEB_LOGIN_OAUTH_URL, (error: Error, response: any, body: any) => {
-            if (!error && response.statusCode == 200) {
+            if (!error && response && response.statusCode == 200) {
                 //we'll need those values to do successful auth
                 //sFTTag: '<input type="hidden" name="PPFT" id="i0327" value="somebiglongvalue"/>',
                 var ppft = /<input type="hidden" name="PPFT" id="i0327" value="([^"]+)"/g.exec(body)[1];
@@ -96,7 +99,7 @@ export class Login {
                 }
             };
             this.requestWithJar.post(postParams, (error: Error, response: any, body: any) => {
-                if (!error && response.statusCode == 200) {
+                if (!error && response && response.statusCode == 200) {
                     var $ = cheerio.load(body);
                     skypeAccount.skypeToken = $('input[name="skypetoken"]').val();
                     skypeAccount.skypeTokenExpiresIn = parseInt($('input[name="expires_in"]').val());//86400 by default
@@ -107,7 +110,8 @@ export class Login {
                             ' hit a CAPTCHA wall.' + $('.message_error').text(), this.eventEmitter);
                     }
                 } else {
-                    rejectWithError(reject, `Failed to get skypetocken ${error} ${body} ${response.statusCode}`, this.eventEmitter);
+                    const code = response ? response.statusCode : 520
+                    rejectWithError(reject, `Failed to get skypetocken ${error} ${body} ${code}`, this.eventEmitter);
                 }
             });
         })
@@ -194,10 +198,10 @@ export class Login {
                 'RegistrationToken': skypeAccount.registrationTokenParams.raw
             }
         }, (error: any, response: http.IncomingMessage, body: any) => {
-            if (!error && response.statusCode === 201) {
+            if (!error && response && response.statusCode === 201) {
                 resolve(skypeAccount);
             } else {
-                const status = response && response.statusCode
+                const status = response ? response.statusCode : 520
                 rejectWithError(reject, `Failed to subscribe to resources. ${error} ${status}`, this.eventEmitter);
             }
         });
@@ -231,11 +235,11 @@ export class Login {
                 'RegistrationToken': skypeAccount.registrationTokenParams.raw
             }
         }, (error: any, response: http.IncomingMessage, body: any) => {
-            if (!error && response.statusCode === 200) {
+            if (!error && response && response.statusCode === 200) {
                 resolve(skypeAccount);
             } else {
                 rejectWithError(reject, 'Failed to create endpoint for status.' +
-                    '.\n Error code: ' + response.statusCode +
+                    '.\n Error code: ' + (response ? response.statusCode : 520) +
                     '.\n Error: ' + error +
                     '.\n Body: ' + body, this.eventEmitter);
             }
@@ -248,12 +252,12 @@ export class Login {
                 'X-Skypetoken': skypeAccout.skypeToken
             }
         }, function (error: any, response: http.IncomingMessage, body: any) {
-            if (!error && response.statusCode == 200) {
+            if (!error && response && response.statusCode == 200) {
                 skypeAccout.selfInfo = JSON.parse(body);
                 resolve(skypeAccout);
             } else {
                 rejectWithError(reject, 'Failed to get selfInfo.' +
-                    '.\n Error code: ' + response.statusCode +
+                    '.\n Error code: ' + (response ? response.statusCode : 520) +
                     '.\n Error: ' + error +
                     '.\n Body: ' + body, this.eventEmitter);
             }

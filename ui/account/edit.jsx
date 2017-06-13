@@ -138,6 +138,7 @@ export default class AccountEdit extends FormComponent {
           name="web"
           label="Использовать Web-версию Skype"
           checked={this.state.web || false}
+          disabled={true}
           onChange={this.onCheck}/>
         <div className="randomization">
           Рандомизация от

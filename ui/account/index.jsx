@@ -38,10 +38,10 @@ export default class AccountList extends Component {
 
   addSkype() {
     if (this.state.accounts instanceof Array) {
-      if (this.state.accounts.length >= 20) {
+      if (this.state.accounts.length >= 500) {
         return <Alert
             warning
-            content="К сожалению в данной версии приложения вы не можете добавить больше 20-ти скайпов"/>
+            content="К сожалению в данной версии приложения вы не можете добавить больше 500 скайпов"/>
       }
       else {
         return <Link to="/accounts/login">Добавить Skype</Link>
